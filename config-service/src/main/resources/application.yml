@@ -1,0 +1,15 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/So-So-Happy/SoSoHappy-BackEnd.git
+          force-pull : true
+          searchPaths:
+            - config-service/config-files
+          default-label: master
