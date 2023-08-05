@@ -1,0 +1,15 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: dm-service
+  data:
+    mongodb:
+      uri: mongodb://34.64.48.95:27017/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
