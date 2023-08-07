@@ -7,7 +7,7 @@ spring:
   cloud:
     bus:
       enabled: true
-      destination: config
+      destination: springCloudBus
       refresh:
         enabled: true
       env:

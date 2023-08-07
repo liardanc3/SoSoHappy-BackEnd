@@ -11,18 +11,15 @@ spring:
       enabled: true
     bus:
       enabled: true
-      destination: config
+      destination: springCloudBus
   data:
     mongodb:
       uri: mongodb://34.64.48.95:27017/
       database: dm
-
-
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-
 test:
   now: "dm-config 2023-08-07-18:20"
