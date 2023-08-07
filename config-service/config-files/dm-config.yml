@@ -21,5 +21,6 @@ management:
     web:
       exposure:
         include: "*"
+
 test:
-  now: "dm-config 2023-08-07-18:20"
+  now: "dm-config 2023-08-07-20:55"
