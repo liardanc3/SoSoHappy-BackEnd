@@ -5,6 +5,13 @@ spring:
   application:
     name: config-server
   cloud:
+    bus:
+      enabled: true
+      destination: config
+      refresh:
+        enabled: true
+      env:
+        enabled: true
     config:
       server:
         git:
@@ -13,3 +20,9 @@ spring:
           searchPaths:
             - config-service/config-files
           default-label: master
+      enabled: true
+      monitor:
+        endpoint:
+          path: /remote-config
+  kafka:
+    bootstrap-servers: http://34.64.48.95:9092
