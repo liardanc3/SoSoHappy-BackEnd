@@ -38,14 +38,15 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                for (def service in services) {
-                    dir(service) {
-                        script {
-                            sh "kubectl apply -f k8s-${service}.yaml"
+		script {
+                    for (def service in services) {
+                        dir(service) {
+                            script {
+                                sh "kubectl apply -f k8s-${service}.yaml"
+                            }
                         }
                     }
                 }
             }
         }
-    }
 }
