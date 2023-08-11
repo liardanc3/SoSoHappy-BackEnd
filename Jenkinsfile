@@ -15,6 +15,7 @@ pipeline {
                 script {
                     for (def service in services) {
                         dir(service) {
+                            sh "chmod +x gradlew"
                             sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
                         }
