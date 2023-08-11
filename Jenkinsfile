@@ -3,6 +3,10 @@ def services = ['config-service', 'dm-service']
 pipeline {
     agent any
 
+    tools {
+    	jdk 'Java17'
+    }
+
     stages {
         stage('Checkout') {
             steps {
