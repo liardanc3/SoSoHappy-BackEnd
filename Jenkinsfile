@@ -1,4 +1,4 @@
-def services = ['dm-service', 'config-service']
+def services = ['config-service', 'dm-service']
 
 pipeline {
     agent any
