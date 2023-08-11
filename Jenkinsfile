@@ -16,7 +16,7 @@ pipeline {
                     for (def service in services) {
                         dir(service) {
                             sh "chmod +x gradlew"
-                            sh "./gradlew build"
+                            sh "./gradlew build --stacktrace"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
                         }
                     }
