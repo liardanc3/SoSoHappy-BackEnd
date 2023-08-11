@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-service
+  template:
+    metadata:
+      labels:
+        app: dm-service
+    spec:
+      containers:
+        - name: dm-container
+          image: liardance/dm-service:latest
+          ports:
+            - containerPort: 8889
+----------
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-service
+spec:
+  selector:
+    app: dm-service
+  ports:
+    - protocol: TCP
+      port: 8888
+      targetPort: 8888
+  type: LoadBalancer
+  externalIPs:
+    - 34.64.48.95
+
