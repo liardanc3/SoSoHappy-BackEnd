@@ -57,7 +57,7 @@ pipeline {
                     for (def service in services) {
                         dir(service) {
                             script {
-                                kubernetesDeploy(configs: "k8s-${service}.yaml")
+                                sh "kubectl --kubeconfig=/root/.kube/config apply -f k8s-${service}.yaml"
                             }
                         }
                     }
