@@ -43,6 +43,7 @@ pipeline {
                 script {
                     for (def service in services) {
                         dir(service) {
+                             sh "docker build -t liardance/${service}:latest"
                              sh "docker push liardance/${service}:latest"
                         }
                     }
