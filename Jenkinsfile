@@ -65,7 +65,7 @@ pipeline {
                     for (def service in services) {
                         dir(service) {
                             script {
-                                sh "kubectl --kubeconfig=/root/.kube/config apply -f k8s-${service}.yaml"
+                                sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${service}.yaml"
                             }
                         }
                     }
