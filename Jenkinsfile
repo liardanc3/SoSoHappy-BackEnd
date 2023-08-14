@@ -38,7 +38,7 @@ pipeline {
             }
         }
         
-        stage('Build Docker Images') {
+        stage('Build Docker Images And Push to Registry') {
             steps {
                 script {
                     for (def service in services) {
@@ -57,7 +57,7 @@ pipeline {
                     for (def service in services) {
                         dir(service) {
                             script {
-                                sh "kubectl apply -f k8s-${service}.yaml"
+                                kubernetesDeploy(configs: "k8s-${service}.yaml")
                             }
                         }
                     }
