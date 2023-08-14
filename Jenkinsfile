@@ -31,7 +31,7 @@ pipeline {
                 script {
                     for (def service in services) {
                         dir(service) {
-                            def dockerImage = docker.build "liardance/${service}:latest"
+                            def dockerImage = docker.build("liardance/${service}:latest")
                             dockerImage.push()
                         }
                     }
