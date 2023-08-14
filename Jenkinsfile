@@ -17,7 +17,8 @@ pipeline {
                         dir(service) {
                             sh "java --version"
                             sh "chmod +x gradlew"
-                            sh "./gradlew build --stacktrace"
+                            sh "./gradlew clean"
+			    sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
                         }
                     }
