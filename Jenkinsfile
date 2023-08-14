@@ -18,7 +18,7 @@ pipeline {
                             sh "java --version"
                             sh "chmod +x gradlew"
                             sh "./gradlew clean"
-			    sh "./gradlew build"
+                            sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
                         }
                     }
@@ -31,8 +31,9 @@ pipeline {
                 script {
                     for (def service in services) {
                         dir(service) {
-                            def dockerImage = docker.build("liardance/${service}:latest")
-                            dockerImage.push()
+                             withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
+                                 bat "docker push liardance/${service}:latest"
+                             }
                         }
                     }
                 }
@@ -41,7 +42,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-		script {
+                script {
                     for (def service in services) {
                         dir(service) {
                             script {
