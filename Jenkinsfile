@@ -33,16 +33,17 @@ pipeline {
         stage('Docker Login'){
             steps{
                 script{
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
                 }
             }
         }
+        
         stage('Build Docker Images') {
             steps {
                 script {
                     for (def service in services) {
                         dir(service) {
-                             sh 'docker push liardance/${service}:latest'
+                             sh "docker push liardance/${service}:latest"
                         }
                     }
                 }
