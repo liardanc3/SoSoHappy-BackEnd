@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +18,8 @@ spec:
           image: liardance/dm-service:latest
           ports:
             - containerPort: 8889
-----------
+
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -32,4 +34,3 @@ spec:
   type: LoadBalancer
   externalIPs:
     - 34.64.48.95
-
