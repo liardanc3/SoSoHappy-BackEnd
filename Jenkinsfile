@@ -51,14 +51,6 @@ pipeline {
             }
         }
 
-        stage('Permission'){
-            steps{
-                script{
-                    sh "chmod +rx /root/.kube/config" 
-                }
-            }
-        }
-
         stage('Deploy to Kubernetes') {
             steps {
                 script {
