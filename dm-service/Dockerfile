@@ -2,7 +2,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY build/libs/dm-service.jar dm-service.jar
+COPY build/libs/dm-service-dev.jar dm-service.jar
 
 EXPOSE 8889
 
