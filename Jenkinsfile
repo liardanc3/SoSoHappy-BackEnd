@@ -51,13 +51,21 @@ pipeline {
             }
         }
 
+        stage('Permission'){
+            steps{
+                script{
+                    sh "chmod +rx /root/.kube/config" 
+                }
+            }
+        }
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
                     for (def service in services) {
                         dir(service) {
                             script {
-                                sh "kubectl --kubeconfig=$KUBECONFIG apply -f k8s-${service}.yaml"
+                                sh "kubectl --kubeconfig=/root/.kube/config apply -f k8s-${service}.yaml"
                             }
                         }
                     }
