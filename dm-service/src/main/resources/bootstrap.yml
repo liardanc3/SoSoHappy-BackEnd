@@ -11,3 +11,12 @@ management:
     web:
       exposure:
         include: "*"
+
+logging:
+  level:
+    root : INFO
+    org:
+      springframework:
+        data:
+          mongodb: DEBUG
+
