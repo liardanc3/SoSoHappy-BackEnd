@@ -1,4 +1,4 @@
-package sosohappy.dmservice.collection;
+package sosohappy.dmservice.domain.collection;
 
 import lombok.*;
 import org.bson.types.ObjectId;
@@ -25,6 +25,4 @@ public class Message {
     private String receiver;
 
     private String text;
-    private byte[] fileData;
-
 }
