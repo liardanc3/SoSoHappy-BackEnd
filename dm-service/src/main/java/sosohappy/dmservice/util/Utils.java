@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import sosohappy.dmservice.aspect.exception.JsonToObjectException;
 
 import java.io.IOException;
 
