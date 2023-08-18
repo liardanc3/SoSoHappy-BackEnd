@@ -6,7 +6,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Document(collection = "message")
@@ -19,7 +21,7 @@ public class Message {
     private ObjectId id;
 
     @CreatedDate
-    private LocalDateTime createdDate;
+    private String createdDate;
 
     private String sender;
     private String receiver;

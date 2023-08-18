@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class WebFluxConfig implements WebFluxConfigurer {
+public class WebSocketConfig implements WebFluxConfigurer {
 
     private final MessageHandler handler;
 
@@ -20,5 +20,4 @@ public class WebFluxConfig implements WebFluxConfigurer {
     public HandlerMapping handlerMapping(){
         return new SimpleUrlHandlerMapping(Map.of("/dm", handler), 1);
     }
-
 }

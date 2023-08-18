@@ -16,7 +16,8 @@ logging:
   level:
     root : INFO
     org:
+      apache:
+        kafka: WARN
       springframework:
         data:
           mongodb: DEBUG
-
