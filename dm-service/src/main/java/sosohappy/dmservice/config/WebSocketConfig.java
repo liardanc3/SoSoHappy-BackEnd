@@ -18,6 +18,6 @@ public class WebSocketConfig implements WebFluxConfigurer {
 
     @Bean
     public HandlerMapping handlerMapping(){
-        return new SimpleUrlHandlerMapping(Map.of("/dm", handler), 1);
+        return new SimpleUrlHandlerMapping(Map.of("/dm-service", handler), 1);
     }
 }

@@ -30,6 +30,8 @@ public class MessageService {
                 .then();
     }
 
+    // ----------------------------------------------------------------------------- //
+
     private void saveMessage(WebSocketMessage webSocketMessage) {
         messageRepository.save(
                 new Message(
