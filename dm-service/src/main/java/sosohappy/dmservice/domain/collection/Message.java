@@ -5,16 +5,12 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
+import sosohappy.dmservice.domain.dto.MessageDto;
 
 @Getter
 @Document(collection = "message")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Message {
 
     @Id
@@ -27,4 +23,11 @@ public class Message {
     private String receiver;
 
     private String text;
+
+    public Message(MessageDto messageDto){
+        this.sender = messageDto.getSender();
+        this.receiver = messageDto.getReceiver();
+        
+        this.text = messageDto.getText();
+    }
 }

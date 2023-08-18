@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
+import sosohappy.dmservice.domain.collection.Message;
 import sosohappy.dmservice.domain.dto.MessageDto;
 import sosohappy.dmservice.repository.MessageRepository;
 import sosohappy.dmservice.util.Utils;
@@ -25,7 +26,16 @@ public class MessageService {
         return session.receive()
                 .doOnSubscribe(subscription -> saveSessionInfo(session))
                 .map(this::handleMessage)
+                .doOnNext(this::saveMessage)
                 .then();
+    }
+
+    private void saveMessage(WebSocketMessage webSocketMessage) {
+        messageRepository.save(
+                new Message(
+                        utils.jsonToObject(webSocketMessage.getPayloadAsText(), MessageDto.class)
+                )
+        ).subscribe();
     }
 
     private void saveSessionInfo(WebSocketSession session) {
