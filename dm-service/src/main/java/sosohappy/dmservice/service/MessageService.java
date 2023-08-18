@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import sosohappy.dmservice.domain.collection.Message;
 import sosohappy.dmservice.domain.dto.MessageDto;
+import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
 import sosohappy.dmservice.repository.MessageRepository;
 import sosohappy.dmservice.util.Utils;
 
@@ -28,6 +30,10 @@ public class MessageService {
                 .map(this::handleMessage)
                 .doOnNext(this::saveMessage)
                 .then();
+    }
+
+    public Flux<MessageDto> findDirectMessage(FindDirectMessageFilter findDirectMessageFilter) {
+        return messageRepository.findDirectMessage(findDirectMessageFilter);
     }
 
     // ----------------------------------------------------------------------------- //
@@ -60,4 +66,5 @@ public class MessageService {
         String receiverSessionId = nickNameToSessionIdMap.get(messageDto.getReceiver());
         return sessionIdToSessionMap.get(receiverSessionId);
     }
+
 }

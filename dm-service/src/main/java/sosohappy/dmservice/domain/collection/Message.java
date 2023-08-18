@@ -2,7 +2,6 @@ package sosohappy.dmservice.domain.collection;
 
 import lombok.*;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import sosohappy.dmservice.domain.dto.MessageDto;
@@ -16,8 +15,7 @@ public class Message {
     @Id
     private ObjectId id;
 
-    @CreatedDate
-    private String createdDate;
+    private Long createdDate;
 
     private String sender;
     private String receiver;
@@ -25,6 +23,8 @@ public class Message {
     private String text;
 
     public Message(MessageDto messageDto){
+        this.createdDate = messageDto.getCreatedDate();
+
         this.sender = messageDto.getSender();
         this.receiver = messageDto.getReceiver();
         
