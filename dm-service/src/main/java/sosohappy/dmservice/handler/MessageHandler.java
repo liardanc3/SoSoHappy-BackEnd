@@ -15,7 +15,7 @@ public class MessageHandler implements WebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        return messageService.handleSession(session);
+        return messageService.connectSessionAndSendMessage(session);
     }
 
 }

@@ -1,7 +1,9 @@
 package sosohappy.dmservice.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import sosohappy.dmservice.aspect.exception.JsonToObjectException;
 
@@ -13,13 +15,9 @@ public class Utils {
 
     private final ObjectMapper objectMapper;
 
+    @SneakyThrows
     public <T> T jsonToObject(String json, Class<T> targetType) {
-        try {
-            return objectMapper.readValue(json, targetType);
-        } catch (IOException e) {
-            System.out.println("e.getMessage() = " + e.getMessage());
-            throw new JsonToObjectException(e.getMessage());
-        }
+        return objectMapper.readValue(json, targetType);
     }
 
 }

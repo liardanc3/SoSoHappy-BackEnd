@@ -22,7 +22,7 @@ public class MessageService {
     private final Map<String, String> nickNameToSessionIdMap;
     private final Map<String, WebSocketSession> sessionIdToSessionMap;
 
-    public Mono<Void> handleSession(WebSocketSession session) {
+    public Mono<Void> connectSessionAndSendMessage(WebSocketSession session) {
         return session.receive()
                 .doOnSubscribe(subscription -> saveSessionInfo(session))
                 .map(this::handleMessage)

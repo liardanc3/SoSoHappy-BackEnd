@@ -11,10 +11,6 @@ import sosohappy.dmservice.aspect.exception.JsonToObjectException;
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 public class ResponseExceptionHandler {
 
-    @ExceptionHandler(JsonProcessingException.class)
-    public JsonToObjectException handleVerifyException(JsonToObjectException e){
-        return e;
-    }
 
 }
 
