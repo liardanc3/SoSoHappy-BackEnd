@@ -1,4 +1,17 @@
+server:
+  port: 8890
+
 spring:
+  application:
+    name: auth-service
+  kafka:
+    bootstrap-servers: http://34.64.48.95:9092
+  cloud:
+    config:
+      enabled: true
+    bus:
+      enabled: true
+      destination: springCloudBus
   datasource:
     driver-class-name: com.mariadb.cj.jdbc.Driver
     url: jdbc:mariadb://34.64.48.95:3306/auth-db
