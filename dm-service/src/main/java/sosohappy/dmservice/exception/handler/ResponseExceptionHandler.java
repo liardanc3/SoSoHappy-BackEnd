@@ -1,4 +1,4 @@
-package sosohappy.dmservice.exception.renderer;
+package sosohappy.dmservice.exception.handler;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
@@ -17,7 +17,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import reactor.core.publisher.Mono;
-import sosohappy.dmservice.exception.renderer.ResponseExceptionAttributes;
 
 import java.util.Map;
 
@@ -36,11 +35,11 @@ public class ResponseExceptionHandler extends AbstractErrorWebExceptionHandler {
     @Override
     protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
         return RouterFunctions.route(
-                RequestPredicates.all(), this::renderErrorResponse
+                RequestPredicates.all(), this::responseException
         );
     }
 
-    private Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
+    private Mono<ServerResponse> responseException(ServerRequest request) {
 
         Map<String, Object> errorMap = getErrorAttributes(request, ErrorAttributeOptions.defaults());
 

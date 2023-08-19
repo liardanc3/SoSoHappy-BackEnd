@@ -1,4 +1,4 @@
-package sosohappy.dmservice.exception.aop;
+package sosohappy.dmservice.exception;
 
 import lombok.SneakyThrows;
 import org.aspectj.lang.annotation.AfterThrowing;

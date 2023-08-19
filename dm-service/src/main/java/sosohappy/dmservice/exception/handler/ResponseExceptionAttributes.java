@@ -1,4 +1,4 @@
-package sosohappy.dmservice.exception.renderer;
+package sosohappy.dmservice.exception.handler;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
@@ -25,4 +25,3 @@ public class ResponseExceptionAttributes extends DefaultErrorAttributes {
     }
 
 }
-
