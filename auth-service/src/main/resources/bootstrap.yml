@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    config:
+      uri: http://127.0.0.1:8888
+      name: auth-config
+  config:
+    import: optional:configserver:http://127.0.0.1:8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root : INFO
+    org:
+      apache:
+        kafka: WARN
+      hibernate:
+        type: warn
+        SQL: off

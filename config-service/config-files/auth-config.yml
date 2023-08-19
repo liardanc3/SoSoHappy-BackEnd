@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mariadb.cj.jdbc.Driver
+    url: jdbc:mariadb://34.64.48.95:3306/auth-db?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: root
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        type: warn
+        SQL: off
+
