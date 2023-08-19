@@ -37,6 +37,12 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
     public Flux<MessageDto> findMultipleDirectMessage(String sender){
         return mongoTemplate.aggregate(
                 Aggregation.newAggregation(
+                        Aggregation.match(
+                                new Criteria().orOperator(
+                                        Criteria.where("sender").is(sender),
+                                        Criteria.where("receiver").is(sender)
+                                )
+                        ),
                         Aggregation.group("messageRoomId").last("$$ROOT").as("lastDirectMessage"),
                         Aggregation.replaceRoot("lastDirectMessage"),
                         Aggregation.sort(Sort.Direction.DESC, "createdDate")
