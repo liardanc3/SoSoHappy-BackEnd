@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mariadb.cj.jdbc.Driver
-    url: jdbc:mariadb://34.64.48.95:3306/auth-db?characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: root
+    url: jdbc:mariadb://34.64.48.95:3306/auth-db
+    username: root #tmp
+    password: root #tmp
   jpa:
     show-sql: false
     hibernate:
