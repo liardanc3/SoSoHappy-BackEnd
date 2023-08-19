@@ -21,4 +21,10 @@ public class MessageController {
     public Flux<MessageDto> findDirectMessage(@ModelAttribute FindDirectMessageFilter findDirectMessageFilter){
         return messageService.findDirectMessage(findDirectMessageFilter);
     }
+
+    @ConvertException(target = FindMessageException.class)
+    @PostMapping("/findMultipleDirectMessage")
+    public Flux<MessageDto> findMultipleDirectMessage(@RequestPart String sender){
+        return messageService.findMultipleDirectMessage(sender);
+    }
 }

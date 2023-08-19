@@ -7,4 +7,6 @@ import sosohappy.dmservice.domain.dto.MessageDto;
 public interface MessageQueryRepository {
 
     Flux<MessageDto> findDirectMessage(FindDirectMessageFilter findDirectMessageFilter);
+
+    Flux<MessageDto> findMultipleDirectMessage(String sender);
 }

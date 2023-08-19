@@ -27,8 +27,8 @@ public class MessageService {
     public Mono<Void> connectSessionAndSendMessage(WebSocketSession session) {
         return session.receive()
                 .doOnSubscribe(subscription -> saveSessionInfo(session))
-                .map(this::handleMessage)
-                .doOnNext(this::saveMessage)
+                .map(this::sendMessage)
+                .doOnNext(this::saveDirectMessage)
                 .then();
     }
 
@@ -36,9 +36,13 @@ public class MessageService {
         return messageRepository.findDirectMessage(findDirectMessageFilter);
     }
 
+    public Flux<MessageDto> findMultipleDirectMessage(String sender) {
+        return messageRepository.findMultipleDirectMessage(sender);
+    }
+
     // ----------------------------------------------------------------------------- //
 
-    private void saveMessage(WebSocketMessage webSocketMessage) {
+    private void saveDirectMessage(WebSocketMessage webSocketMessage) {
         messageRepository.save(
                 new Message(
                         utils.jsonToObject(webSocketMessage.getPayloadAsText(), MessageDto.class)
@@ -51,7 +55,7 @@ public class MessageService {
         sessionIdToSessionMap.put(session.getId(), session);
     }
 
-    private WebSocketMessage handleMessage(WebSocketMessage webSocketMessage) {
+    private WebSocketMessage sendMessage(WebSocketMessage webSocketMessage) {
         MessageDto messageDto = utils.jsonToObject(webSocketMessage.getPayloadAsText(), MessageDto.class);
         WebSocketSession receiverSession = getReceiverSession(messageDto);
 
@@ -66,5 +70,4 @@ public class MessageService {
         String receiverSessionId = nickNameToSessionIdMap.get(messageDto.getReceiver());
         return sessionIdToSessionMap.get(receiverSessionId);
     }
-
 }
