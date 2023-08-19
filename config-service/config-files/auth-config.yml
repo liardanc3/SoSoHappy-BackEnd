@@ -13,7 +13,7 @@ spring:
       enabled: true
       destination: springCloudBus
   datasource:
-    driver-class-name: com.mariadb.cj.jdbc.Driver
+    driver-class-name: com.mariadb.jdbc.Driver
     url: jdbc:mariadb://34.64.48.95:3306/auth-db
     username: root #tmp
     password: root #tmp
