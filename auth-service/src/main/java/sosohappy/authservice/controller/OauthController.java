@@ -9,8 +9,8 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/oauth")
 public class OauthController {
 
-    @GetMapping("/kakao")
-    public void getKakaoAccessCode(@RequestParam("code") String code){
-        System.out.println("code = " + code);
+    @PostMapping("/hello")
+    public void hello(){
+
     }
 }

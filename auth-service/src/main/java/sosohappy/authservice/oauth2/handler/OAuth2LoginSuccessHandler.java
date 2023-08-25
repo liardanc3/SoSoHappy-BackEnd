@@ -2,6 +2,7 @@ package sosohappy.authservice.oauth2.handler;
 
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import sosohappy.authservice.entity.User;
 import sosohappy.authservice.repository.UserRepository;
 import sosohappy.authservice.jwt.service.JwtService;
@@ -19,16 +20,17 @@ import java.io.IOException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        log.info("OAuth2 Login 성공!");
-
         DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
+
+        System.out.println("oAuth2User.getAuthorities() = " + oAuth2User.getAuthorities());
+        System.out.println("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
 
         String accessToken = jwtService.createAccessToken(oAuth2User.getName());
 

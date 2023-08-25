@@ -55,10 +55,6 @@ public class JwtService {
         return JWT.create() // JWT 토큰을 생성하는 빌더 반환
                 .withSubject(ACCESS_TOKEN_SUBJECT) // JWT의 Subject 지정 -> AccessToken이므로 AccessToken
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod)) // 토큰 만료 시간 설정
-
-                //클레임으로는 저희는 email 하나만 사용합니다.
-                //추가적으로 식별자나, 이름 등의 정보를 더 추가하셔도 됩니다.
-                //추가하실 경우 .withClaim(클래임 이름, 클래임 값) 으로 설정해주시면 됩니다
                 .withClaim(EMAIL_CLAIM, email)
                 .sign(Algorithm.HMAC512(secretKey)); // HMAC512 알고리즘 사용, application-jwt.yml에서 지정한 secret 키로 암호화
     }
@@ -68,7 +64,6 @@ public class JwtService {
      * RefreshToken은 Claim에 email도 넣지 않으므로 withClaim() X
      */
     public String createRefreshToken() {
-        System.out.println("JwtService.createRefreshToken");
         Date now = new Date();
         return JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
@@ -91,12 +86,10 @@ public class JwtService {
      * AccessToken + RefreshToken 헤더에 실어서 보내기
      */
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
-        System.out.println("JwtService.sendAccessAndRefreshToken");
         response.setStatus(HttpServletResponse.SC_OK);
 
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
-        log.info("Access Token, Refresh Token 헤더 설정 완료");
     }
 
     /**
@@ -105,7 +98,6 @@ public class JwtService {
      * 헤더를 가져온 후 "Bearer"를 삭제(""로 replace)
      */
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        System.out.println("JwtService.extractRefreshToken");
         return Optional.ofNullable(request.getHeader(refreshHeader))
                 .filter(refreshToken -> refreshToken.startsWith(BEARER))
                 .map(refreshToken -> refreshToken.replace(BEARER, ""));
@@ -118,10 +110,8 @@ public class JwtService {
      */
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader))
-                .filter(refreshToken ->
-                        refreshToken.startsWith(BEARER))
-                .map(refreshToken ->
-                        refreshToken.replace(BEARER, ""));
+                .filter(refreshToken -> refreshToken.startsWith(BEARER))
+                .map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
     /**

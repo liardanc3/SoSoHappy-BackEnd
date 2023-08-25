@@ -37,8 +37,6 @@ import java.util.UUID;
 @Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-    private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
-
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
@@ -46,16 +44,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JwtAuthenticationProcessingFilter.doFilterInternal");
-        if (request.getRequestURI().equals(NO_CHECK_URL)) {
-            filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
-            return; // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
+        if (request.getRequestURI().contains("/oauth2/authorization")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        // 사용자 요청 헤더에서 RefreshToken 추출
-        // -> RefreshToken이 없거나 유효하지 않다면(DB에 저장된 RefreshToken과 다르다면) null을 반환
-        // 사용자의 요청 헤더에 RefreshToken이 있는 경우는, AccessToken이 만료되어 요청한 경우밖에 없다.
-        // 따라서, 위의 경우를 제외하면 추출한 refreshToken은 모두 null
         String refreshToken = jwtService.extractRefreshToken(request)
                 .filter(jwtService::isTokenValid)
                 .orElse(null);
@@ -71,9 +64,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         // RefreshToken이 없거나 유효하지 않다면, AccessToken을 검사하고 인증을 처리하는 로직 수행
         // AccessToken이 없거나 유효하지 않다면, 인증 객체가 담기지 않은 상태로 다음 필터로 넘어가기 때문에 403 에러 발생
         // AccessToken이 유효하다면, 인증 객체가 담긴 상태로 다음 필터로 넘어가기 때문에 인증 성공
-        if (refreshToken == null) {
-            checkAccessTokenAndAuthentication(request, response, filterChain);
-        }
+        checkAccessTokenAndAuthentication(request, response, filterChain);
     }
 
     /**
@@ -98,7 +89,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      * DB에 재발급한 리프레시 토큰 업데이트 후 Flush
      */
     private String reIssueRefreshToken(User user) {
-        System.out.println("JwtAuthenticationProcessingFilter.reIssueRefreshToken");
         String reIssuedRefreshToken = jwtService.createRefreshToken();
         user.updateRefreshToken(reIssuedRefreshToken);
         userRepository.saveAndFlush(user);
