@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Base64;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -25,6 +27,10 @@ public class User {
     @Column
     private String introduction;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private String profile;
+
     @Column
     private String provider;
     @Column
@@ -36,4 +42,5 @@ public class User {
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
 }
