@@ -23,13 +23,13 @@ public class User {
     @Column
     private String email;
     @Column
-    private String nickName;
+    private String nickname;
     @Column
     private String introduction;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    private String profile;
+    private String profileImg;
 
     @Column
     private String provider;
@@ -43,4 +43,9 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+    public void updateProfile(UserDto userDto){
+        this.profileImg = userDto.getProfileImg();
+        this.nickname = userDto.getNickname();
+        this.introduction = userDto.getIntroduction();
+    }
 }

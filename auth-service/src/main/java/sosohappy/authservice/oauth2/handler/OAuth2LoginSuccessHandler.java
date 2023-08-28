@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import sosohappy.authservice.oauth2.service.UserService;
+import sosohappy.authservice.service.UserService;
 
 import java.util.Map;
 

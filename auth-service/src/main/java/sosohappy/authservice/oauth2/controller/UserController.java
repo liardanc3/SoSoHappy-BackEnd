@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sosohappy.authservice.entity.ResignDto;
-import sosohappy.authservice.oauth2.service.UserService;
+import sosohappy.authservice.service.UserService;
 
 @RestController
 @RequiredArgsConstructor

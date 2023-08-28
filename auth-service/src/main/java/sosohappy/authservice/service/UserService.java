@@ -1,4 +1,4 @@
-package sosohappy.authservice.oauth2.service;
+package sosohappy.authservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.authservice.entity.ResignDto;
 import sosohappy.authservice.entity.User;
+import sosohappy.authservice.entity.UserDto;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
@@ -13,11 +14,11 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
 
-    @Transactional
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
         String name = String.valueOf(userAttributes.get("name"));
@@ -30,7 +31,7 @@ public class UserService {
                                 () -> userRepository.save(
                                         User.builder()
                                                 .email(email)
-                                                .nickName(name)
+                                                .nickname(name)
                                                 .provider(provider)
                                                 .providerId(providerId)
                                                 .refreshToken(refreshToken)
@@ -54,5 +55,14 @@ public class UserService {
                                 .email(email)
                                 .build()
                 );
+    }
+
+    public Boolean checkDuplicateNickname(String nickname) {
+        return userRepository.findByNickname(nickname).isEmpty();
+    }
+
+    public void setProfile(UserDto userDto) {
+        userRepository.findByEmail(userDto.getEmail())
+                .ifPresent(user -> user.updateProfile(userDto));
     }
 }
