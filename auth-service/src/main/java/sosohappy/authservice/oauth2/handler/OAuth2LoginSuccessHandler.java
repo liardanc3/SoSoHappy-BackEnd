@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import sosohappy.authservice.service.UserService;
+import sosohappy.authservice.oauth2.service.UserService;
 
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         jwtService.setAccessTokenOnHeader(response, accessToken);
         jwtService.setRefreshTokenOnHeader(response, refreshToken);
 
-        userService.save(userAttributes, refreshToken);
+        userService.signIn(userAttributes, refreshToken);
     }
 
 }

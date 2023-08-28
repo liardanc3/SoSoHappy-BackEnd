@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class JwtService {
 
     private final UserRepository userRepository;
 
+    @KafkaProducer(topic = "accessToken")
     public String createAccessToken(String email) {
         return JWT.create()
                 .withSubject("AccessToken") 
@@ -82,11 +84,6 @@ public class JwtService {
         } catch (Exception e) {
             return Optional.empty();
         }
-    }
-
-    public void updateRefreshToken(String email, String refreshToken) {
-        userRepository.findByEmail(email)
-                .ifPresent(user -> user.updateRefreshToken(refreshToken));
     }
 
     public boolean isTokenValid(String token) {

@@ -1,28 +1,21 @@
 package sosohappy.authservice.jwt.filter;
 
-import lombok.SneakyThrows;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
-import sosohappy.authservice.entity.User;
-import sosohappy.authservice.repository.UserRepository;
-import sosohappy.authservice.jwt.service.JwtService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.hc.core5.http.HttpStatus;
+import org.springframework.web.filter.OncePerRequestFilter;
+import sosohappy.authservice.entity.User;
+import sosohappy.authservice.jwt.service.JwtService;
+import sosohappy.authservice.repository.UserRepository;
+
 import java.io.IOException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -37,16 +30,29 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return;
         }
 
-        // accessToken expired
-        String refreshToken = jwtService.extractRefreshToken(request)
-                .filter(jwtService::isTokenValid)
-                .orElse(null);
-        if (refreshToken != null) {
-            reIssueToken(response, refreshToken);
+        // reIssueToken (accessToken, refreshToken 입력받음)
+        if (request.getRequestURI().contains("/reIssueToken")){
+            String attributeEmail = request.getQueryString();
+            String tokenEmail = jwtService.extractEmail(
+                    jwtService.extractAccessToken(request).orElse(null)
+            ).orElse(null);
+
+            String refreshToken = jwtService.extractRefreshToken(request)
+                    .filter(jwtService::isTokenValid)
+                    .orElse(null);
+
+            if (tokenEmail != null && attributeEmail.equals(tokenEmail) && refreshToken != null) {
+                reIssueToken(response, refreshToken);
+                response.sendError(HttpStatus.SC_OK);
+                return;
+            }
+
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        checkAccessToken(request, response, filterChain);
+        // verify
+        verifyAccessToken(request, response, filterChain);
     }
 
     public void reIssueToken(HttpServletResponse response, String refreshToken) {
@@ -73,7 +79,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     @SneakyThrows
-    public void checkAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    public void verifyAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         Optional<User> user = jwtService.extractAccessToken(request)
                 .filter(jwtService::isTokenValid)
                 .flatMap(jwtService::extractEmail)
