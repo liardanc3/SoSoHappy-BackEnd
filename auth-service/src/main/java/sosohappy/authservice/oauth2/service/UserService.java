@@ -18,8 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    @KafkaProducer(topic = "refreshToken")
-    public Map<String, String> signIn(Map<String, Object> userAttributes, String refreshToken) {
+    public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
         String name = String.valueOf(userAttributes.get("name"));
         String provider = String.valueOf(userAttributes.get("provider"));
@@ -38,11 +37,6 @@ public class UserService {
                                                 .build()
                                 )
                         );
-
-        return Map.of(
-                "key", email,
-                "value", refreshToken
-        );
     }
 
     public ResignDto resign(String email) {
