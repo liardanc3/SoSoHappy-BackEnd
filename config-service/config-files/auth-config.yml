@@ -25,9 +25,9 @@ spring:
     username: root #tmp
     password: root #tmp
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
