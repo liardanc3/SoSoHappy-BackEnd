@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sosohappy.authservice.entity.ResignDto;
 import sosohappy.authservice.entity.UserDto;
 import sosohappy.authservice.service.UserService;
 
@@ -21,6 +22,11 @@ public class UserController {
     @PostMapping("/setProfile")
     public void setProfile(UserDto userDto){
         userService.setProfile(userDto);
+    }
+
+    @PostMapping("/resign")
+    public ResignDto resign(String email){
+        return userService.resign(email);
     }
 
 }
