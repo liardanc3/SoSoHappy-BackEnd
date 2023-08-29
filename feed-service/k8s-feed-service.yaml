@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed-service
+  template:
+    metadata:
+      labels:
+        app: feed-service
+    spec:
+      containers:
+        - name: feed-container
+          image: liardance/feed-service:latest
+          ports:
+            - containerPort: 8892
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feed-service
+spec:
+  selector:
+    app: feed-service
+  ports:
+    - protocol: TCP
+      port: 8892
+      targetPort: 8892
+  type: LoadBalancer
+  externalIPs:
+    - 34.64.48.95
