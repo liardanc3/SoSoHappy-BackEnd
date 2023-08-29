@@ -1,10 +1,17 @@
 server:
-  port: 8889
+  port: 8891
 
 spring:
   application:
-    name: dm-service
+    name: diary-service
   kafka:
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
     bootstrap-servers: http://34.64.48.95:9092
   cloud:
     config:
@@ -12,11 +19,15 @@ spring:
     bus:
       enabled: true
       destination: springCloudBus
-  data:
-    mongodb:
-      uri: mongodb://34.64.48.95:27017/
-      database: dm
-
-test:
-  now: "dm-config 2023-08-07 21:04"
-
+  datasource:
+    driverClassName: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://34.64.48.95:3306/diary-db
+    username: root #tmp
+    password: root #tmp
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
