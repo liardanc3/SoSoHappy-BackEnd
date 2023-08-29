@@ -1,0 +1,22 @@
+server:
+  port: 8889
+
+spring:
+  application:
+    name: dm-service
+  kafka:
+    bootstrap-servers: http://34.64.48.95:9092
+  cloud:
+    config:
+      enabled: true
+    bus:
+      enabled: true
+      destination: springCloudBus
+  data:
+    mongodb:
+      uri: mongodb://34.64.48.95:27017/
+      database: dm
+
+test:
+  now: "dm-config 2023-08-07 21:04"
+
