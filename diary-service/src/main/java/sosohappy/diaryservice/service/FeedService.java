@@ -17,4 +17,8 @@ public class FeedService {
     public List<FeedDto> findMonthFeed(SearchFeedFilter searchFeedFilter) {
         return feedRepository.findMonthFeedBySearchFeedFilter(searchFeedFilter);
     }
+
+    public FeedDto findDayFeed(SearchFeedFilter searchFeedFilter) {
+        return feedRepository.findDayFeedBySearchFeedFilter(searchFeedFilter);
+    }
 }

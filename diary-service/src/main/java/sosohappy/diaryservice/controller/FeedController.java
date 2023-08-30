@@ -20,4 +20,9 @@ public class FeedController {
     public List<FeedDto> findMonthFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
         return feedService.findMonthFeed(searchFeedFilter);
     }
+
+    @PostMapping("/findDayFeed")
+    public FeedDto findDayFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
+        return feedService.findDayFeed(searchFeedFilter);
+    }
 }
