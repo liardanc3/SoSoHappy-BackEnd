@@ -48,6 +48,9 @@ dependencies {
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 	implementation "com.querydsl:querydsl-core:5.0.0"
 
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
 }
 
 dependencyManagement {
@@ -60,7 +63,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-def querydslDir = "$buildDir/generated/inunavi"
+def querydslDir = "$buildDir/generated/diary-service"
 
 querydsl {
 	jpa = true
