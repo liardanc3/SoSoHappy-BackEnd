@@ -15,11 +15,14 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/So-So-Happy/SoSoHappy-BackEnd.git
+          uri: git@github.com:So-So-Happy/config-files.git
           force-pull : true
-          searchPaths:
-            - config-service/config-files
           default-label: master
+          private-key: -----BEGIN EC PRIVATE KEY-----
+            MHcCAQEEIG8mwKANBWMqbltdtrgSmEBS8BjknmETYmJvJ9ZoCVMSoAoGCCqGSM49
+            AwEHoUQDQgAEMAY5KY1cnPPFn4pSKeHISLPkRio2VbmmnpzOSj2QJ5TD+swWpxzg
+            nJ5XArmMpcjIcRyvRAjosSNgUyNyFHrWkA==
+            -----END EC PRIVATE KEY-----
       enabled: true
       monitor:
         endpoint:
