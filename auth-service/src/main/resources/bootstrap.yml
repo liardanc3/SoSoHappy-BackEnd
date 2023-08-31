@@ -5,29 +5,6 @@ spring:
       name: auth-config
   config:
     import: optional:configserver:http://127.0.0.1:8888
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 640150050609-j01gh12kvustpvj51l1b5k7osuoqjpb5.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri : http://localhost:8890/login/oauth2/code/google
-            scope : profile,email
-          kakao:
-            client-id: 2d697543d44a9f37d78edc1ef8a6ceda
-            client-secret: TF8vAzD7OKYvPgtdhP9WSb0CIZIB9BlP
-            client-authentication-method: client_secret_post
-            redirect-uri: http://localhost:8890/login/oauth2/code/kakao
-            scope: profile_nickname, account_email
-            authorization-grant-type: authorization_code
-            client-name: kakao
-        provider:
-          kakao:
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-name-attribute: id
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
 
 jwt:
   secretKey: dsajfnlwejabjldqwnadjkenqkjfbkjf132asdkk1ljl09henl322
