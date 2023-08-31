@@ -15,7 +15,6 @@ jwt:
     expiration: 12096000000
     header: Authorization-refresh
 
-
 management:
   endpoints:
     web:

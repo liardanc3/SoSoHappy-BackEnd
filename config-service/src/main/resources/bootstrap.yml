@@ -1,6 +1,7 @@
 server:
   port: 8888
 
+
 spring:
   application:
     name: config-server
@@ -16,13 +17,62 @@ spring:
       server:
         git:
           uri: git@github.com:So-So-Happy/config-files.git
-          force-pull : true
+          ignore-local-ssh-settings: true
+          private-key: |
+              -----BEGIN RSA PRIVATE KEY-----
+              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
+              -----END RSA PRIVATE KEY-----
+          host-key: AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
+          host-key-algorithm: ssh-rsa
           default-label: master
-          private-key: -----BEGIN EC PRIVATE KEY-----
-            MHcCAQEEIG8mwKANBWMqbltdtrgSmEBS8BjknmETYmJvJ9ZoCVMSoAoGCCqGSM49
-            AwEHoUQDQgAEMAY5KY1cnPPFn4pSKeHISLPkRio2VbmmnpzOSj2QJ5TD+swWpxzg
-            nJ5XArmMpcjIcRyvRAjosSNgUyNyFHrWkA==
-            -----END EC PRIVATE KEY-----
       enabled: true
       monitor:
         endpoint:
