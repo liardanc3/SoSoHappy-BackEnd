@@ -10,6 +10,8 @@ import java.util.List;
 @Data
 public class FeedDto {
 
+    private String nickname;
+
     private String weather;
 
     private Long date;
@@ -27,7 +29,8 @@ public class FeedDto {
     private List<String> likeNicknameList;
 
     public FeedDto(Feed feed){
-        this.weather = feed.getWeather().name();
+        this.nickname = feed.getNickname();
+        this.weather = feed.getWeather();
         this.date = feed.getDate();
         this.happiness = feed.getHappiness();
         this.text = feed.getText();

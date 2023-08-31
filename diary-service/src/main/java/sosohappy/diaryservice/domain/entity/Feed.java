@@ -2,6 +2,7 @@ package sosohappy.diaryservice.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import sosohappy.diaryservice.domain.dto.UpdateFeedDto;
 
 import java.util.List;
 
@@ -17,9 +18,8 @@ public class Feed {
     @Column
     private String nickname;
 
-    @Enumerated(EnumType.STRING)
     @Column
-    private Weather weather;
+    private String weather;
 
     @Column
     private Long date;
@@ -56,4 +56,20 @@ public class Feed {
     )
     @Column
     private List<String> likeNicknameList;
+
+
+    // --------------------------------------- //
+    public void updateFeed(UpdateFeedDto updateFeedDto){
+
+    }
+
+    public Feed(UpdateFeedDto updateFeedDto){
+        this.weather = updateFeedDto.getWeather();
+        this.date = updateFeedDto.getDate();
+        this.text = updateFeedDto.getText();
+        this.happiness = updateFeedDto.getHappiness();
+        this.categoryList = updateFeedDto.getCategoryList();
+        this.imageList = updateFeedDto.getImageList();
+        this.isPublic = updateFeedDto.getIsPublic();
+    }
 }

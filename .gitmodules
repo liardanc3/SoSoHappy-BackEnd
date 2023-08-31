@@ -1,0 +1,4 @@
+[submodule "config-service/config-files"]
+	path = config-service/config-files
+	url = https://github.com/So-So-Happy/config-files.git
+	branch = master

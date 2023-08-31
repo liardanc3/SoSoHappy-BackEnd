@@ -6,7 +6,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sosohappy.diaryservice.domain.dto.FeedDto;
+import sosohappy.diaryservice.domain.dto.UpdateFeedDto;
 import sosohappy.diaryservice.domain.dto.SearchFeedFilter;
+import sosohappy.diaryservice.domain.entity.Feed;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +50,11 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                         dayEq(searchFeedFilter.getDate())
                 )
                 .fetchOne();
+    }
+
+    @Override
+    public Optional<Feed> findByNicknameAndDate(String nickname, Long date) {
+        return Optional.empty();
     }
 
     // ----------------------------------------------------------------- //
