@@ -28,7 +28,7 @@ spring:
         endpoint:
           path: /remote-config
   kafka:
-    bootstrap-servers: http://34.64.48.95:9092
+    bootstrap-servers: http://34.22.67.179:9092
 
 management:
   endpoints:
