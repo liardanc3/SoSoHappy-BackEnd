@@ -1,7 +1,7 @@
-def services = ['config-service', 'auth-service']
+def services = ['auth-service']
 
 pipeline {
-    environment{
+    environment {
         DOCKERHUB_CREDENTIALS = credentials('docker-credential')
     }
 
@@ -14,7 +14,32 @@ pipeline {
             }
         }
 
-        stage('Build and Deploy Services') {
+        stage('Build and Deploy config-service') {
+            steps {
+                script {
+                    dir('config-service') {
+                        sh "java --version"
+                        sh "chmod +x gradlew"
+                        sh "./gradlew clean"
+                        sh "./gradlew build"
+                        archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
+
+                        sh "docker build -t liardance/config-service:latest ./"
+                        sh "docker push liardance/config-service:latest"
+
+                        sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-config-service.yaml"
+                    }
+                }
+            }
+        }
+
+        stage('Waiting config pod running') {
+            steps {
+                sleep(time: 30, unit: 'SECONDS')
+            }
+        }
+
+        stage('Build and Deploy Other Services') {
             steps {
                 script {
                     for (def service in services) {
