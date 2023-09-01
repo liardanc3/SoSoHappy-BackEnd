@@ -43,19 +43,19 @@ pipeline {
         stage('Build and Deploy Other Services') {
             steps {
                 script {
-                    for (def service in services) {
-                        dir(${service}-service) {
+                    for (def serv in services) {
+                        dir("${serv}-service") {
                             sh "java --version"
                             sh "chmod +x gradlew"
                             sh "./gradlew clean"
                             sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
 
-                            sh "docker build -t liardance/${service}-service:latest ./"
-                            sh "docker push liardance/${service}-service:latest"
+                            sh "docker build -t liardance/${serv}-service:latest ./"
+                            sh "docker push liardance/${serv}-service:latest"
 
-                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config delete deployment ${service}-deployment"
-                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${service}-service.yaml"
+                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config delete deployment ${serv}-deployment"
+                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${serv}-service.yaml"
                         }
                     }
                 }
