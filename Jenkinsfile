@@ -1,4 +1,4 @@
-def services = ['auth-service']
+def services = ['auth']
 
 pipeline {
     environment {
@@ -27,6 +27,7 @@ pipeline {
                         sh "docker build -t liardance/config-service:latest ./"
                         sh "docker push liardance/config-service:latest"
 
+                        sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config delete deployment config-deployment"
                         sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-config-service.yaml"
                     }
                 }
@@ -50,10 +51,11 @@ pipeline {
                             sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
 
-                            sh "docker build -t liardance/${service}:latest ./"
-                            sh "docker push liardance/${service}:latest"
+                            sh "docker build -t liardance/${service}-service:latest ./"
+                            sh "docker push liardance/${service}-service:latest"
 
-                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${service}.yaml"
+                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config delete deployment ${service}-deployment"
+                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${service}-service.yaml"
                         }
                     }
                 }
