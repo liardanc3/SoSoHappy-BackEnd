@@ -14,7 +14,7 @@ pipeline {
             }
         }
 
-        stage('Build jar') {
+        stage('Build and Deploy Services') {
             steps {
                 script {
                     for (def service in services) {
@@ -24,41 +24,11 @@ pipeline {
                             sh "./gradlew clean"
                             sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
-                        }
-                    }
-                }
-            }
-        }
 
-        stage('Docker Login'){
-            steps{
-                script{
-                    sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
-                }
-            }
-        }
-        
-        stage('Build Docker Images And Push to Registry') {
-            steps {
-                script {
-                    for (def service in services) {
-                        dir(service) {
-                             sh "docker build -t liardance/${service}:latest ./"
-                             sh "docker push liardance/${service}:latest"
-                        }
-                    }
-                }
-            }
-        }
+                            sh "docker build -t liardance/${service}:latest ./"
+                            sh "docker push liardance/${service}:latest"
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    for (def service in services) {
-                        dir(service) {
-                            script {
-                                sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${service}.yaml"
-                            }
+                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${service}.yaml"
                         }
                     }
                 }
