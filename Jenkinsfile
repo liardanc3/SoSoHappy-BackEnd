@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     for (def service in services) {
-                        dir(service) {
+                        dir(${service}-service) {
                             sh "java --version"
                             sh "chmod +x gradlew"
                             sh "./gradlew clean"
