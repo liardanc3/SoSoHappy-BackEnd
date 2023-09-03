@@ -45,10 +45,11 @@ public class JwtService {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(String email) {
         return JWT.create()
                 .withSubject("RefreshToken")
                 .withExpiresAt(new Date(new Date().getTime() + refreshTokenExpirationPeriod))
+                .withClaim("email", email)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
