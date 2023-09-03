@@ -44,7 +44,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
             if (tokenEmail != null && headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
-                response.sendError(HttpStatus.SC_OK);
                 return;
             }
 
