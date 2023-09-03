@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sosohappy.authservice.entity.DuplicateDto;
 import sosohappy.authservice.entity.ResignDto;
 import sosohappy.authservice.entity.UserDto;
+import sosohappy.authservice.exception.ConvertException;
+import sosohappy.authservice.exception.ServerException;
 import sosohappy.authservice.service.UserService;
 
 @RestController
@@ -14,8 +17,9 @@ public class UserController {
 
     private final UserService userService;
 
+    @ConvertException(target = ServerException.class)
     @GetMapping("/checkDuplicateNickname")
-    public Boolean checkDuplicateNickname(String nickname){
+    public DuplicateDto checkDuplicateNickname(String nickname){
         return userService.checkDuplicateNickname(nickname);
     }
 

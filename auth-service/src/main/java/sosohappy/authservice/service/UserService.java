@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sosohappy.authservice.entity.DuplicateDto;
 import sosohappy.authservice.entity.ResignDto;
 import sosohappy.authservice.entity.User;
 import sosohappy.authservice.entity.UserDto;
@@ -45,20 +46,32 @@ public class UserService {
                 .map(user -> {
                     userRepository.delete(user);
                     return ResignDto.builder()
-                            .httpStatus(200)
                             .email(email)
+                            .success(true)
                             .build();
                 })
                 .orElseGet(() ->
                         ResignDto.builder()
-                                .httpStatus(500)
                                 .email(email)
+                                .success(false)
                                 .build()
                 );
     }
 
-    public Boolean checkDuplicateNickname(String nickname) {
-        return userRepository.findByNickname(nickname).isEmpty();
+    public DuplicateDto checkDuplicateNickname(String nickname) {
+        return userRepository.findByNickname(nickname)
+                .map(user ->
+                        DuplicateDto.builder()
+                                .email(user.getEmail())
+                                .isPresent(true)
+                                .build()
+                )
+                .orElseGet(() ->
+                        DuplicateDto.builder()
+                                .email(null)
+                                .isPresent(false)
+                                .build()
+                );
     }
 
     public void setProfile(UserDto userDto) {

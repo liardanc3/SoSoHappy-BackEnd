@@ -5,9 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ResignDto {
+public class DuplicateDto {
 
     private String email;
-    private Boolean success;
-
+    private Boolean isPresent;
 }
