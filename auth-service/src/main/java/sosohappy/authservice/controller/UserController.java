@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sosohappy.authservice.entity.DuplicateDto;
 import sosohappy.authservice.entity.ResignDto;
+import sosohappy.authservice.entity.SetProfileDto;
 import sosohappy.authservice.entity.UserDto;
 import sosohappy.authservice.exception.ConvertException;
 import sosohappy.authservice.exception.ServerException;
@@ -23,11 +24,13 @@ public class UserController {
         return userService.checkDuplicateNickname(nickname);
     }
 
+    @ConvertException(target = ServerException.class)
     @PostMapping("/setProfile")
-    public void setProfile(UserDto userDto){
-        userService.setProfile(userDto);
+    public SetProfileDto setProfile(UserDto userDto){
+        return userService.setProfile(userDto);
     }
 
+    @ConvertException(target = ServerException.class)
     @PostMapping("/resign")
     public ResignDto resign(String email){
         return userService.resign(email);

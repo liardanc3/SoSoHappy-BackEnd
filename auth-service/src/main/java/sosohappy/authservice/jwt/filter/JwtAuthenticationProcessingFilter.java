@@ -24,15 +24,15 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // login
+        // 로그인
         if (request.getRequestURI().contains("/oauth2")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // reIssueToken (accessToken, refreshToken 입력받음)
+        // 토큰 재발급
         if (request.getRequestURI().contains("/reIssueToken")){
-            String attributeEmail = request.getQueryString();
+            String attributeEmail = request.getHeader("Email");
             String tokenEmail = jwtService.extractEmail(
                     jwtService.extractAccessToken(request).orElse(null)
             ).orElse(null);
@@ -80,6 +80,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @SneakyThrows
     public void verifyAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+
         Optional<User> user = jwtService.extractAccessToken(request)
                 .filter(jwtService::isTokenValid)
                 .flatMap(jwtService::extractEmail)

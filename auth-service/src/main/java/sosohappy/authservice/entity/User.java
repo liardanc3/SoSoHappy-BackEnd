@@ -43,9 +43,11 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
-    public void updateProfile(UserDto userDto){
+    public User updateProfile(UserDto userDto){
         this.profileImg = userDto.getProfileImg();
         this.nickname = userDto.getNickname();
         this.introduction = userDto.getIntroduction();
+
+        return this;
     }
 }

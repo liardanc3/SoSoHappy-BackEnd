@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sosohappy.authservice.entity.DuplicateDto;
-import sosohappy.authservice.entity.ResignDto;
-import sosohappy.authservice.entity.User;
-import sosohappy.authservice.entity.UserDto;
+import sosohappy.authservice.entity.*;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
@@ -74,8 +71,22 @@ public class UserService {
                 );
     }
 
-    public void setProfile(UserDto userDto) {
-        userRepository.findByEmail(userDto.getEmail())
-                .ifPresent(user -> user.updateProfile(userDto));
+    public SetProfileDto setProfile(UserDto userDto) {
+        return userRepository.findByEmail(userDto.getEmail())
+                .map(user -> {
+                    user.updateProfile(userDto);
+                    return SetProfileDto.builder()
+                            .email(user.getEmail())
+                            .success(true)
+                            .build();
+                })
+                .orElseGet(() ->
+                        SetProfileDto.builder()
+                                .email(userDto.getEmail())
+                                .success(false)
+                                .build()
+                );
     }
+
+
 }
