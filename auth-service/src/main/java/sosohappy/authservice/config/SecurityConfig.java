@@ -1,6 +1,5 @@
 package sosohappy.authservice.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +14,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import sosohappy.authservice.jwt.filter.JwtAuthenticationProcessingFilter;
+import sosohappy.authservice.jwt.filter.JwtFilter;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginFailureHandler;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginSuccessHandler;
@@ -70,8 +69,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
-        JwtAuthenticationProcessingFilter jwtAuthenticationFilter = new JwtAuthenticationProcessingFilter(jwtService, userRepository);
+    public JwtFilter jwtAuthenticationProcessingFilter() {
+        JwtFilter jwtAuthenticationFilter = new JwtFilter(jwtService, userRepository);
         return jwtAuthenticationFilter;
     }
 }

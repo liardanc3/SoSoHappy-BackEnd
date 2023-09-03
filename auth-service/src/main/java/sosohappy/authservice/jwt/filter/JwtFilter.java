@@ -6,10 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sosohappy.authservice.entity.User;
-import sosohappy.authservice.exception.ServerException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.repository.UserRepository;
 
@@ -17,7 +15,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
