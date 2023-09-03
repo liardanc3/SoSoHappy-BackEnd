@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="323adc06-3786-4eef-97e3-154160ea7860" name="Changes" comment="[Add] jakarta.persistence-api, jakarta.annotation-api (#6)">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k8s-diary-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/DiaryServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/aspect/exception/ResponseExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/aspect/exception/custom/UpdateException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/controller/FeedController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/dto/FeedDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/dto/SearchFeedFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/dto/UpdateFeedDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/dto/UpdateResultDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/entity/Category.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/entity/Feed.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/domain/entity/Weather.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/repository/FeedQueryRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/repository/FeedQueryRepositoryImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/repository/FeedRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sosohappy/diaryservice/service/FeedService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bootstrap.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/sosohappy/diaryservice/FeedServiceApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="diary-service" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="diary-service" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="diary-service" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="diary-service" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="other" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="diary-service" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="querydsl" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="AnnotationType" />
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2UeBm1ENeIGn5sIPAdw1RRnbi9r" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/uusei/OneDrive/바탕 화면/SoSoHappy-BackEnd/feed-service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;99868b08d52d630de033de785d666705&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mariadb&quot;
+    ]
+  }
+}</component>
+  <component name="RunManager" selected="Spring Boot.FeedServiceApplication">
+    <configuration name="diary-service [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="clean" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="diary-service [compileQuerydsl]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="compileQuerydsl" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="FeedServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="diary-service.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="sosohappy.feedservice.FeedServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="feedServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="feed-service.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="sosohappy.feedservice.feedServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.diary-service [clean]" />
+      <item itemvalue="Gradle.diary-service [compileQuerydsl]" />
+      <item itemvalue="Spring Boot.feedServiceApplication" />
+      <item itemvalue="Spring Boot.FeedServiceApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.diary-service [clean]" />
+        <item itemvalue="Gradle.diary-service [compileQuerydsl]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="323adc06-3786-4eef-97e3-154160ea7860" name="Changes" comment="" />
+      <created>1693290320812</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1693290320812</updated>
+      <workItem from="1693290321977" duration="423000" />
+      <workItem from="1693290864985" duration="119000" />
+      <workItem from="1693291658832" duration="104000" />
+      <workItem from="1693291791507" duration="86000" />
+      <workItem from="1693292270148" duration="1126000" />
+      <workItem from="1693293669980" duration="51000" />
+      <workItem from="1693293756166" duration="8032000" />
+      <workItem from="1693373750723" duration="67000" />
+      <workItem from="1693373839945" duration="133000" />
+      <workItem from="1693373997133" duration="714000" />
+      <workItem from="1693374802471" duration="82000" />
+      <workItem from="1693374918612" duration="226000" />
+      <workItem from="1693375166022" duration="341000" />
+      <workItem from="1693376054993" duration="502000" />
+      <workItem from="1693376589178" duration="136000" />
+      <workItem from="1693376736371" duration="117000" />
+      <workItem from="1693376887797" duration="194000" />
+      <workItem from="1693377105540" duration="1042000" />
+      <workItem from="1693378620771" duration="13000" />
+      <workItem from="1693378678398" duration="2607000" />
+      <workItem from="1693382738639" duration="5578000" />
+      <workItem from="1693484386546" duration="7000" />
+      <workItem from="1693741472236" duration="554000" />
+    </task>
+    <task id="LOCAL-00001" summary="[Add] init diary-service project (#6)">
+      <created>1693290429418</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1693290429418</updated>
+    </task>
+    <task id="LOCAL-00002" summary="[Add] dependencies: jwt, bus-kafka, bootstrap, aop (#6)">
+      <created>1693290911245</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1693290911245</updated>
+    </task>
+    <task id="LOCAL-00003" summary="[Add] dependencies: jwt, bus-kafka, bootstrap, aop (#6)">
+      <created>1693290972291</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1693290972291</updated>
+    </task>
+    <task id="LOCAL-00004" summary="[Add] diary, feed config yml (#3)">
+      <created>1693291750253</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1693291750253</updated>
+    </task>
+    <task id="LOCAL-00005" summary="[Add] config server info (#3)">
+      <created>1693291854121</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1693291854121</updated>
+    </task>
+    <task id="LOCAL-00006" summary="[Fix] UserController::resign (#5)">
+      <created>1693292358297</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1693292358297</updated>
+    </task>
+    <task id="LOCAL-00007" summary="[Fix] datasource url (#3)">
+      <created>1693292513778</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1693292513778</updated>
+    </task>
+    <task id="LOCAL-00008" summary="[Del] feed-service project">
+      <created>1693295213309</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1693295213309</updated>
+    </task>
+    <task id="LOCAL-00009" summary="[Add] auth-service, diary-service (#4)">
+      <created>1693295250664</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1693295250664</updated>
+    </task>
+    <task id="LOCAL-00010" summary="[Feat] exception handler (#6)">
+      <created>1693375396789</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1693375396789</updated>
+    </task>
+    <task id="LOCAL-00011" summary="[Add] querydsl dependency (#6)">
+      <created>1693375436551</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1693375436551</updated>
+    </task>
+    <task id="LOCAL-00012" summary="[Feat] api findMonthFeed (#6)">
+      <created>1693376368528</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1693376368528</updated>
+    </task>
+    <task id="LOCAL-00013" summary="[Feat] api findDayFeed (#6)">
+      <created>1693380853322</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1693380853322</updated>
+    </task>
+    <task id="LOCAL-00014" summary="[Add] jakarta.persistence-api, jakarta.annotation-api (#6)">
+      <created>1693384244929</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1693384244929</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="[Add] init diary-service project (#6)" />
+    <MESSAGE value="[Add] dependencies: jwt, bus-kafka, bootstrap, aop (#6)" />
+    <MESSAGE value="[Add] diary, feed config yml (#3)" />
+    <MESSAGE value="[Add] config server info (#3)" />
+    <MESSAGE value="[Fix] UserController::resign (#5)" />
+    <MESSAGE value="[Fix] datasource url (#3)" />
+    <MESSAGE value="[Del] feed-service project" />
+    <MESSAGE value="[Add] auth-service, diary-service (#4)" />
+    <MESSAGE value="[Feat] exception handler (#6)" />
+    <MESSAGE value="[Add] querydsl dependency (#6)" />
+    <MESSAGE value="[Feat] api findMonthFeed (#6)" />
+    <MESSAGE value="[Feat] api findDayFeed (#6)" />
+    <MESSAGE value="[Add] jakarta.persistence-api, jakarta.annotation-api (#6)" />
+    <option name="LAST_COMMIT_MESSAGE" value="[Add] jakarta.persistence-api, jakarta.annotation-api (#6)" />
+  </component>
+</project>
