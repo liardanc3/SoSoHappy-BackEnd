@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sosohappy.authservice.entity.User;
+import sosohappy.authservice.exception.ServerException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.repository.UserRepository;
 
@@ -32,16 +33,16 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         // 토큰 재발급
         if (request.getRequestURI().contains("/reIssueToken")){
-            String attributeEmail = request.getHeader("Email");
-            String tokenEmail = jwtService.extractEmail(
-                    jwtService.extractAccessToken(request).orElse(null)
-            ).orElse(null);
+            String headerEmail = jwtService.extractHeaderEmail(request);
 
-            String refreshToken = jwtService.extractRefreshToken(request)
-                    .filter(jwtService::isTokenValid)
+            String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))
                     .orElse(null);
 
-            if (tokenEmail != null && attributeEmail.equals(tokenEmail) && refreshToken != null) {
+            String refreshToken = jwtService.extractRefreshToken(request)
+                    .filter(token -> jwtService.isTokenValid(token, headerEmail))
+                    .orElse(null);
+
+            if (tokenEmail != null && headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
                 response.sendError(HttpStatus.SC_OK);
                 return;
@@ -82,8 +83,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     public void verifyAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
 
         Optional<User> user = jwtService.extractAccessToken(request)
-                .filter(jwtService::isTokenValid)
-                .flatMap(jwtService::extractEmail)
+                .filter(token -> jwtService.isTokenValid(token, jwtService.extractHeaderEmail(request)))
+                .flatMap(jwtService::extractTokenEmail)
                 .flatMap(userRepository::findByEmail);
 
         if(user.isEmpty()){

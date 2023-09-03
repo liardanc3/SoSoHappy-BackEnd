@@ -72,7 +72,11 @@ public class JwtService {
                 .map(accessToken -> accessToken.replace("Bearer ", ""));
     }
 
-    public Optional<String> extractEmail(String accessToken) {
+    public String extractHeaderEmail(HttpServletRequest request){
+        return request.getHeader("Email");
+    }
+
+    public Optional<String> extractTokenEmail(String accessToken) {
         try {
             return Optional.ofNullable(
                     JWT.require(Algorithm.HMAC512(secretKey))
@@ -86,10 +90,14 @@ public class JwtService {
         }
     }
 
-    public boolean isTokenValid(String token) {
+    public boolean isTokenValid(String token, String headerEmail) {
         try {
-            JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
-            return true;
+            String tokenEmail = JWT.require(Algorithm.HMAC512(secretKey))
+                    .build()
+                    .verify(token)
+                    .getClaim("email")
+                    .asString();
+            return headerEmail.equals(tokenEmail);
         } catch (Exception e) {
             return false;
         }
