@@ -1,6 +1,7 @@
 package sosohappy.feedservice.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,11 @@ public class FeedController {
 
     private final FeedService feedService;
 
+    @GetMapping("/test")
+    public String test(){
+        return "test";
+    }
+
     @PostMapping("/findMonthFeed")
     public List<FeedDto> findMonthFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
         return feedService.findMonthFeed(searchFeedFilter);
@@ -32,4 +38,5 @@ public class FeedController {
     public UpdateResultDto saveFeed(@ModelAttribute UpdateFeedDto updateFeedDto){
         return feedService.updateFeed(updateFeedDto);
     }
+
 }

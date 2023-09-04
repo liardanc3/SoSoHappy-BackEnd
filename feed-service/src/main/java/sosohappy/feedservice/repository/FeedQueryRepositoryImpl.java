@@ -6,7 +6,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 import sosohappy.feedservice.domain.dto.SearchFeedFilter;
 import sosohappy.feedservice.domain.entity.Feed;
 

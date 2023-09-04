@@ -8,14 +8,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sosohappy.feedservice.jwt.service.JwtService;
 
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
+    private final JwtService jwtService;
+
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+        if(!jwtService.verifyAccessToken(request)){
+            response.sendError(403);
+            return;
+        }
 
         filterChain.doFilter(request, response);
     }

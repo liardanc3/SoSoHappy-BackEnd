@@ -9,18 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class KafkaConsumer {
 
-    private static ConcurrentHashMap<String, String> emailToTokenMap;
+    public static ConcurrentHashMap<String, String> emailAndTokenMap = new ConcurrentHashMap<>();
 
-    @KafkaListener(topics = "accessToken")
-    public void addAccessToken(String email, String accessToken){
-        System.out.println("email = " + email);
-        System.out.println("accessToken = " + accessToken);
+    @KafkaListener(topics = "accessToken", groupId = "feed-service")
+    public void addAccessToken(ConsumerRecord<String, String> record){
+        String email = record.key();
+        String accessToken = record.value();
 
-        emailToTokenMap.put(email, accessToken);
-
-        for (String value : emailToTokenMap.values()) {
-            System.out.println("value = " + value);
-        }
+        emailAndTokenMap.put(email, accessToken);
     }
 
 }

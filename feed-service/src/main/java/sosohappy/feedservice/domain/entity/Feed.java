@@ -2,12 +2,14 @@ package sosohappy.feedservice.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Feed {
 
     @Id
