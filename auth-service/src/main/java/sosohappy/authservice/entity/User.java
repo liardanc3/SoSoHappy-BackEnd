@@ -1,12 +1,7 @@
 package sosohappy.authservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.Base64;
+import lombok.*;
 
 @Entity
 @Getter
@@ -29,7 +24,8 @@ public class User {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    private String profileImg;
+    @Column(columnDefinition = "MEDIUMBLOB")
+    private byte[] profileImg;
 
     @Column
     private String provider;
@@ -43,11 +39,10 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
-    public User updateProfile(UserDto userDto){
-        this.profileImg = userDto.getProfileImg();
-        this.nickname = userDto.getNickname();
-        this.introduction = userDto.getIntroduction();
-
-        return this;
+    @SneakyThrows
+    public void updateProfile(UserRequestDto userRequestDto)  {
+        this.profileImg = userRequestDto.getProfileImg().getBytes();
+        this.nickname = userRequestDto.getNickname();
+        this.introduction = userRequestDto.getIntroduction();
     }
 }

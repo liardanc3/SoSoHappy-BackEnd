@@ -1,12 +1,15 @@
 package sosohappy.authservice.entity;
 
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class UserDto {
+@Builder
+public class UserRequestDto {
 
     private String email;
-    private String profileImg;
+    private MultipartFile profileImg;
 
     private String nickname;
     private String introduction;

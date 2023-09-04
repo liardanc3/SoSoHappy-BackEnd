@@ -1,11 +1,13 @@
 package sosohappy.authservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import sosohappy.authservice.entity.*;
-import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
 import java.util.Map;
@@ -71,10 +73,10 @@ public class UserService {
                 );
     }
 
-    public SetProfileDto setProfile(UserDto userDto) {
-        return userRepository.findByEmail(userDto.getEmail())
+    public SetProfileDto setProfile(UserRequestDto userRequestDto) {
+        return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
-                    user.updateProfile(userDto);
+                    user.updateProfile(userRequestDto);
                     return SetProfileDto.builder()
                             .email(user.getEmail())
                             .success(true)
@@ -82,11 +84,20 @@ public class UserService {
                 })
                 .orElseGet(() ->
                         SetProfileDto.builder()
-                                .email(userDto.getEmail())
+                                .email(userRequestDto.getEmail())
                                 .success(false)
                                 .build()
                 );
     }
 
-
+    public UserResponseDto findProfileImg(String nickname) {
+        return userRepository.findByNickname(nickname)
+                .map(user ->
+                        UserResponseDto.builder()
+                                .nickname(nickname)
+                                .profileImg(user.getProfileImg())
+                                .build()
+                )
+                .orElseGet(() -> UserResponseDto.builder().build());
+    }
 }
