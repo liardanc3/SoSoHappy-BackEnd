@@ -2,15 +2,11 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.3'
 	id 'io.spring.dependency-management' version '1.1.3'
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'sosohappy'
 version = 'dev'
-
-java {
-	sourceCompatibility = '17'
-}
+sourceCompatibility = '17'
 
 configurations {
 	compileOnly {
@@ -46,10 +42,8 @@ dependencies {
 
 	implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
-	implementation "com.querydsl:querydsl-core:5.0.0"
-
-	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
-	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 }
 
@@ -63,22 +57,9 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-def querydslDir = "$buildDir/generated/feed-service"
 
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
+def querydslDir = "$buildDir/generated/inunavi"
 
-sourceSets {
-	main.java.srcDir querydslDir
-}
-
-configurations {
-	querydsl.extendsFrom compileClasspath
-}
-
-compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
-	dependsOn 'clean'
+clean {
+	delete file (querydslDir)
 }
