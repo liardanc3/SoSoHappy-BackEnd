@@ -1,10 +1,10 @@
-package sosohappy.feedservice.aspect.exception;
+package sosohappy.feedservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import sosohappy.feedservice.aspect.exception.custom.UpdateException;
+import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 
 @RestControllerAdvice

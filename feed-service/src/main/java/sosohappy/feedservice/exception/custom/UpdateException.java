@@ -1,4 +1,4 @@
-package sosohappy.feedservice.aspect.exception.custom;
+package sosohappy.feedservice.exception.custom;
 
 import lombok.Getter;
 
