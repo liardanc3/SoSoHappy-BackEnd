@@ -53,7 +53,15 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     @Override
     public Optional<Feed> findByNicknameAndDate(String nickname, Long date) {
-        return Optional.empty();
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(feed)
+                        .where(
+                                nickNameEq(nickname),
+                                dayEq(date)
+                        )
+                        .fetchOne()
+        );
     }
 
     // ----------------------------------------------------------------- //

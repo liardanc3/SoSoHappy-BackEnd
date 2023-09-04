@@ -24,7 +24,7 @@ public class FeedDto {
 
     private List<String> categoryList;
 
-    private List<String> imageList;
+    private List<byte[]> imageList;
 
     private List<String> likeNicknameList;
 

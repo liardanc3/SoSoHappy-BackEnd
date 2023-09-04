@@ -9,6 +9,8 @@ import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 import sosohappy.feedservice.domain.dto.FeedDto;
 import sosohappy.feedservice.domain.dto.SearchFeedFilter;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
+import sosohappy.feedservice.exception.ConvertException;
+import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.service.FeedService;
 
 import java.util.List;
@@ -34,6 +36,7 @@ public class FeedController {
         return feedService.findDayFeed(searchFeedFilter);
     }
 
+    @ConvertException(target = UpdateException.class)
     @PostMapping("/saveFeed")
     public UpdateResultDto saveFeed(@ModelAttribute UpdateFeedDto updateFeedDto){
         return feedService.updateFeed(updateFeedDto);

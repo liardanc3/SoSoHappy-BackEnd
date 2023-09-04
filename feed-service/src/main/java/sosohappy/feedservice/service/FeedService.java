@@ -14,6 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class FeedService {
 
     private final FeedRepository feedRepository;
@@ -26,7 +27,7 @@ public class FeedService {
         return feedRepository.findDayFeedBySearchFeedFilter(searchFeedFilter);
     }
 
-    @Transactional
+
     public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
         return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())
                 .map(feed -> {
