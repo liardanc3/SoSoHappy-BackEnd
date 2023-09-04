@@ -1,13 +1,14 @@
 package sosohappy.authservice.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sosohappy.authservice.entity.DuplicateDto;
-import sosohappy.authservice.entity.ResignDto;
-import sosohappy.authservice.entity.SetProfileDto;
-import sosohappy.authservice.entity.UserDto;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+import sosohappy.authservice.entity.*;
 import sosohappy.authservice.exception.ConvertException;
 import sosohappy.authservice.exception.ServerException;
 import sosohappy.authservice.service.UserService;
@@ -26,8 +27,8 @@ public class UserController {
 
     @ConvertException(target = ServerException.class)
     @PostMapping("/setProfile")
-    public SetProfileDto setProfile(UserDto userDto){
-        return userService.setProfile(userDto);
+    public SetProfileDto setProfile(UserRequestDto userRequestDto){
+        return userService.setProfile(userRequestDto);
     }
 
     @ConvertException(target = ServerException.class)
@@ -36,4 +37,9 @@ public class UserController {
         return userService.resign(email);
     }
 
+    @ConvertException(target = ServerException.class)
+    @PostMapping(value = "/findProfileImg")
+    public UserResponseDto findProfileImg(String nickname) {
+        return userService.findProfileImg(nickname);
+    }
 }
