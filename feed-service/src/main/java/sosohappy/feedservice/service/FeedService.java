@@ -12,6 +12,7 @@ import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +22,10 @@ public class FeedService {
     private final FeedRepository feedRepository;
 
     public List<FeedDto> findMonthFeed(SearchFeedFilter searchFeedFilter) {
-        return feedRepository.findMonthFeedBySearchFeedFilter(searchFeedFilter);
+        return Optional.ofNullable(feedRepository.findMonthFeedBySearchFeedFilter(searchFeedFilter))
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(FindException::new);
     }
-
     public FeedDto findDayFeed(SearchFeedFilter searchFeedFilter) {
         return feedRepository.findDayFeedBySearchFeedFilter(searchFeedFilter)
                 .orElseThrow(FindException::new);
