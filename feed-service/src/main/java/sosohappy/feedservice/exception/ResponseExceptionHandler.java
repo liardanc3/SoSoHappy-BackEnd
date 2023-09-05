@@ -8,7 +8,6 @@ import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
 
-import java.util.Map;
 
 @RestControllerAdvice
 public class ResponseExceptionHandler {

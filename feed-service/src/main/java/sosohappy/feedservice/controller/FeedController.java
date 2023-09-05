@@ -32,7 +32,6 @@ public class FeedController {
         return feedService.findMonthFeed(searchFeedFilter);
     }
 
-    @ConvertException(target = FindException.class)
     @PostMapping("/findDayFeed")
     public FeedDto findDayFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
         return feedService.findDayFeed(searchFeedFilter);
