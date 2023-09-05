@@ -3,7 +3,6 @@ package sosohappy.feedservice.domain.dto;
 import jakarta.persistence.*;
 import lombok.Data;
 import sosohappy.feedservice.domain.entity.Feed;
-import sosohappy.feedservice.domain.entity.Weather;
 
 import java.util.List;
 

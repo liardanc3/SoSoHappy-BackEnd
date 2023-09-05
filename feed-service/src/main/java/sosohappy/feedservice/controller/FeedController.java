@@ -5,13 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sosohappy.feedservice.domain.dto.UpdateFeedDto;
-import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.SearchFeedFilter;
-import sosohappy.feedservice.domain.dto.UpdateResultDto;
-import sosohappy.feedservice.exception.ConvertException;
-import sosohappy.feedservice.exception.custom.FindException;
-import sosohappy.feedservice.exception.custom.UpdateException;
+import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.service.FeedService;
 
 import java.util.List;
@@ -28,13 +22,13 @@ public class FeedController {
     }
 
     @PostMapping("/findMonthFeed")
-    public List<FeedDto> findMonthFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
-        return feedService.findMonthFeed(searchFeedFilter);
+    public List<FeedDto> findMonthFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+        return feedService.findMonthFeed(nicknameAndDateDto);
     }
 
     @PostMapping("/findDayFeed")
-    public FeedDto findDayFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
-        return feedService.findDayFeed(searchFeedFilter);
+    public FeedDto findDayFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+        return feedService.findDayFeed(nicknameAndDateDto);
     }
 
     @PostMapping("/saveFeed")
@@ -43,8 +37,8 @@ public class FeedController {
     }
 
     @PostMapping("/updatePublicStatus")
-    public UpdateResultDto updatePublicStatus(@ModelAttribute SearchFeedFilter searchFeedFilter){
-        return feedService.updatePublicStatus(searchFeedFilter);
+    public UpdateResultDto updatePublicStatus(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+        return feedService.updatePublicStatus(nicknameAndDateDto);
     }
 
 }

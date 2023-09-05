@@ -6,7 +6,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.SearchFeedFilter;
+import sosohappy.feedservice.domain.dto.HappinessDto;
+import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.entity.Feed;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<FeedDto> findMonthFeedDtoBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
+    public List<FeedDto> findMonthFeedDtoBySearchFeedFilter(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
                 .select(Projections.constructor(
                         FeedDto.class,
@@ -29,15 +30,15 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 ))
                 .from(feed)
                 .where(
-                        nickNameEq(searchFeedFilter.getNickname()),
-                        monthEq(searchFeedFilter.getDate())
+                        nickNameEq(nicknameAndDateDto.getNickname()),
+                        monthEq(nicknameAndDateDto.getDate())
                 )
                 .orderBy(feed.date.asc())
                 .fetch();
     }
 
     @Override
-    public Optional<FeedDto> findDayFeedDtoBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
+    public Optional<FeedDto> findDayFeedDtoBySearchFeedFilter(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(
                 queryFactory
                         .select(Projections.constructor(
@@ -46,8 +47,8 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                         ))
                         .from(feed)
                         .where(
-                                nickNameEq(searchFeedFilter.getNickname()),
-                                dayEq(searchFeedFilter.getDate())
+                                nickNameEq(nicknameAndDateDto.getNickname()),
+                                dayEq(nicknameAndDateDto.getDate())
                         )
                         .fetchOne()
         );
@@ -65,6 +66,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                         .fetchOne()
         );
     }
+
 
     // ----------------------------------------------------------------- //
 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.SearchFeedFilter;
+import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.FindException;
@@ -22,13 +22,13 @@ public class FeedService {
 
     private final FeedRepository feedRepository;
 
-    public List<FeedDto> findMonthFeed(SearchFeedFilter searchFeedFilter) {
-        return Optional.ofNullable(feedRepository.findMonthFeedDtoBySearchFeedFilter(searchFeedFilter))
+    public List<FeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
+        return Optional.ofNullable(feedRepository.findMonthFeedDtoBySearchFeedFilter(nicknameAndDateDto))
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(FindException::new);
     }
-    public FeedDto findDayFeed(SearchFeedFilter searchFeedFilter) {
-        return feedRepository.findDayFeedDtoBySearchFeedFilter(searchFeedFilter)
+    public FeedDto findDayFeed(NicknameAndDateDto nicknameAndDateDto) {
+        return feedRepository.findDayFeedDtoBySearchFeedFilter(nicknameAndDateDto)
                 .orElseThrow(FindException::new);
     }
 
@@ -44,8 +44,8 @@ public class FeedService {
                 });
     }
 
-    public UpdateResultDto updatePublicStatus(SearchFeedFilter searchFeedFilter) {
-        return feedRepository.findByNicknameAndDate(searchFeedFilter.getNickname(), searchFeedFilter.getDate())
+    public UpdateResultDto updatePublicStatus(NicknameAndDateDto nicknameAndDateDto) {
+        return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
                 .map(Feed::updateIsPublic)
                 .map(feed -> UpdateResultDto.updateSuccess("업데이트 성공"))
                 .orElseThrow(UpdateException::new);

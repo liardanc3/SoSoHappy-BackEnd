@@ -3,7 +3,7 @@ package sosohappy.feedservice.domain.dto;
 import lombok.Data;
 
 @Data
-public class SearchFeedFilter {
+public class NicknameAndDateDto {
 
     private String nickname;
 
