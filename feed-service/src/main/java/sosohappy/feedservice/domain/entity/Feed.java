@@ -93,8 +93,12 @@ public class Feed {
         this.categoryList = updateFeedDto.getCategoryList();
         this.isPublic = updateFeedDto.getIsPublic();
 
+        this.imageList = new ArrayList<>();
         if(updateFeedDto.getImageList() != null && !updateFeedDto.getImageList().isEmpty()){
-            for (MultipartFile multipartFile : updateFeedDto.getImageList()) {
+
+            List<MultipartFile> imageList = updateFeedDto.getImageList();
+
+            for (MultipartFile multipartFile : imageList) {
                 this.imageList.add(multipartFile.getBytes());
             }
         }
