@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
+import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
 
-import java.lang.module.FindException;
 import java.util.Map;
 
 @RestControllerAdvice
