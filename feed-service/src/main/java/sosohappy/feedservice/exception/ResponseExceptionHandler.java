@@ -21,8 +21,7 @@ public class ResponseExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(FindException.class)
-    public Map<String, Boolean> handleFindException(){
-        return Map.of("success", false);
+    public void handleFindException(){
     }
 
 
