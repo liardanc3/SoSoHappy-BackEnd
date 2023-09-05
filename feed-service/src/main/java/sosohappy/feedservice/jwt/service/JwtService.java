@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import sosohappy.feedservice.exception.ConvertException;
+import sosohappy.feedservice.exception.custom.JWTException;
 import sosohappy.feedservice.kafka.KafkaConsumer;
 
 import java.util.Optional;
@@ -20,6 +22,7 @@ public class JwtService {
     @Value("${jwt.access.header}")
     private String accessHeader;
 
+    @ConvertException(target = JWTException.class)
     public boolean verifyAccessToken(HttpServletRequest request) {
         ConcurrentHashMap<String, String> emailToTokenMap = KafkaConsumer.emailAndTokenMap;
 
