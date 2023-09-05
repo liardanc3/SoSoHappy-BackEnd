@@ -10,7 +10,6 @@ import sosohappy.feedservice.repository.FeedRepository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,7 +22,7 @@ public class HappinessService {
     private final FeedRepository feedRepository;
 
     @PostConstruct
-    void reIssueSimilarityMatrix() {
+    void updateSimilarityMatrix() {
         int size = (int) feedRepository.findAllCategories()
                 .stream()
                 .map(category -> categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size()))
