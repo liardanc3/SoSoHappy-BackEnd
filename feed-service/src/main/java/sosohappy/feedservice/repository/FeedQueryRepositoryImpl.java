@@ -73,10 +73,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     private BooleanExpression monthEq(Long date) {
-        return feed.date.mod(10000000000L).eq(date % 10000000000L);
+        return feed.date.divide(10000000000L).eq(date / 10000000000L);
     }
 
     private BooleanExpression dayEq(Long date){
-        return feed.date.mod(100000000L).eq(date % 100000000L);
+        return feed.date.divide(100000000L).eq(date / 100000000L);
     }
 }
