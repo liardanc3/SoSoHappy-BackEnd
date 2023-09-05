@@ -21,7 +21,6 @@ public class UserService {
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
-        String name = String.valueOf(userAttributes.get("name"));
         String provider = String.valueOf(userAttributes.get("provider"));
         String providerId = String.valueOf(userAttributes.get("providerId"));
 
@@ -31,7 +30,6 @@ public class UserService {
                                 () -> userRepository.save(
                                         User.builder()
                                                 .email(email)
-                                                .nickname(name)
                                                 .provider(provider)
                                                 .providerId(providerId)
                                                 .refreshToken(refreshToken)
