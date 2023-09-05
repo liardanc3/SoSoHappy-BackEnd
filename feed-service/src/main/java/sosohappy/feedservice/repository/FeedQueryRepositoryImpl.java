@@ -21,7 +21,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<FeedDto> findMonthFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
+    public List<FeedDto> findMonthFeedDtoBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
         return queryFactory
                 .select(Projections.constructor(
                         FeedDto.class,
@@ -37,7 +37,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public Optional<FeedDto> findDayFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
+    public Optional<FeedDto> findDayFeedDtoBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
         return Optional.ofNullable(
                 queryFactory
                         .select(Projections.constructor(

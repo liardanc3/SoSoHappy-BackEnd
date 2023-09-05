@@ -83,6 +83,11 @@ public class Feed {
         }
     }
 
+    public static Feed updateIsPublic(Feed feed){
+        feed.isPublic = !feed.isPublic;
+        return feed;
+    }
+
     @SneakyThrows
     public Feed(UpdateFeedDto updateFeedDto){
         this.nickname = updateFeedDto.getNickname();

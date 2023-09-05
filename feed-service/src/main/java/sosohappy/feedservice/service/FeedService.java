@@ -9,6 +9,7 @@ import sosohappy.feedservice.domain.dto.SearchFeedFilter;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.FindException;
+import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.List;
@@ -22,12 +23,12 @@ public class FeedService {
     private final FeedRepository feedRepository;
 
     public List<FeedDto> findMonthFeed(SearchFeedFilter searchFeedFilter) {
-        return Optional.ofNullable(feedRepository.findMonthFeedBySearchFeedFilter(searchFeedFilter))
+        return Optional.ofNullable(feedRepository.findMonthFeedDtoBySearchFeedFilter(searchFeedFilter))
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(FindException::new);
     }
     public FeedDto findDayFeed(SearchFeedFilter searchFeedFilter) {
-        return feedRepository.findDayFeedBySearchFeedFilter(searchFeedFilter)
+        return feedRepository.findDayFeedDtoBySearchFeedFilter(searchFeedFilter)
                 .orElseThrow(FindException::new);
     }
 
@@ -41,5 +42,12 @@ public class FeedService {
                     feedRepository.save(new Feed(updateFeedDto));
                     return UpdateResultDto.updateSuccess("등록 성공");
                 });
+    }
+
+    public UpdateResultDto updatePublicStatus(SearchFeedFilter searchFeedFilter) {
+        return feedRepository.findByNicknameAndDate(searchFeedFilter.getNickname(), searchFeedFilter.getDate())
+                .map(Feed::updateIsPublic)
+                .map(feed -> UpdateResultDto.updateSuccess("업데이트 성공"))
+                .orElseThrow(UpdateException::new);
     }
 }

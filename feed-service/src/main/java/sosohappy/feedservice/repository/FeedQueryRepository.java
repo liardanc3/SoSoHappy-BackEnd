@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface FeedQueryRepository {
 
-    List<FeedDto> findMonthFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
+    List<FeedDto> findMonthFeedDtoBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
 
-    Optional<FeedDto> findDayFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
+    Optional<FeedDto> findDayFeedDtoBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
 
     Optional<Feed> findByNicknameAndDate(String nickname, Long date);
 }

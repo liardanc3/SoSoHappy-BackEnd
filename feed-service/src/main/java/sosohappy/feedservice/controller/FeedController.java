@@ -37,10 +37,14 @@ public class FeedController {
         return feedService.findDayFeed(searchFeedFilter);
     }
 
-    @ConvertException(target = UpdateException.class)
     @PostMapping("/saveFeed")
     public UpdateResultDto saveFeed(@ModelAttribute UpdateFeedDto updateFeedDto){
         return feedService.updateFeed(updateFeedDto);
+    }
+
+    @PostMapping("/updatePublicStatus")
+    public UpdateResultDto updatePublicStatus(@ModelAttribute SearchFeedFilter searchFeedFilter){
+        return feedService.updatePublicStatus(searchFeedFilter);
     }
 
 }
