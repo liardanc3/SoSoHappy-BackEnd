@@ -11,7 +11,7 @@ public interface FeedQueryRepository {
 
     List<FeedDto> findMonthFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
 
-    FeedDto findDayFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
+    Optional<FeedDto> findDayFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter);
 
     Optional<Feed> findByNicknameAndDate(String nickname, Long date);
 }

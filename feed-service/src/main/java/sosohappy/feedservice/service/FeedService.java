@@ -8,6 +8,7 @@ import sosohappy.feedservice.domain.dto.FeedDto;
 import sosohappy.feedservice.domain.dto.SearchFeedFilter;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.domain.entity.Feed;
+import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class FeedService {
     }
 
     public FeedDto findDayFeed(SearchFeedFilter searchFeedFilter) {
-        return feedRepository.findDayFeedBySearchFeedFilter(searchFeedFilter);
+        return feedRepository.findDayFeedBySearchFeedFilter(searchFeedFilter)
+                .orElseThrow(FindException::new);
     }
-
 
     public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
         return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())

@@ -37,18 +37,20 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public FeedDto findDayFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
-        return queryFactory
-                .select(Projections.constructor(
-                        FeedDto.class,
-                        feed
-                ))
-                .from(feed)
-                .where(
-                        nickNameEq(searchFeedFilter.getNickname()),
-                        dayEq(searchFeedFilter.getDate())
-                )
-                .fetchOne();
+    public Optional<FeedDto> findDayFeedBySearchFeedFilter(SearchFeedFilter searchFeedFilter) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(Projections.constructor(
+                                FeedDto.class,
+                                feed
+                        ))
+                        .from(feed)
+                        .where(
+                                nickNameEq(searchFeedFilter.getNickname()),
+                                dayEq(searchFeedFilter.getDate())
+                        )
+                        .fetchOne()
+        );
     }
 
     @Override

@@ -10,6 +10,7 @@ import sosohappy.feedservice.domain.dto.FeedDto;
 import sosohappy.feedservice.domain.dto.SearchFeedFilter;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.exception.ConvertException;
+import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.service.FeedService;
 
@@ -31,6 +32,7 @@ public class FeedController {
         return feedService.findMonthFeed(searchFeedFilter);
     }
 
+    @ConvertException(target = FindException.class)
     @PostMapping("/findDayFeed")
     public FeedDto findDayFeed(@ModelAttribute SearchFeedFilter searchFeedFilter){
         return feedService.findDayFeed(searchFeedFilter);

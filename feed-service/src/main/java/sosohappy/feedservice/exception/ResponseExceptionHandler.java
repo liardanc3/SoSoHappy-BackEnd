@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.exception.custom.UpdateException;
 
+import java.lang.module.FindException;
+import java.util.Map;
+
 @RestControllerAdvice
 public class ResponseExceptionHandler {
 
@@ -15,6 +18,13 @@ public class ResponseExceptionHandler {
     public UpdateResultDto handleUpdateException(){
         return UpdateResultDto.updateFailure();
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(FindException.class)
+    public Map<String, Boolean> handleFindException(){
+        return Map.of("success", false);
+    }
+
 
 
 }
