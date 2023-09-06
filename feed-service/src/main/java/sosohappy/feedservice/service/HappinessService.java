@@ -3,10 +3,7 @@ package sosohappy.feedservice.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sosohappy.feedservice.domain.dto.AnalysisDto;
-import sosohappy.feedservice.domain.dto.DayHappinessAndDateDto;
-import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
-import sosohappy.feedservice.domain.dto.UpdateFeedDto;
+import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.repository.FeedRepository;
@@ -58,11 +55,33 @@ public class HappinessService {
         updateSimilarity(happiness, categoryList);
     }
 
-    public List<DayHappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
-        return Optional.ofNullable(feedRepository.findDayHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
+    public List<HappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
+        return Optional.ofNullable(feedRepository.findHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
                 .filter(monthHappinessAndDateDtoList -> !monthHappinessAndDateDtoList.isEmpty())
                 .orElseThrow(FindException::new);
 
+    }
+
+    public List<HappinessAndDateDto> findYearHappiness(NicknameAndDateDto nicknameAndDateDto) {
+        List<HappinessAndDateDto> result = new ArrayList<>();
+
+        String year = nicknameAndDateDto.getDate().toString().substring(0, 4);
+        for (int i = 1; i <= 12; i++) {
+            Long date = Long.parseLong(year + String.format("%02d", i) + "0000000000");
+
+            Double happiness = feedRepository.findMonthHappinessAvgByNicknameAndDate(nicknameAndDateDto.getNickname(), date)
+                    .orElse(0.0);
+
+            if(happiness >= 1){
+                result.add(new HappinessAndDateDto(happiness, date));
+            }
+        }
+
+        if(result.isEmpty()){
+            throw new FindException();
+        }
+
+        return result;
     }
 
     // ------------------------------------------------------------------------------- //
@@ -174,5 +193,4 @@ public class HappinessService {
         categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size());
         indexToCategoryMap.putIfAbsent(categoryToIndexMap.size()-1, category);
     }
-
 }

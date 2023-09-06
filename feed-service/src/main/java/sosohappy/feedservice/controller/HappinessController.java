@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sosohappy.feedservice.domain.dto.AnalysisDto;
-import sosohappy.feedservice.domain.dto.DayHappinessAndDateDto;
+import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.service.HappinessService;
 
@@ -23,7 +23,12 @@ public class HappinessController {
     }
 
     @PostMapping("/findMonthHappiness")
-    public List<DayHappinessAndDateDto> findMonthHappiness(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public List<HappinessAndDateDto> findMonthHappiness(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
         return happinessService.findMonthHappiness(nicknameAndDateDto);
+    }
+
+    @PostMapping("/findYearHappiness")
+    public List<HappinessAndDateDto> findYearHappiness(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+        return happinessService.findYearHappiness(nicknameAndDateDto);
     }
 }

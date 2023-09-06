@@ -1,0 +1,21 @@
+package sosohappy.feedservice.domain.dto;
+
+import lombok.Data;
+import sosohappy.feedservice.domain.entity.Feed;
+
+@Data
+public class HappinessAndDateDto {
+
+    private Double happiness;
+    private String formattedDate;
+
+    public HappinessAndDateDto(Feed feed){
+        this.happiness = feed.getHappiness().doubleValue();
+        this.formattedDate = feed.getDate().toString().substring(4,6) + "/" + feed.getDate().toString().substring(6,8);
+    }
+
+    public HappinessAndDateDto(Double happiness, Long date) {
+        this.happiness = happiness;
+        this.formattedDate = date.toString().substring(4, 6) + "월";
+    }
+}

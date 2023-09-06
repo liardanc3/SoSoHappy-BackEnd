@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sosohappy.feedservice.domain.dto.FeedDto;
 import sosohappy.feedservice.domain.dto.HappinessAndCategoryDto;
-import sosohappy.feedservice.domain.dto.DayHappinessAndDateDto;
+import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.entity.Feed;
 
@@ -84,10 +84,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public List<DayHappinessAndDateDto> findDayHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+    public List<HappinessAndDateDto> findHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
                 .select(Projections.constructor(
-                        DayHappinessAndDateDto.class,
+                        HappinessAndDateDto.class,
                         feed
                 ))
                 .from(feed)
@@ -97,6 +97,20 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 )
                 .orderBy(feed.date.asc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<Double> findMonthHappinessAvgByNicknameAndDate(String nickname, Long date) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(feed.happiness.avg())
+                        .from(feed)
+                        .where(
+                                nickNameEq(nickname),
+                                monthEq(date)
+                        )
+                        .fetchOne()
+        );
     }
 
     // ----------------------------------------------------------------- //
