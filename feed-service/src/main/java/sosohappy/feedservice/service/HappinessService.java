@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sosohappy.feedservice.domain.dto.AnalysisDto;
-import sosohappy.feedservice.domain.dto.MonthHappinessAndDateDto;
+import sosohappy.feedservice.domain.dto.DayHappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 import sosohappy.feedservice.domain.entity.Feed;
@@ -58,8 +58,8 @@ public class HappinessService {
         updateSimilarity(happiness, categoryList);
     }
 
-    public List<MonthHappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
-        return Optional.ofNullable(feedRepository.findMonthHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
+    public List<DayHappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
+        return Optional.ofNullable(feedRepository.findDayHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
                 .filter(monthHappinessAndDateDtoList -> !monthHappinessAndDateDtoList.isEmpty())
                 .orElseThrow(FindException::new);
 
