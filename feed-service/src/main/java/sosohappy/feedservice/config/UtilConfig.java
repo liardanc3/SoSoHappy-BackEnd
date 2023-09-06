@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Configuration
-public class UtilsConfig {
+public class UtilConfig {
 
     @Bean
     ConcurrentHashMap<String, Integer> StringAndIntegerMap(){
@@ -16,7 +16,12 @@ public class UtilsConfig {
     }
 
     @Bean
-    AtomicReference<List<List<Integer>>> twoDimensionIntegerArray(){
+    ConcurrentHashMap<Integer, String> IntegerAndStringMap(){
+        return new ConcurrentHashMap<>();
+    }
+
+    @Bean
+    AtomicReference<List<List<Integer>>> twoDimensionIntegerList(){
         return new AtomicReference<>();
     }
 }

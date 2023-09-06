@@ -22,7 +22,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<FeedDto> findMonthFeedDtoBySearchFeedFilter(NicknameAndDateDto nicknameAndDateDto) {
+    public List<FeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
                 .select(Projections.constructor(
                         FeedDto.class,
@@ -38,7 +38,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public Optional<FeedDto> findDayFeedDtoBySearchFeedFilter(NicknameAndDateDto nicknameAndDateDto) {
+    public Optional<FeedDto> findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(
                 queryFactory
                         .select(Projections.constructor(
@@ -67,6 +67,20 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
         );
     }
 
+    @Override
+    public List<HappinessDto> findMonthHappinessDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+        return queryFactory
+                .select(Projections.constructor(
+                        HappinessDto.class,
+                        feed
+                ))
+                .from(feed)
+                .where(
+                        nickNameEq(nicknameAndDateDto.getNickname()),
+                        monthEq(nicknameAndDateDto.getDate())
+                )
+                .fetch();
+    }
 
     // ----------------------------------------------------------------- //
 

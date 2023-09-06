@@ -11,7 +11,7 @@ public class KafkaConsumer {
 
     public static ConcurrentHashMap<String, String> emailAndTokenMap = new ConcurrentHashMap<>();
 
-    @KafkaListener(topics = "accessToken", groupId = "21resdaasddddasddsadw")
+    @KafkaListener(topics = "accessToken", groupId = "dasfadf")
     public void addAccessToken(ConsumerRecord<String, String> record){
         String email = record.key();
         String accessToken = record.value();

@@ -23,12 +23,12 @@ public class FeedService {
     private final FeedRepository feedRepository;
 
     public List<FeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
-        return Optional.ofNullable(feedRepository.findMonthFeedDtoBySearchFeedFilter(nicknameAndDateDto))
+        return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(FindException::new);
     }
     public FeedDto findDayFeed(NicknameAndDateDto nicknameAndDateDto) {
-        return feedRepository.findDayFeedDtoBySearchFeedFilter(nicknameAndDateDto)
+        return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto)
                 .orElseThrow(FindException::new);
     }
 
