@@ -10,6 +10,7 @@ import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.service.FeedService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,6 +48,11 @@ public class FeedController {
                                                         @RequestParam @Nullable Long date,
                                                         @PageableDefault(size = 7) Pageable pageable){
         return feedService.findOtherFeed(nickname, date == null ? -1 : date, pageable);
+    }
+
+    @PostMapping("/updateLike")
+    public Map<String, Boolean> updateLike(String srcNickname, @ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+        return feedService.updateLike(srcNickname, nicknameAndDateDto);
     }
 
 }

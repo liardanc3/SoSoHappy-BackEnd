@@ -33,6 +33,6 @@ public class OtherFeedDto {
         this.categoryList = feed.getCategoryList();
         this.imageList = feed.getImageList();
 
-        this.isLiked = feed.getLikeNicknameList().contains(nickname);
+        this.isLiked = feed.getLikeNicknameSet().contains(nickname);
     }
 }

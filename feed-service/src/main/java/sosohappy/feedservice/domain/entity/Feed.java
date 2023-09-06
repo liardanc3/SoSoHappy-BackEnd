@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -60,7 +62,7 @@ public class Feed {
             joinColumns = @JoinColumn(name = "feed_id")
     )
     @Column
-    private List<String> likeNicknameList = new ArrayList<>();
+    private Set<String> likeNicknameSet = new HashSet<>();
 
 
     // --------------------------------------- //
@@ -86,6 +88,16 @@ public class Feed {
     public static Feed updateIsPublic(Feed feed){
         feed.isPublic = !feed.isPublic;
         return feed;
+    }
+
+    public Boolean updateLike(String nickname){
+        if (this.likeNicknameSet.contains(nickname)) {
+            this.likeNicknameSet.remove(nickname);
+            return false;
+        } else {
+            this.likeNicknameSet.add(nickname);
+            return true;
+        }
     }
 
     @SneakyThrows

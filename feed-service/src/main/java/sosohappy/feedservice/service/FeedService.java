@@ -14,6 +14,7 @@ import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -57,5 +58,12 @@ public class FeedService {
 
     public SliceResponse<OtherFeedDto> findOtherFeed(String nickname, Long date, Pageable pageable) {
         return new SliceResponse<>(feedRepository.findByNicknameAndDateWithSlicing(nickname, date, pageable));
+    }
+
+    public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
+        return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
+                .map(feed -> feed.updateLike(srcNickname))
+                .map(like -> Map.of("like", like))
+                .orElseThrow(FindException::new);
     }
 }
