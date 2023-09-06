@@ -6,7 +6,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.HappinessDto;
+import sosohappy.feedservice.domain.dto.HappinessAndCategoryDto;
+import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.entity.Feed;
 
@@ -68,10 +69,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public List<HappinessDto> findMonthHappinessDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+    public List<HappinessAndCategoryDto> findMonthHappinessAndCategoryDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
                 .select(Projections.constructor(
-                        HappinessDto.class,
+                        HappinessAndCategoryDto.class,
                         feed
                 ))
                 .from(feed)
@@ -79,6 +80,22 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                         nickNameEq(nicknameAndDateDto.getNickname()),
                         monthEq(nicknameAndDateDto.getDate())
                 )
+                .fetch();
+    }
+
+    @Override
+    public List<HappinessAndDateDto> findMonthHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+        return queryFactory
+                .select(Projections.constructor(
+                        HappinessAndDateDto.class,
+                        feed
+                ))
+                .from(feed)
+                .where(
+                        nickNameEq(nicknameAndDateDto.getNickname()),
+                        monthEq(nicknameAndDateDto.getDate())
+                )
+                .orderBy(feed.date.asc())
                 .fetch();
     }
 

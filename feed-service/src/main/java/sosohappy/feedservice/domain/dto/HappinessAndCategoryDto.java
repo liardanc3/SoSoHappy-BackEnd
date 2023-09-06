@@ -6,12 +6,12 @@ import sosohappy.feedservice.domain.entity.Feed;
 import java.util.List;
 
 @Data
-public class HappinessDto {
+public class HappinessAndCategoryDto {
 
     private Integer happiness;
     private List<String> categories;
 
-    public HappinessDto(Feed feed) {
+    public HappinessAndCategoryDto(Feed feed) {
         this.happiness = feed.getHappiness();
         this.categories = feed.getCategoryList();
     }

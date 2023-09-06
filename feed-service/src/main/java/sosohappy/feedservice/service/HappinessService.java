@@ -4,9 +4,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sosohappy.feedservice.domain.dto.AnalysisDto;
+import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 import sosohappy.feedservice.domain.entity.Feed;
+import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.*;
@@ -56,6 +58,13 @@ public class HappinessService {
         updateSimilarity(happiness, categoryList);
     }
 
+    public List<HappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
+        return Optional.ofNullable(feedRepository.findMonthHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
+                .filter(happinessAndDateDtoList -> !happinessAndDateDtoList.isEmpty())
+                .orElseThrow(FindException::new);
+
+    }
+
     // ------------------------------------------------------------------------------- //
 
     private List<String> getRecommendCategoryList(List<String> bestCategoryList) {
@@ -89,7 +98,7 @@ public class HappinessService {
     private List<String> getBestCategoryList(NicknameAndDateDto nicknameAndDateDto) {
         Map<String, Integer> categoryAndPointMap = new HashMap<>();
 
-        feedRepository.findMonthHappinessDtoByNicknameAndDateDto(nicknameAndDateDto)
+        feedRepository.findMonthHappinessAndCategoryDtoByNicknameAndDateDto(nicknameAndDateDto)
                 .forEach(happinessDto -> {
                     Integer point = happinessDto.getHappiness();
 
@@ -110,7 +119,7 @@ public class HappinessService {
     }
 
     private void initMatrix() {
-        feedRepository.findHappinessDtoAll()
+        feedRepository.findHappinessAndCategoryDtoAll()
                 .forEach(happinessDto -> {
                     Integer happiness = happinessDto.getHappiness();
                     List<String> categories = happinessDto.getCategories();
@@ -165,6 +174,5 @@ public class HappinessService {
         categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size());
         indexToCategoryMap.putIfAbsent(categoryToIndexMap.size()-1, category);
     }
-
 
 }
