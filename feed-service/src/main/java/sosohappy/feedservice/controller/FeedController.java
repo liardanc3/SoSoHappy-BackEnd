@@ -55,4 +55,11 @@ public class FeedController {
         return feedService.updateLike(srcNickname, nicknameAndDateDto);
     }
 
+    @GetMapping("/findUserFeed")
+    public SliceResponse<OtherFeedDto> findUserFeed(@RequestParam String srcNickname,
+                                                    @RequestParam String dstNickname,
+                                                    @PageableDefault(size = 7) Pageable pageable){
+        return feedService.findUserFeed(srcNickname, dstNickname, pageable);
+    }
+
 }

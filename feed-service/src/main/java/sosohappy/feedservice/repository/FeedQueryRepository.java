@@ -1,5 +1,6 @@
 package sosohappy.feedservice.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import sosohappy.feedservice.domain.dto.*;
@@ -24,4 +25,5 @@ public interface FeedQueryRepository {
 
     Slice<OtherFeedDto> findByNicknameAndDateWithSlicing(String nickname, Long date, Pageable pageable);
 
+    Slice<OtherFeedDto> findUserFeed(String srcNickname, String dstNickname, Pageable pageable);
 }

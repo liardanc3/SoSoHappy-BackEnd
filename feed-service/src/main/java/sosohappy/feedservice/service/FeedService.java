@@ -60,10 +60,13 @@ public class FeedService {
         return new SliceResponse<>(feedRepository.findByNicknameAndDateWithSlicing(nickname, date, pageable));
     }
 
+    public SliceResponse<OtherFeedDto> findUserFeed(String srcNickname, String dstNickname, Pageable pageable) {
+        return new SliceResponse<>(feedRepository.findUserFeed(srcNickname, dstNickname, pageable));
+    }
+
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
-                .map(feed -> feed.updateLike(srcNickname))
-                .map(like -> Map.of("like", like))
+                .map(feed ->  Map.of("like", feed.updateLike(srcNickname)))
                 .orElseThrow(FindException::new);
     }
 }

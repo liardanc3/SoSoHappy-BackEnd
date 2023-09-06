@@ -143,6 +143,34 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
         return new SliceImpl<>(feedList, pageable, hasNext);
     }
 
+    @Override
+    public Slice<OtherFeedDto> findUserFeed(String srcNickname, String dstNickname, Pageable pageable) {
+        if(pageable.getPageSize() > 25){
+            throw new ValidException();
+        }
+
+        List<OtherFeedDto> feedList = queryFactory
+                .select(Projections.constructor(
+                        OtherFeedDto.class,
+                        feed, Expressions.asString(srcNickname)
+                ))
+                .from(feed)
+                .where(
+                        nickNameEq(dstNickname)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        boolean hasNext = false;
+        if (feedList.size() > pageable.getPageSize()){
+            feedList.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+
+        return new SliceImpl<>(feedList, pageable, hasNext);
+    }
+
     // ----------------------------------------------------------------- //
 
     private BooleanExpression nickNameEq(String nickname){
