@@ -38,7 +38,7 @@ public class Feed {
     @Column
     private Boolean isPublic;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection
     @CollectionTable(
             name = "feed_categories",
             joinColumns = @JoinColumn(name = "feed_id")
@@ -46,7 +46,7 @@ public class Feed {
     @Column
     private List<String> categoryList;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection
     @CollectionTable(
             name = "feed_images",
             joinColumns = @JoinColumn(name = "feed_id")
@@ -54,7 +54,7 @@ public class Feed {
     @Column(columnDefinition = "MEDIUMBLOB")
     private List<byte[]> imageList = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection
     @CollectionTable(
             name = "feed_likes",
             joinColumns = @JoinColumn(name = "feed_id")

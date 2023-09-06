@@ -5,11 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sosohappy.feedservice.domain.dto.AnalysisDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
+import sosohappy.feedservice.domain.dto.UpdateFeedDto;
+import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +25,35 @@ public class HappinessService {
     private final FeedRepository feedRepository;
 
     @PostConstruct
-    void updateSimilarityMatrix() {
-        atomicSimilarityMatrix.set(initMatrix(allocateMatrix()));
+    void initSimilarityMatrix() {
+        allocateMatrix();
+        initMatrix();
     }
 
     public AnalysisDto analysisHappiness(NicknameAndDateDto nicknameAndDateDto) {
-
         List<String> bestCategoryList = getBestCategoryList(nicknameAndDateDto);
         List<String> recommendCategoryList = getRecommendCategoryList(bestCategoryList);
 
         return new AnalysisDto(bestCategoryList, recommendCategoryList);
+    }
+
+    public void updateSimilarityMatrix(Feed feed, UpdateFeedDto updateFeedDto) {
+        Integer srcHappiness = feed.getHappiness();
+        List<String> srcCategoryList = feed.getCategoryList();
+        
+        updateSimilarity(-srcHappiness, srcCategoryList);
+
+        Integer dstHappiness = updateFeedDto.getHappiness();
+        List<String> dstCategoryList = updateFeedDto.getCategoryList();
+
+        updateSimilarity(dstHappiness, dstCategoryList);
+    }
+
+    public void updateSimilarityMatrix(UpdateFeedDto updateFeedDto) {
+        Integer happiness = updateFeedDto.getHappiness();
+        List<String> categoryList = updateFeedDto.getCategoryList();
+        
+        updateSimilarity(happiness, categoryList);
     }
 
     // ------------------------------------------------------------------------------- //
@@ -47,16 +70,19 @@ public class HappinessService {
                         int point = similarityMatrix.get(idx).get(i);
 
                         indexAndPointMap.compute(i, (k, v) -> (v == null) ? point : v + point);
+
                     }
                 });
         List<Map.Entry<Integer, Integer>> indexAndPointList = new ArrayList<>(indexAndPointMap.entrySet());
-        indexAndPointList.sort(Map.Entry.comparingByValue());
+        indexAndPointList.sort(Map.Entry.<Integer, Integer>comparingByValue().reversed());
 
         return indexAndPointList
                 .subList(0, Math.min(10, indexAndPointList.size()))
                 .stream()
                 .map(Map.Entry::getKey)
                 .map(indexToCategoryMap::get)
+                .filter(category -> !bestCategoryList.contains(category))
+                .filter(Objects::nonNull)
                 .toList();
     }
 
@@ -83,48 +109,62 @@ public class HappinessService {
                 .toList();
     }
 
-    private List<List<Integer>> initMatrix(List<List<Integer>> matrix) {
+    private void initMatrix() {
         feedRepository.findHappinessDtoAll()
                 .forEach(happinessDto -> {
+                    Integer happiness = happinessDto.getHappiness();
                     List<String> categories = happinessDto.getCategories();
 
-                    for (int i = 0; i < categories.size(); i++){
-
-                        int srcIdx = categoryToIndexMap.get(categories.get(i));
-
-                        for (int j = 0; j < categories.size(); j++){
-                            if (i != j){
-
-                                int dstIdx = categoryToIndexMap.get(categories.get(j));
-
-                                matrix.get(srcIdx)
-                                        .set(
-                                                dstIdx,
-                                                matrix.get(srcIdx).get(dstIdx) + happinessDto.getHappiness()
-                                        );
-                            }
-                        }
-                    }
+                    updateSimilarity(happiness, categories);
                 });
-
-        return matrix;
     }
 
-    private List<List<Integer>> allocateMatrix() {
-        int size = (int) feedRepository.findAllCategories()
-                .stream()
-                .map(category -> {
-                    categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size());
-                    indexToCategoryMap.putIfAbsent(categoryToIndexMap.size()-1, category);
-                    return 1;
-                })
-                .count();
+    private void updateSimilarity(Integer happiness, List<String> categories) {
+        List<List<Integer>> matrix = atomicSimilarityMatrix.get();
 
-        List<List<Integer>> matrix = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            matrix.add(new ArrayList<>(Collections.nCopies(size, 0)));
+        for (String category : categories) {
+            updateCategory(category);
         }
 
-        return matrix;
+        for (int i = 0; i < categories.size(); i++){
+
+            int srcIdx = categoryToIndexMap.get(categories.get(i));
+
+            for (int j = 0; j < categories.size(); j++){
+                if (i != j){
+
+                    int dstIdx = categoryToIndexMap.get(categories.get(j));
+
+                    matrix.get(srcIdx)
+                            .set(
+                                    dstIdx,
+                                    matrix.get(srcIdx).get(dstIdx) + happiness
+                            );
+                }
+            }
+        }
     }
+
+    private void allocateMatrix() {
+        feedRepository.findAllCategories()
+                .forEach(this::updateCategory);
+
+        int size = Math.max(categoryToIndexMap.size(), 100);
+        atomicSimilarityMatrix.set(
+                Stream.generate(() ->
+                                Stream.generate(() -> 0)
+                                        .limit(size)
+                                        .collect(Collectors.toList())
+                        )
+                        .limit(size)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private void updateCategory(String category) {
+        categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size());
+        indexToCategoryMap.putIfAbsent(categoryToIndexMap.size()-1, category);
+    }
+
+
 }
