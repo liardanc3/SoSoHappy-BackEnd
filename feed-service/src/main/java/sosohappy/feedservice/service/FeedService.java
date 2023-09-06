@@ -1,12 +1,13 @@
 package sosohappy.feedservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.integration.annotation.Default;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sosohappy.feedservice.domain.dto.UpdateFeedDto;
-import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
-import sosohappy.feedservice.domain.dto.UpdateResultDto;
+import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
@@ -23,12 +24,12 @@ public class FeedService {
     private final FeedRepository feedRepository;
     private final HappinessService happinessService;
 
-    public List<FeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
+    public List<UserFeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(FindException::new);
     }
-    public FeedDto findDayFeed(NicknameAndDateDto nicknameAndDateDto) {
+    public UserFeedDto findDayFeed(NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto)
                 .orElseThrow(FindException::new);
     }
@@ -52,5 +53,9 @@ public class FeedService {
                 .map(Feed::updateIsPublic)
                 .map(feed -> UpdateResultDto.updateSuccess("업데이트 성공"))
                 .orElseThrow(UpdateException::new);
+    }
+
+    public SliceResponse<OtherFeedDto> findOtherFeed(String nickname, Long date, Pageable pageable) {
+        return new SliceResponse<>(feedRepository.findByNicknameAndDateWithSlicing(nickname, date, pageable));
     }
 }

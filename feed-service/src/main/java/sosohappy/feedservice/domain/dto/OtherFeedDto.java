@@ -1,9 +1,11 @@
 package sosohappy.feedservice.domain.dto;
 
+import lombok.Data;
 import sosohappy.feedservice.domain.entity.Feed;
 
 import java.util.List;
 
+@Data
 public class OtherFeedDto {
 
     private String nickname;

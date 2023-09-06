@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
+import sosohappy.feedservice.exception.custom.ValidException;
 
 
 @RestControllerAdvice
@@ -21,6 +22,11 @@ public class ResponseExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(FindException.class)
     public void handleFindException(){
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ValidException.class)
+    public void handleValidException(){
     }
 
 

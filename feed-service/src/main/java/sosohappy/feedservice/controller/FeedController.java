@@ -1,10 +1,11 @@
 package sosohappy.feedservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.*;
 import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.service.FeedService;
 
@@ -22,12 +23,12 @@ public class FeedController {
     }
 
     @PostMapping("/findMonthFeed")
-    public List<FeedDto> findMonthFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public List<UserFeedDto> findMonthFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
         return feedService.findMonthFeed(nicknameAndDateDto);
     }
 
     @PostMapping("/findDayFeed")
-    public FeedDto findDayFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public UserFeedDto findDayFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
         return feedService.findDayFeed(nicknameAndDateDto);
     }
 
@@ -39,6 +40,13 @@ public class FeedController {
     @PostMapping("/updatePublicStatus")
     public UpdateResultDto updatePublicStatus(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
         return feedService.updatePublicStatus(nicknameAndDateDto);
+    }
+
+    @GetMapping("/findOtherFeed")
+    public SliceResponse<OtherFeedDto> findOtherDayFeed(@RequestParam String nickname,
+                                                        @RequestParam @Nullable Long date,
+                                                        @PageableDefault(size = 7) Pageable pageable){
+        return feedService.findOtherFeed(nickname, date == null ? -1 : date, pageable);
     }
 
 }

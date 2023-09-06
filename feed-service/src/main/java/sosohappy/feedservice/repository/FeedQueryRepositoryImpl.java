@@ -2,14 +2,16 @@ package sosohappy.feedservice.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
-import sosohappy.feedservice.domain.dto.FeedDto;
-import sosohappy.feedservice.domain.dto.HappinessAndCategoryDto;
-import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
-import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
+import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
+import sosohappy.feedservice.exception.custom.ValidException;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +25,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<FeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+    public List<UserFeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
                 .select(Projections.constructor(
-                        FeedDto.class,
+                        UserFeedDto.class,
                         feed
                 ))
                 .from(feed)
@@ -39,11 +41,11 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public Optional<FeedDto> findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+    public Optional<UserFeedDto> findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(
                 queryFactory
                         .select(Projections.constructor(
-                                FeedDto.class,
+                                UserFeedDto.class,
                                 feed
                         ))
                         .from(feed)
@@ -113,6 +115,34 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
         );
     }
 
+    @Override
+    public Slice<OtherFeedDto> findByNicknameAndDateWithSlicing(String nickname, Long date, Pageable pageable) {
+        if(pageable.getPageSize() > 25){
+            throw new ValidException();
+        }
+
+        List<OtherFeedDto> feedList = queryFactory
+                .select(Projections.constructor(
+                        OtherFeedDto.class,
+                        feed, Expressions.asString(nickname)
+                ))
+                .from(feed)
+                .where(
+                        isDayFind(date)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        boolean hasNext = false;
+        if (feedList.size() > pageable.getPageSize()){
+            feedList.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+
+        return new SliceImpl<>(feedList, pageable, hasNext);
+    }
+
     // ----------------------------------------------------------------- //
 
     private BooleanExpression nickNameEq(String nickname){
@@ -125,5 +155,12 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     private BooleanExpression dayEq(Long date){
         return feed.date.divide(100000000L).floor().eq(date / 100000000L);
+    }
+
+    private BooleanExpression isDayFind(Long date){
+        if(date != -1){
+            return dayEq(date);
+        }
+        return null;
     }
 }
