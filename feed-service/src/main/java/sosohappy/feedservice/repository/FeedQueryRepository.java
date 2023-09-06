@@ -2,7 +2,7 @@ package sosohappy.feedservice.repository;
 
 import sosohappy.feedservice.domain.dto.FeedDto;
 import sosohappy.feedservice.domain.dto.HappinessAndCategoryDto;
-import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
+import sosohappy.feedservice.domain.dto.MonthHappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.entity.Feed;
 
@@ -19,6 +19,6 @@ public interface FeedQueryRepository {
 
     List<HappinessAndCategoryDto> findMonthHappinessAndCategoryDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
 
-    List<HappinessAndDateDto> findMonthHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
+    List<MonthHappinessAndDateDto> findMonthHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
 
 }

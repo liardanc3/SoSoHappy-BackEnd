@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sosohappy.feedservice.domain.dto.FeedDto;
 import sosohappy.feedservice.domain.dto.HappinessAndCategoryDto;
-import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
+import sosohappy.feedservice.domain.dto.MonthHappinessAndDateDto;
 import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
 import sosohappy.feedservice.domain.entity.Feed;
 
@@ -84,10 +84,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public List<HappinessAndDateDto> findMonthHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+    public List<MonthHappinessAndDateDto> findMonthHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
                 .select(Projections.constructor(
-                        HappinessAndDateDto.class,
+                        MonthHappinessAndDateDto.class,
                         feed
                 ))
                 .from(feed)
