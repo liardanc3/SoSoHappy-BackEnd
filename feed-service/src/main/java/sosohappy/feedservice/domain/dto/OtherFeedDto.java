@@ -1,13 +1,10 @@
 package sosohappy.feedservice.domain.dto;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import sosohappy.feedservice.domain.entity.Feed;
 
 import java.util.List;
 
-@Data
-public class FeedDto {
+public class OtherFeedDto {
 
     private String nickname;
 
@@ -19,22 +16,21 @@ public class FeedDto {
 
     private String text;
 
-    private Boolean isPublic;
-
     private List<String> categoryList;
 
     private List<byte[]> imageList;
 
-    private List<String> likeNicknameList;
+    private Boolean isLiked;
 
-    public FeedDto(Feed feed){
+    public OtherFeedDto(Feed feed, String nickname){
         this.nickname = feed.getNickname();
         this.weather = feed.getWeather();
         this.date = feed.getDate();
         this.happiness = feed.getHappiness();
         this.text = feed.getText();
-        this.isPublic = feed.getIsPublic();
         this.categoryList = feed.getCategoryList();
         this.imageList = feed.getImageList();
+
+        this.isLiked = feed.getLikeNicknameList().contains(nickname);
     }
 }
