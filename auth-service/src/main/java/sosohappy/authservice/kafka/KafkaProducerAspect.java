@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaProducerAspect {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<byte[], byte[]> kafkaTemplate;
 
     @AfterReturning(value = "@annotation(kafkaProducer)", returning = "result")
     public void handleKafkaProducer(JoinPoint joinPoint, KafkaProducer kafkaProducer, Object result){
         String email = (String) joinPoint.getArgs()[0];
-        kafkaTemplate.send(kafkaProducer.topic(), email, (String) result);
+        kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), ((String) result).getBytes());
     }
 
 }
