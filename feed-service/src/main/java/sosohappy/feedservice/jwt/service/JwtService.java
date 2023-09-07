@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${jwt.secretKey}")
@@ -22,15 +23,16 @@ public class JwtService {
     @Value("${jwt.access.header}")
     private String accessHeader;
 
+    private final ConcurrentHashMap<String, String> emailAndTokenMap;
+
     @ConvertException(target = JWTException.class)
     public boolean verifyAccessToken(HttpServletRequest request) {
-        ConcurrentHashMap<String, String> emailToTokenMap = KafkaConsumer.emailAndTokenMap;
 
         return extractAccessToken(request)
                 .filter(token -> isTokenValid(token, extractHeaderEmail(request)))
                 .flatMap(this::extractTokenEmail)
                 .filter(email -> 
-                        emailToTokenMap.get(email)
+                        emailAndTokenMap.get(email)
                                 .equals(extractAccessToken(request).orElse(null))
                 )
                 .isPresent();
