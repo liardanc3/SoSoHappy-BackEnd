@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface ConvertException {
 
     Class<? extends Exception> target();
+
 }
