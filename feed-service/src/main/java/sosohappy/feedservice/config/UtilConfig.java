@@ -21,6 +21,11 @@ public class UtilConfig {
     }
 
     @Bean
+    ConcurrentHashMap<String, String> StringAndStringMap(){
+        return new ConcurrentHashMap<>();
+    }
+
+    @Bean
     AtomicReference<List<List<Integer>>> twoDimensionIntegerList(){
         return new AtomicReference<>();
     }
