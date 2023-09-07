@@ -11,7 +11,7 @@ public class MessageDto {
     private String sender;
     private String receiver;
 
-    private Long createdDate;
+    private Long date;
 
     private String text;
 
@@ -19,7 +19,7 @@ public class MessageDto {
         this.sender = message.getSender();
         this.receiver = message.getReceiver();
 
-        this.createdDate = message.getCreatedDate();
+        this.date = message.getDate();
         this.text = message.getText();
     }
 }

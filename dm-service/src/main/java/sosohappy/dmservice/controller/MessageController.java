@@ -11,7 +11,6 @@ import sosohappy.dmservice.service.MessageService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/dm-service")
 public class MessageController {
 
     private final MessageService messageService;

@@ -12,6 +12,7 @@ import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
 import sosohappy.dmservice.repository.MessageRepository;
 import sosohappy.dmservice.util.Utils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -21,8 +22,8 @@ public class MessageService {
     private final Utils utils;
     private final MessageRepository messageRepository;
 
-    private final Map<String, String> nickNameToSessionIdMap;
-    private final Map<String, WebSocketSession> sessionIdToSessionMap;
+    private final HashMap<String, String> nickNameToSessionIdMap;
+    private final HashMap<String, WebSocketSession> sessionIdToSessionMap;
 
     public Mono<Void> connectSessionAndSendMessage(WebSocketSession session) {
         return session.receive()
@@ -51,7 +52,7 @@ public class MessageService {
     }
 
     private void saveSessionInfo(WebSocketSession session) {
-        nickNameToSessionIdMap.put(session.getHandshakeInfo().getUri().getQuery(), session.getId());
+        nickNameToSessionIdMap.put(session.getHandshakeInfo().getUri().getQuery().split("=")[1], session.getId());
         sessionIdToSessionMap.put(session.getId(), session);
     }
 

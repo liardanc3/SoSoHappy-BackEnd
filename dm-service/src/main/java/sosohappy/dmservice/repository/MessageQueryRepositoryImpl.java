@@ -26,7 +26,7 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
         return mongoTemplate.find(
                 new Query()
                         .addCriteria(Criteria.where("messageRoomId").is(messageRoomId))
-                        .addCriteria(Criteria.where("createdDate").lte(timeBoundary))
+                        .addCriteria(Criteria.where("date").lte(timeBoundary))
                         .limit(messageCnt),
 
                         Message.class
@@ -45,7 +45,7 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
                         ),
                         Aggregation.group("messageRoomId").last("$$ROOT").as("lastDirectMessage"),
                         Aggregation.replaceRoot("lastDirectMessage"),
-                        Aggregation.sort(Sort.Direction.DESC, "createdDate")
+                        Aggregation.sort(Sort.Direction.DESC, "date")
                 ),
                 "message",
                 Message.class

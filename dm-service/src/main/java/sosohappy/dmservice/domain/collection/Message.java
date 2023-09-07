@@ -6,8 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import sosohappy.dmservice.domain.dto.MessageDto;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +21,7 @@ public class Message {
 
     private String messageRoomId;
 
-    private Long createdDate;
+    private Long date;
 
     private String sender;
     private String receiver;
@@ -31,7 +29,7 @@ public class Message {
     private String text;
 
     public Message(MessageDto messageDto){
-        this.createdDate = messageDto.getCreatedDate();
+        this.date = messageDto.getDate();
 
         this.sender = messageDto.getSender();
         this.receiver = messageDto.getReceiver();
