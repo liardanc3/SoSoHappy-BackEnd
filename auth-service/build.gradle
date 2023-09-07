@@ -35,7 +35,7 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.boot:spring-boot-starter-test'
 
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly "org.springframework.boot:spring-boot-configuration-processor"
