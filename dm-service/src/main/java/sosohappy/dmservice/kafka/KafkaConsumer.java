@@ -5,8 +5,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
