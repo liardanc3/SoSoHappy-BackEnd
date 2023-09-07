@@ -54,7 +54,7 @@ pipeline {
                             sh "docker build -t liardance/${serv}-service:latest ./"
                             sh "docker push liardance/${serv}-service:latest"
 
-                            sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config delete deployment ${serv}-deployment"
+                         
                             sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${serv}-service.yaml"
                         }
                     }
