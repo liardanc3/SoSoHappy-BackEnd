@@ -26,7 +26,7 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
         return mongoTemplate.find(
                 new Query()
                         .addCriteria(Criteria.where("messageRoomId").is(messageRoomId))
-                        .addCriteria(Criteria.where("date").lte(timeBoundary))
+                        .addCriteria(Criteria.where("date").lt(timeBoundary))
                         .limit(messageCnt),
 
                         Message.class

@@ -20,7 +20,7 @@ public class FindDirectMessageFilter {
         this.sender = sender;
         this.receiver = receiver;
         this.timeBoundary = timeBoundary;
-        this.messageCnt = messageCnt;
+        this.messageCnt = messageCnt == null ? 20 : messageCnt;
 
         this.messageRoomId = Stream.of(sender, receiver)
                 .sorted()
