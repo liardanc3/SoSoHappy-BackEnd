@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notice-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notice-service
+  template:
+    metadata:
+      labels:
+        app: notice-service
+    spec:
+      containers:
+        - name: notice-container
+          image: liardance/notice-service:latest
+          ports:
+            - containerPort: 8892
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notice-service
+spec:
+  selector:
+    app: notice-service
+  ports:
+    - protocol: TCP
+      port: 8892
+      targetPort: 8892
+  type: LoadBalancer
+  externalIPs:
+    - 34.64.48.95

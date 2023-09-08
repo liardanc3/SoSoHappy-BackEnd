@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    config:
+      uri: http://sosohappy.net:8888
+      name: notice-config
+  config:
+    import: optional:configserver:http://sosohappy.net:8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root : INFO
+    org:
+      apache:
+        kafka: WARN
