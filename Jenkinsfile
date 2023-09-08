@@ -1,4 +1,4 @@
-def services = ['auth']
+def services = ['auth', 'dm', 'feed', 'notice']
 
 pipeline {
     environment {
