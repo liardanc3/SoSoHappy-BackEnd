@@ -18,10 +18,16 @@ public class ResponseExceptionAttributes extends DefaultErrorAttributes {
         Throwable error = getError(request);
 
         if(error instanceof FindMessageException){
-            return Map.of("error", new ExceptionDto("메시지 조회 실패"));
+            return Map.of(
+                    "error", new ExceptionDto("메시지 조회 실패"),
+                    "status", 404
+            );
         }
 
-        return Map.of("error", new ExceptionDto("알 수 없는 오류"));
+        return Map.of(
+                "error", new ExceptionDto("알 수 없는 오류"),
+                "status", 500
+        );
     }
 
 }

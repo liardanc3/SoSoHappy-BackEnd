@@ -16,7 +16,7 @@ public class JwtService {
 
     public boolean verifyAccessToken(ServerWebExchange exchange) {
         return extractAccessToken(exchange.getRequest())
-                .filter(token -> isTokenValid(token, extractHeaderEmail(exchange.getRequest()).orElse(null)))
+                .filter(token -> isTokenValid(extractHeaderEmail(exchange.getRequest()).orElse(null), token))
                 .isPresent();
     }
 
@@ -27,16 +27,11 @@ public class JwtService {
     }
 
     public Optional<String> extractHeaderEmail(ServerHttpRequest request) {
-        return Optional.ofNullable(request.getHeaders().getFirst("Email"))
-                .filter(accessToken -> accessToken.startsWith("Bearer "))
-                .map(accessToken -> accessToken.replace("Bearer ", ""));
+        return Optional.ofNullable(request.getHeaders().getFirst("Email"));
     }
 
     public boolean isTokenValid(String email, String token){
-        if(email == null || token == null || emailAndTokenMap.get(email) == null || !emailAndTokenMap.get(email).equals(token)){
-            return false;
-        }
-        return true;
+        return email != null && token != null && emailAndTokenMap.get(email) != null && emailAndTokenMap.get(email).equals(token);
     }
 
 }

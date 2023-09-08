@@ -13,7 +13,6 @@ import sosohappy.dmservice.repository.MessageRepository;
 import sosohappy.dmservice.util.Utils;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +28,7 @@ public class MessageService {
         return session.receive()
                 .doOnSubscribe(subscription -> saveSessionInfo(session))
                 .map(this::sendMessage)
+                .onErrorContinue((err, arg) -> {})
                 .doOnNext(this::saveDirectMessage)
                 .then();
     }
