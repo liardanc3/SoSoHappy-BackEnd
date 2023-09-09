@@ -70,7 +70,7 @@ public class FeedService {
                 .map(feed ->  {
                     Map<String, Boolean> responseDto = Map.of("like", feed.updateLike(srcNickname));
                     if(responseDto.get("like")){
-                        produceUpdateLike(srcNickname, nicknameAndDateDto.getNickname());
+                        produceUpdateLike(srcNickname, nicknameAndDateDto);
                     }
                     return responseDto;
                 })
@@ -78,7 +78,7 @@ public class FeedService {
     }
 
     @KafkaProducer(topic = "notice-like")
-    private List<String> produceUpdateLike(String srcNickname, String dstNickname) {
-        return List.of(srcNickname, dstNickname);
+    private List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
+        return List.of(srcNickname, nicknameAndDateDto.getNickname() + "," + nicknameAndDateDto.getDate());
     }
 }
