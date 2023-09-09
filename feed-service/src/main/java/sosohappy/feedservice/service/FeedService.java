@@ -1,6 +1,8 @@
 package sosohappy.feedservice.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -25,6 +27,7 @@ public class FeedService {
 
     private final FeedRepository feedRepository;
     private final HappinessService happinessService;
+    private final ObjectProvider<FeedService> feedServiceObjectProvider;
 
     public List<UserFeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
@@ -70,7 +73,7 @@ public class FeedService {
                 .map(feed ->  {
                     Map<String, Boolean> responseDto = Map.of("like", feed.updateLike(srcNickname));
                     if(responseDto.get("like")){
-                        produceUpdateLike(srcNickname, nicknameAndDateDto);
+                        feedServiceObjectProvider.getObject().produceUpdateLike(srcNickname, nicknameAndDateDto);
                     }
                     return responseDto;
                 })
@@ -78,7 +81,7 @@ public class FeedService {
     }
 
     @KafkaProducer(topic = "notice-like")
-    private List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
+    public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return List.of(srcNickname, nicknameAndDateDto.getNickname() + "," + nicknameAndDateDto.getDate());
     }
 }

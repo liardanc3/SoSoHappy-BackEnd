@@ -21,7 +21,7 @@ public class KafkaProducerAspect {
     public void handleKafkaProducer(JoinPoint joinPoint, KafkaProducer kafkaProducer, Object result){
 
         // notice-like
-        if(result instanceof List){
+        if(result instanceof List<?>){
             List<String> likeResult = (List<String>) result;
             String key = likeResult.get(0);
             String value = likeResult.get(1);
