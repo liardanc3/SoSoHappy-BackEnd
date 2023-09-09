@@ -37,6 +37,9 @@ dependencies {
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.micrometer:micrometer-core'
+
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 

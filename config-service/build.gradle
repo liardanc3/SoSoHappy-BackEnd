@@ -20,6 +20,8 @@ ext {
 }
 
 dependencies {
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.micrometer:micrometer-core'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation "org.springframework.cloud:spring-cloud-starter-stream-kafka"
 	implementation 'org.springframework.cloud:spring-cloud-config-monitor'
