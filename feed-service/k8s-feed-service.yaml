@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: feed-deployment
 spec:
+  revisionHistoryLimit: 0
   replicas: 1
   selector:
     matchLabels:

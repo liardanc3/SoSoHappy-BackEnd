@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: notice-deployment
 spec:
+  revisionHistoryLimit: 0
   replicas: 1
   selector:
     matchLabels:
