@@ -17,10 +17,9 @@ public class KafkaConsumer {
 
     private final NoticeService noticeService;
     private final Utils utils;
+    private final ConcurrentHashMap<String, String> emailAndTokenMap;
 
-    public static ConcurrentHashMap<String, String> emailAndTokenMap = new ConcurrentHashMap<>();
-
-    @KafkaListener(topics = "accessToken", groupId = "ASddd2ddsafdadddasdd")
+    @KafkaListener(topics = "accessToken", groupId = "hjkjdd")
     public void addAccessToken(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String accessToken = new String(record.value());
@@ -28,7 +27,7 @@ public class KafkaConsumer {
         emailAndTokenMap.put(email, accessToken);
     }
 
-    @KafkaListener(topics = "notice-like", groupId = "Asdasdas")
+    @KafkaListener(topics = "notice-like", groupId = "Asdasddas")
     public void noticeLike(ConsumerRecord<byte[], byte[]> record){
         String liker = new String(record.key());
         String[] nicknameAndDateStr = new String(record.value()).split(",");

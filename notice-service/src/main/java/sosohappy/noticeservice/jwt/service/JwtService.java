@@ -9,9 +9,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    private static final ConcurrentHashMap<String, String> emailAndTokenMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> emailAndTokenMap;
 
     public boolean verifyAccessToken(ServerWebExchange exchange) {
         return extractAccessToken(exchange.getRequest())
