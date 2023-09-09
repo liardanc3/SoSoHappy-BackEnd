@@ -11,6 +11,7 @@ import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
+import sosohappy.feedservice.kafka.KafkaProducer;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.List;
@@ -66,7 +67,18 @@ public class FeedService {
 
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
-                .map(feed ->  Map.of("like", feed.updateLike(srcNickname)))
+                .map(feed ->  {
+                    Map<String, Boolean> responseDto = Map.of("like", feed.updateLike(srcNickname));
+                    if(responseDto.get("like")){
+                        produceUpdateLike(srcNickname, nicknameAndDateDto.getNickname());
+                    }
+                    return responseDto;
+                })
                 .orElseThrow(FindException::new);
+    }
+
+    @KafkaProducer(topic = "notice-like")
+    private List<String> produceUpdateLike(String srcNickname, String dstNickname) {
+        return List.of(srcNickname, dstNickname);
     }
 }
