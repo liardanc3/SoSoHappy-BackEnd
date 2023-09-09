@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import sosohappy.noticeservice.dto.LikeNoticeDto;
+import sosohappy.noticeservice.data.LikeNotice;
+import sosohappy.noticeservice.data.Notice;
 import sosohappy.noticeservice.service.NoticeService;
 import sosohappy.noticeservice.util.Utils;
 
@@ -32,17 +33,25 @@ public class KafkaConsumer {
         String liker = new String(record.key());
         String[] nicknameAndDateStr = new String(record.value()).split(",");
         String nickname = nicknameAndDateStr[0];
-        Double date = Double.parseDouble(nicknameAndDateStr[1]);
+        Long date = Long.parseLong(nicknameAndDateStr[1]);
 
         noticeService.sendNotice(
                 nickname,
-                utils.objectToString(LikeNoticeDto.builder()
-                        .liker(liker)
-                        .date(date)
-                        .build()
+                utils.objectToString(
+                        Notice.builder()
+                                .topic("like")
+                                .data(
+                                        LikeNotice.builder()
+                                                .liker(liker)
+                                                .date(date)
+                                                .build()
+                                )
+                                .build()
                 )
         );
     }
+
+
 
 
 }
