@@ -1,10 +1,10 @@
 spring:
   cloud:
     config:
-      uri: http://34.64.48.95:8888
+      uri: http://sosohappy.net:8888
       name: auth-config
   config:
-    import: optional:configserver:http://34.64.48.95:8888
+    import: optional:configserver:http://sosohappy.net:8888
 
 jwt:
   secretKey: dsajfnlwejabjldqwnadjkenqkjfbkjf132asdkk1ljl09henl322
