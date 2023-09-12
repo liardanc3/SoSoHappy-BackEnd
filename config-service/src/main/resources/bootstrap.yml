@@ -1,5 +1,7 @@
 server:
   port: 8888
+  servlet:
+    context-path: /config-service
 
 
 spring:
@@ -74,9 +76,6 @@ spring:
           host-key-algorithm: ssh-rsa
           default-label: master
       enabled: true
-      monitor:
-        endpoint:
-          path: /remote-config
   kafka:
     bootstrap-servers: http://34.22.67.179:9092
 
