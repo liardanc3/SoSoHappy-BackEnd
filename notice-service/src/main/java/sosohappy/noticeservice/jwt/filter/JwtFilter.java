@@ -19,7 +19,7 @@ public class JwtFilter implements WebFilter {
     @NotNull
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        if(!jwtService.verifyAccessToken(exchange)) {
+        if(!exchange.getRequest().getURI().getPath().contains("actuator") && !jwtService.verifyAccessToken(exchange)) {
             exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(403));
             return Mono.empty();
         }
