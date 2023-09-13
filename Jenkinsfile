@@ -36,7 +36,7 @@ pipeline {
 
         stage('Waiting config pod running') {
             steps {
-                sleep(time: 60, unit: 'SECONDS')
+                sleep(time: 120, unit: 'SECONDS')
             }
         }
 
