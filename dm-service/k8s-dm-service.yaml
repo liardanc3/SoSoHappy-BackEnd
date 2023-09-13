@@ -34,4 +34,4 @@ spec:
       targetPort: 8889
   type: LoadBalancer
   externalIPs:
-    - 34.64.84.221
+    - 10.178.0.5
