@@ -24,7 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // 로그인
-        if (request.getRequestURI().contains("/oauth2")) {
+        if (request.getRequestURI().contains("/oauth2") || request.getRequestURI().contains("actuator")) {
             filterChain.doFilter(request, response);
             return;
         }
