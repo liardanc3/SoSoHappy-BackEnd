@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebFluxConfigurer {
 
     @Bean
     public HandlerMapping handlerMapping(){
-        return new SimpleUrlHandlerMapping(Map.of("/connect-notice", handler), 1);
+        return new SimpleUrlHandlerMapping(Map.of("/notice-service/connect-notice", handler), 1);
     }
 
 
