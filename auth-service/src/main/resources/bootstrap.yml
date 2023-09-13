@@ -20,3 +20,5 @@ logging:
         kafka: WARN
 
 
+a:
+  b: "c"
