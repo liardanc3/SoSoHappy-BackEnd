@@ -5,6 +5,8 @@ spring:
       name: dm-config
   config:
     import: optional:configserver:https://sosohappy.net/config-service
+  webflux:
+    base-path: /dm-service
 
 management:
   endpoints:

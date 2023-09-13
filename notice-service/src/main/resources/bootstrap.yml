@@ -5,6 +5,8 @@ spring:
       name: notice-config
   config:
     import: optional:configserver:https://sosohappy.net/config-service
+  webflux:
+    base-path: /notice-service
 
 management:
   endpoints:
