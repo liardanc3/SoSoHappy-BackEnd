@@ -7,17 +7,23 @@
 <br>
 
 ## 목차
-- [마이크로서비스](#마이크로서비스)
-- [HTTPS 로드 밸런서](#https-로드-밸런서)
-
+- [Microservices](#microservices)
+- [Load Balancer](#load-balancer)
+- [CI/CD](#cicd)
 <br>
   
-## 마이크로서비스
-![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f475409f-7add-4b42-bdd0-774d77d36d1a)
-
+## Microservices
+![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f2fc5325-3e40-49ac-84b8-998bbc1cad38)
 설명.
 
 <br>
 
-## HTTPS 로드 밸런서
-![loadbalancing](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f01a0570-673f-4244-a436-295cc45601c8)
+## Load Balancer
+![loadbalancer](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/5eb267ad-8b0b-4b1f-a55f-eb0b89fa0c40)
+설명.
+
+<br>
+
+## CI/CD
+![cicd](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/e7789836-a855-4ce8-a746-505aefbd7835)
+설명.
