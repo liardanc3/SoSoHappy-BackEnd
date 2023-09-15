@@ -7,14 +7,15 @@
 <br>
 
 ## 목차
-- [Project Architecture](#project-architecture)
-- [Kubernetes Configuration](#kubernetes-configuration)
+- [쿠버네티스 구성](#쿠버네티스-구성)
+- [HTTPS 로드 밸런서](#https-로드-밸런서)
 
 <br>
   
-## Project Architecture
+## 쿠버네티스 구성
 ![architecture](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/0e2984f9-566b-4e96-b4de-91f3e0f7e642)
 
 <br>
 
-## Kubernetes Configuration
+## HTTPS 로드 밸런서
+![loadbalancing](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f01a0570-673f-4244-a436-295cc45601c8)
