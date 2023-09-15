@@ -7,13 +7,15 @@
 <br>
 
 ## 목차
-- [쿠버네티스 구성](#쿠버네티스-구성)
+- [마이크로서비스](#마이크로서비스)
 - [HTTPS 로드 밸런서](#https-로드-밸런서)
 
 <br>
   
-## 쿠버네티스 구성
-![architecture](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/0e2984f9-566b-4e96-b4de-91f3e0f7e642)
+## 마이크로서비스
+![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f475409f-7add-4b42-bdd0-774d77d36d1a)
+
+설명.
 
 <br>
 
