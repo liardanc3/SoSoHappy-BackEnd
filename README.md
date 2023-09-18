@@ -31,29 +31,56 @@
 <br>
 
 ###  구성 서버 
-외부에 노출시키면 안되는 property 파일들을 [서브모듈](https://github.com/So-So-Happy/SoSoHappy-BackEnd/tree/master/config-service)에 모아두고 타겟 서버에 전파하기 위해 구현한 서버입니다.<br>
-`/actuator/busrefresh` 을 통해 [변경된 property를 한번에 업데이트](#topic) 할 수 있습니다.
+###### 외부에 노출시키면 안되는 property 파일들을 [서브모듈](https://github.com/So-So-Happy/SoSoHappy-BackEnd/tree/master/config-service)에 모아두고 타겟 서버에 전파하기 위해 구현한 서버입니다.
+###### `/actuator/busrefresh` 을 통해 [변경된 property를 한번에 업데이트](#topic) 할 수 있습니다.
 
+<br>
 
 ###  인증 서버 
-소셜 로그인 및 유저 정보 관련 작업을 수행하는 서버입니다.<br>
-인증 서버에서 
+###### 소셜 로그인 및 유저 정보 관련 작업을 수행하는 서버입니다.
+###### `spring-boot-starter-web` 를 끌어오며 DB는 MySQL을 사용합니다.
+###### 인증 서버에서 JWT를 발급받으면 해당 내용이 [메시지 큐에 전송](#topic)되며 클라이언트는 이곳에서 발급받은 JWT로 다른 서버에 요청을 보낼 수 있습니다.   
+###### (OAuth 내용)
 
+<br>
 
 ###  피드 서버 
+###### 피드 추가, 수정, 삭제, 추천 등의 작업을 수행하는 서버입니다.
+###### `spring-boot-starter-web`를 끌어오며 Statefulset으로 올라간 MySQL과 연결됩니다..
+###### (querydsl 내용)
+###### 모든 api 호출엔 [JWT가 필요](#topic)합니다.
 
-
+<br>
 
 ###  채팅 서버 
+###### 다이렉트 메시지 송수신을 위한 서버입니다.
+###### `spring-boot-starter-webflux`를 끌어오며 Statefulset으로 올라간 MongoDB와 연결됩니다.
+###### (Websocket 내용)
+###### 모든 api 호출엔 [JWT가 필요](#topic)합니다.
 
-
+<br>
 
 ###  알림 서버 
+###### 푸시 알림 전송을 위한 서버입니다.
+###### `spring-boot-starter-webflux`를 끌어오며 회원가입된 모든 유저와의 WebSocket Session을 유지합니다.
+###### (websocket 내용)
+###### 모든 api 호출엔 [JWT가 필요](#topic)합니다.
 
+<br>
 
 # Load Balancer
 ![loadbalancer](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d25c9821-b53b-49bb-8acb-06afd2ba599e)
-설명.
+
+> 트래픽을 서비스들에게 라우팅하기 위한 Load Balancer의 구조를 나타낸 그림입니다.<br><br>
+> GCP 환경에서 SSL 인증서를 사용하기 위해 HTTPS Load balancer를 사용했지만, 모든 백엔드 서비스들이 1개씩만 존재하므로 로드밸런서의 부하 분산기능은 사용되지 않고 라우팅 기능만 사용되었습니다.
+
+### frontend
+
+내용
+
+### backend
+
+내용
 
 <br>
 
