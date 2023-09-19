@@ -18,6 +18,9 @@
   + [backend](#backend)
 - [Message Queue](#message-queue)
   + [topic : springCloudBus](#topic--springcloudbus)
+  + [topic : accessToken](#topic--accesstoken)
+  + [topic : resign](#topic--resign)
+  + [topic : noticeLike](#topic--noticelike)
 - [Monitoring](#monitoring)
 - [CI/CD](#cicd)
 <br>
@@ -176,10 +179,44 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97
 <br>
 
 ### topic : resign
+###### 인증서버가 탈퇴한 회원 정보를 전파하기 위해 사용되는 토픽입니다.
+<details><summary>
+  
+###### 자세히
+ </summary>
 
+ 
+</details>
 <br>
 
 ### topic : noticeLike
+###### 피드에 좋아요를 눌렀을 때 해당 회원 정보를 전파하기 위한 토픽입니다.
+<details><summary>
+  
+###### 자세히
+ </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L86
+###### 유저가 피드에 좋아요를 누르면 호출되는 함수 중 하나입니다. 커스텀 애노테이션 `@KafkaProducer`을 통해 해당 함수의 리턴값을 끌어옵니다.
+###### 이 함수의 리턴값엔 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임이 포함됩니다.
+
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L20-L32
+###### 메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져옵니다.<br>
+###### 이후 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임을 byte array 형태로 브로커에 전송합니다.
+
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L30-L51
+###### 알림 서버가 이 데이터를 수신해서, 해당 데이터로 notice 서비스의 sendNotice 메소드를 호출합니다.
+
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L26-L31
+###### WebSocket으로 연결된 Session 중 좋아요 알림 메시지를 받아야 할 유저의 Session을 찾아 좋아요를 누른 유저의 닉네임과 피드에 대한 데이터를 전송합니다.
+
+</details>
 
 <br>
 
