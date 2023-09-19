@@ -2,7 +2,9 @@
 <img src="https://img.shields.io/badge/Google Cloud Platform-4285F4?style=flat&logo=Google Cloud&logoColor=white"/> <img src="https://img.shields.io/badge/kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white"/> <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white"/> <img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=Git&logoColor=white"/> <img src="https://img.shields.io/badge/Github-181717?style=flat&logo=Github&logoColor=white"/> <img src="https://img.shields.io/badge/Jenkins-D24939?style=flat&logo=Jenkins&logoColor=white"/> <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat&logo=prometheus&logoColor=white"/> <img src="https://img.shields.io/badge/Grafana-F46800?style=flat&logo=grafana&logoColor=white"/> <img src="https://img.shields.io/badge/Apache Kafka-231F20?style=flat&logo=apachekafka&logoColor=white"/> <img src="https://img.shields.io/badge/MariaDB-003545?style=flat&logo=mariadb&logoColor=white"/> <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=flat&logo=Databricks&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data MongoDB-6DB33F?style=flat&logo=Databricks&logoColor=white"> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat&logo=Spring Boot&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=flat&logo=springsecurity&logoColor=white"/> <img src="https://img.shields.io/badge/Spring WebFlux-6DB33F?style=flat&logo=spring&logoColor=white"/><br><br>
 ![sosohappy-icon-removebg-preview](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/6c3db330-b80f-4837-b286-95f45d0cd6ae)
 - - -
-###### 이 문서는 [클라이언트](https://github.com/So-So-Happy/SoSoHappy-iOS) 3명, 서버 1명 총 4명의 팀원이 진행한 SNS 성격의 iOS 앱 SoSoHappy의 서버단 구조 및 기능을 설명합니다.
+###### 이 문서는 iOS 앱 SoSoHappy의 서버단 구조 및 기능을 설명합니다.
+###### 클라이언트 3명([@suekim999](https://github.com/suekim999), [@rirupark](https://github.com/rirupark), [@kyungee](https://github.com/kyungeee)), 서버 1명([@liardanc3](https://github.com/liardanc3))이 참여한 프로젝트입니다.
+###### 클라이언트단 레포지토리는 [여기서](https://github.com/So-So-Happy/SoSoHappy-iOS), API 문서는 [여기서](https://sosohappy.gitbook.io/sosohappy/) 확인하실 수 있습니다.
 - - -
 <br>
 
@@ -26,6 +28,8 @@
   + [sleep](#sleep)
   + [build and deployment other services](#build-and-deployment-other-services)
 - [Monitoring](#monitoring)
+  + [spring microservices](#spring-microservices)
+  + [database](#database)
 
 <br>
   
@@ -227,7 +231,8 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6
 
 # CI/CD
 ![cicd](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/7e6d4bf0-6d35-4a84-b1af-49ca17f3567a)
-> ###### Jenkins pipeline의 stages 구성을 나타내는 그림입니다. webhook을 사용하지 않고 수동으로 빌드합니다.
+> ###### Jenkins pipeline의 stages 구성을 나타내는 그림입니다.
+> ###### Jenkins는 kubernetes에 올라가지 않으며 webhook을 사용하지 않고 수동으로 빌드합니다.
 
 <br>
 
@@ -271,9 +276,15 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 <br>
 
 ### Sleep
-###### 구성 서버가 쿠버네티스에 올라가서 완전히 실행될 때까지 기다리는 스테이지 입니다.
-###### 구성서버는 다른 서버의 구성정보를 전파해야 하기 때문에 구성 서버가 로딩이 되지 않으면 다른 서버가 온전히 실행되지 않습니다.
-
+###### 구성 서버가 쿠버네티스에 올라가서 완전히 실행될 때까지 기다리는 stage 입니다.
+<details><summary>
+  
+###### 자세히
+ </summary>
+ 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L37-L41
+###### 구성서버는 다른 서버의 구성정보를 전파해야 하기 때문에 구성 서버가 완전히 로딩되지 않으면 다른 서버가 온전히 실행되지 않습니다.
+</details>
 <br>
 
 ### Build and Deployment other services
@@ -316,7 +327,63 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 <br>
 
 # Monitoring
-![monitoring](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/c0684412-8fe0-462e-868d-30522ca77800)
+![monitoring](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/60079483-b786-4c32-a97d-c838580107ab)
+> ###### 모니터링 환경의 구성요소를 나타내는 그림입니다.
+> ###### Grafana와 Prometheus는 kubernetes에 올라가지 않습니다.
 
-설명.
+<br>
+
+### spring microservices
+###### 각 서비스는 prometheus에 본인의 메트릭 정보를 전달하고 Grafana는 prometheus에서 얻은 서비스의 메트릭 정보를 시각화합니다.
+<details><summary>
+  
+###### 자세히
+ </summary>
+
+###### 모든 스프링 서버는 다음과 같은 의존성을 가집니다.
+``` java
+implementation "org.springframework.boot:spring-boot-starter-actuator"
+implementation 'io.micrometer:micrometer-core'
+runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+```
+###### 때문에 각 서비스들은 prometheus에 HTTP GET `serverIP:Port/actuator/prometheus`로 본인의 메트릭 정보를 전달할 수 있습니다.
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/9ec58307-a644-4601-bedf-1019259e85b9)
+###### 위와 같이 prometheus로 전달된 메트릭 정보는 Grafana가 datasource로 연결하여 수집합니다.
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/2be6f58b-aca5-4ce1-b9fd-2fa20b290a97)
+###### 수집한 데이터를 대시보드를 통해 시각화합니다.
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/b20e083f-c632-4bed-9a29-e12d78cf731d)
+
+  
+</details>
+
+<br>
+
+### database
+###### MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 통해 본인의 메트릭 정보를 prometheus에 전달하고 Grafana는 prometheus에서 얻은 DB의 메트릭 정보를 시각화합니다.
+###### MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
+
+<details><summary>
+    
+###### 자세히
+
+</summary>
+
+  ###### MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 사용해서 db의 메트릭 데이터를 prometheus에 HTTP GET `exporterIP:Port/metrics`로 전달할 수 있습니다.
+  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/fa13e3c5-0f7d-473f-bd0d-fd89d4174876)
+  ###### 위와 같이 prometheus로 전달된 메트릭 정보는 Grafana가 datasource로 연결하여 수집합니다.
+  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/2be6f58b-aca5-4ce1-b9fd-2fa20b290a97)
+
+  ###### MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
+  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/3572c901-d754-454c-a33b-b53e3cf36460)
+  
+  ###### 수집한 데이터를 대시보드를 통해 시각화합니다.
+  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d5d4c990-b06c-403e-a382-cfa8d1f9525b)
+
+</details>
+  
+  
+
+
+
+
 
