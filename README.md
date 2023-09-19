@@ -21,8 +21,12 @@
   + [topic : accessToken](#topic--accesstoken)
   + [topic : resign](#topic--resign)
   + [topic : noticeLike](#topic--noticelike)
-- [Monitoring](#monitoring)
 - [CI/CD](#cicd)
+  + [build and deployment config-service](#build-and-deployment-config-service)
+  + [sleep](#sleep)
+  + [build and deployment other services](#build-and-deployment-other-services)
+- [Monitoring](#monitoring)
+
 <br>
   
 # Microservices
@@ -179,7 +183,8 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97
 <br>
 
 ### topic : resign
-###### 인증서버가 탈퇴한 회원 정보를 전파하기 위해 사용되는 토픽입니다.
+###### 인증서버가 탈퇴한 회원 정보를 전파하기 위한 토픽입니다.
+###### 피드서버와는 데이터 정합성을 맞추고, 채팅서버 및 알림서버는 연결된 WebSocket Session을 끊기 위해 사용됩니다. 
 <details><summary>
   
 ###### 자세히
@@ -222,7 +227,91 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6
 
 # CI/CD
 ![cicd](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/7e6d4bf0-6d35-4a84-b1af-49ca17f3567a)
-설명.
+> ###### Jenkins pipeline의 stages 구성을 나타내는 그림입니다. webhook을 사용하지 않고 수동으로 빌드합니다.
+
+<br>
+
+### Build and Deployment config-service
+###### 구성 서버를 빌드하고 배포하는 stage 입니다. 
+
+<details><summary>
+  
+###### 자세히
+ </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L17-L35
+###### 이 스테이지는 크게 3단계로 나누어 집니다.
+<br>
+
+```
+sh "chmod +x gradlew"
+sh "./gradlew clean"
+sh "./gradlew build"
+archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
+```
+###### spring project를 빌드하는 단계입니다. 이 단계에서 jar 파일을 추출합니다.
+
+<br>
+
+```
+sh "docker build -t liardance/config-service:latest ./"
+sh "docker push liardance/config-service:latest"
+```
+###### 도커 이미지를 생성하고 도커 허브에 push하는 단계입니다.
+
+<br>
+
+```
+sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-config-service.yaml"
+sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deployment config-deployment"
+```
+###### 도커 허브에 올라간 이미지로 kubernetes의 deployment로 서비스를 배포하는 단계입니다.
+</details>
+
+<br>
+
+### Sleep
+###### 구성 서버가 쿠버네티스에 올라가서 완전히 실행될 때까지 기다리는 스테이지 입니다.
+###### 구성서버는 다른 서버의 구성정보를 전파해야 하기 때문에 구성 서버가 로딩이 되지 않으면 다른 서버가 온전히 실행되지 않습니다.
+
+<br>
+
+### Build and Deployment other services
+###### 인증, 피드, 채팅, 알림 서버를 빌드하고 배포하는 stage 입니다. 
+<details><summary>
+  
+###### 자세히
+ </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L43-L63
+###### 이 스테이지 또한 크게 3단계로 나누어 집니다.
+<br>
+
+```
+sh "chmod +x gradlew"
+sh "./gradlew clean"
+sh "./gradlew build"
+archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
+```
+###### spring project를 빌드하는 단계입니다. 이 단계에서 jar 파일을 추출합니다.
+
+<br>
+
+```
+sh "docker build -t liardance/${serv}-service:latest ./"
+sh "docker push liardance/${serv}-service:latest"
+```
+###### 도커 이미지를 생성하고 도커 허브에 push하는 단계입니다.
+
+<br>
+
+```
+sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${serv}-service.yaml"
+sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deployment ${serv}-deployment"
+```
+###### 도커 허브에 올라간 이미지로 kubernetes의 deployment로 서비스를 배포하는 단계입니다.
+###### 해당 작업을 인증, 피드, 채팅, 알림서버가 반복하면서 서비스가 배포됩니다.
+</details>
 
 <br>
 
