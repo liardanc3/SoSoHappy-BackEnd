@@ -1,6 +1,7 @@
 package sosohappy.authservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import sosohappy.authservice.entity.*;
+import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ObjectProvider<UserService> userServiceProvider;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -41,6 +44,7 @@ public class UserService {
     public ResignDto resign(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> {
+                    userServiceProvider.getObject().produceResign(user.getNickname());
                     userRepository.delete(user);
                     return ResignDto.builder()
                             .email(email)
@@ -97,5 +101,11 @@ public class UserService {
                                 .build()
                 )
                 .orElseGet(() -> UserResponseDto.builder().build());
+    }
+
+    // --------------------------------------------------------------- //
+
+    @KafkaProducer(topic = "resign")
+    private void produceResign(String nickname){
     }
 }

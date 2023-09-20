@@ -17,11 +17,16 @@ public class KafkaProducerAspect {
     @AfterReturning(value = "@annotation(kafkaProducer)", returning = "result")
     public void handleKafkaProducer(JoinPoint joinPoint, KafkaProducer kafkaProducer, Object result){
 
-        // topic : "accessToken"
-        if(result instanceof String){
+        if(kafkaProducer.topic().equals("accessToken")){
             String email = (String) joinPoint.getArgs()[0];
             kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), ((String) result).getBytes());
         }
+
+        if(kafkaProducer.topic().equals("resign")){
+            String nickname = (String) joinPoint.getArgs()[0];
+            kafkaTemplate.send(kafkaProducer.topic(), nickname.getBytes(), null);
+        }
+
     }
 
 }
