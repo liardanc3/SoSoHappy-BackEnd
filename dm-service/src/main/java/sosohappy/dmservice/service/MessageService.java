@@ -43,6 +43,9 @@ public class MessageService {
 
     public void closeSession(String nickname){
         getReceiverSession(nickname).close().subscribe();
+
+        sessionIdToSessionMap.remove(nickNameToSessionIdMap.get(nickname));
+        nickNameToSessionIdMap.remove(nickname);
     }
 
     // ----------------------------------------------------------------------------- //
