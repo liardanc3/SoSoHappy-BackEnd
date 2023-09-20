@@ -16,4 +16,8 @@ public interface FeedRepository extends JpaRepository<Feed, Long>, FeedQueryRepo
 
     @Query("SELECT DISTINCT c FROM Feed f JOIN f.categoryList c")
     List<String> findAllCategories();
+
+    void deleteByNickname(String nickname);
+
+    List<Feed> findByLikeNicknameSetContaining(String nickname);
 }

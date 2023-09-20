@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import sosohappy.feedservice.service.FeedService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class KafkaConsumer {
 
     private final ConcurrentHashMap<String, String> emailAndTokenMap;
+    private final FeedService feedService;
 
     @KafkaListener(topics = "accessToken", groupId = "ASddd2ddxxxcxcdsaxddddsafdadddasdd")
     public void addAccessToken(ConsumerRecord<byte[], byte[]> record){
@@ -19,6 +21,16 @@ public class KafkaConsumer {
         String accessToken = new String(record.value());
 
         emailAndTokenMap.put(email, accessToken);
+    }
+
+    @KafkaListener(topics = "resign", groupId = "ljkdadddlj")
+    public void handleResignedUser(ConsumerRecord<byte[], byte[]> record){
+
+        String email = new String(record.key());
+        String nickname = new String(record.value());
+
+        emailAndTokenMap.remove(email);
+        feedService.deleteDataOfResignedUser(nickname);
     }
 
 }

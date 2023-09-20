@@ -80,7 +80,14 @@ public class FeedService {
                 .orElseThrow(FindException::new);
     }
 
-    @KafkaProducer(topic = "notice-like")
+    public void deleteDataOfResignedUser(String nickname){
+        feedRepository.deleteByNickname(nickname);
+
+        feedRepository.findByLikeNicknameSetContaining(nickname)
+                .forEach(feed -> feed.getLikeNicknameSet().remove(nickname));
+    }
+
+    @KafkaProducer(topic = "noticeLike")
     public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return List.of(srcNickname, nicknameAndDateDto.getNickname() + "," + nicknameAndDateDto.getDate());
     }

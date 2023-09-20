@@ -8,7 +8,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Aspect
 @Component
@@ -20,8 +19,7 @@ public class KafkaProducerAspect {
     @AfterReturning(value = "@annotation(kafkaProducer)", returning = "result")
     public void handleKafkaProducer(JoinPoint joinPoint, KafkaProducer kafkaProducer, Object result){
 
-        // notice-like
-        if(result instanceof List<?>){
+        if(kafkaProducer.topic().equals("noticeLike")){
             List<String> likeResult = (List<String>) result;
             String key = likeResult.get(0);
             String value = likeResult.get(1);
