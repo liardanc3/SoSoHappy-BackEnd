@@ -3,7 +3,6 @@ package sosohappy.noticeservice.jwt.filter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.server.RequestPath;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -20,8 +19,6 @@ public class JwtFilter implements WebFilter {
     @NotNull
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String path = exchange.getRequest().getURI().getPath();
-        RequestPath path1 = exchange.getRequest().getPath();
         if(!exchange.getRequest().getURI().getPath().contains("actuator") && !jwtService.verifyAccessToken(exchange)) {
             exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(403));
             return Mono.empty();

@@ -27,7 +27,7 @@ public class KafkaConsumer {
         emailAndTokenMap.put(email, accessToken);
     }
 
-    @KafkaListener(topics = "notice-like", groupId = "Asdasddas")
+    @KafkaListener(topics = "noticeLike", groupId = "Asdasddas")
     public void noticeLike(ConsumerRecord<byte[], byte[]> record){
         String liker = new String(record.key());
         String[] nicknameAndDateStr = new String(record.value()).split(",");
