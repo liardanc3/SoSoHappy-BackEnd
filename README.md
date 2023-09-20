@@ -44,14 +44,34 @@
 <br>
 
 ###  구성 서버 
-###### 외부에 노출시키면 안되는 property 파일들을 [서브모듈](https://github.com/So-So-Happy/SoSoHappy-BackEnd/tree/master/config-service)에 모아두고 타겟 서버에 전파하기 위해 구현한 서버입니다.
+###### 최신 구성 정보(property)를 타겟 서버에 전파하기 위해 구현한 서버입니다.
 <details><summary>
   
 ###### 자세히
  </summary>
 
-내용
-  
+###### 구성 서버의 주요한 의존성 구성입니다.
+
+``` java
+runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+implementation 'io.micrometer:micrometer-core'
+implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+implementation 'org.springframework.cloud:spring-cloud-starter-bus-kafka'
+implementation 'org.springframework.cloud:spring-cloud-config-server'
+testImplementation 'org.springframework.kafka:spring-kafka-test'
+```
+
+###### 첫 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+###### 이후 3줄은 property의 최신 정보를 전파하기 위해 추가하였습니다.
+
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/config-service/src/main/java/sosohappy/configservice/ConfigServiceApplication.java#L7-L16
+###### `@EnableConfigServer` 애노테이션을 추가하여 이 서버를 구성 정보 전파 서버로 설정할 수 있습니다.
+###### 구성정보는 kafka의 토픽 [springCloudBus](#topic--springcloudbus)로 전파되어 타겟 서버가 구성 정보를 업데이트 할 수 있습니다.
+
+###### property 파일들은 외부에 노출되면 안되는 내용을 포함하기 때문에 [서브모듈](https://github.com/So-So-Happy/SoSoHappy-BackEnd/tree/master/config-service)에 모아두고 관리합니다.
 </details>
 
 <br>
@@ -100,9 +120,23 @@
   
 ###### 자세히
  </summary>
+ 
+###### 알림 서버의 주요한 의존성 구성입니다.
+``` java
+implementation 'org.springframework.cloud:spring-cloud-starter-config'
+implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
+testImplementation 'org.springframework.kafka:spring-kafka-test'
 
-내용
-  
+implementation "org.springframework.boot:spring-boot-starter-actuator"
+runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+implementation 'io.micrometer:micrometer-core'
+```
+
+###### 첫 3줄은 구성 정보를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
+###### 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+
+
+
 </details>
 
 <br>
