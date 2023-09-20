@@ -23,8 +23,9 @@ public class KafkaProducerAspect {
         }
 
         if(kafkaProducer.topic().equals("resign")){
-            String nickname = (String) joinPoint.getArgs()[0];
-            kafkaTemplate.send(kafkaProducer.topic(), nickname.getBytes(), null);
+            String email = (String) joinPoint.getArgs()[0];
+            String nickname = (String) joinPoint.getArgs()[1];
+            kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), nickname.getBytes());
         }
 
     }

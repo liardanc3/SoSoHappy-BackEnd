@@ -44,8 +44,13 @@ public class UserService {
     public ResignDto resign(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> {
-                    userServiceProvider.getObject().produceResign(user.getNickname());
-                    userRepository.delete(user);
+
+                    userServiceProvider.getObject()
+                            .produceResign(user.getEmail(), user.getNickname());
+
+                    userRepository
+                            .delete(user);
+
                     return ResignDto.builder()
                             .email(email)
                             .success(true)
@@ -106,6 +111,6 @@ public class UserService {
     // --------------------------------------------------------------- //
 
     @KafkaProducer(topic = "resign")
-    private void produceResign(String nickname){
+    private void produceResign(String email, String nickname){
     }
 }
