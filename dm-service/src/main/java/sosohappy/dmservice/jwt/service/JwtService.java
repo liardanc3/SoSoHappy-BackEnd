@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -14,24 +14,25 @@ public class JwtService {
 
     private final ConcurrentHashMap<String, String> emailAndTokenMap;
 
-    public boolean verifyAccessToken(ServerWebExchange exchange) {
+    public Mono<Boolean> verifyAccessToken(ServerWebExchange exchange) {
         return extractAccessToken(exchange.getRequest())
-                .filter(token -> isTokenValid(extractHeaderEmail(exchange.getRequest()).orElse(null), token))
-                .isPresent();
+                .flatMap(token -> {
+                    String email = extractHeaderEmail(exchange.getRequest());
+                    return Mono.just(isTokenValid(email, token));
+                });
     }
 
-    public Optional<String> extractAccessToken(ServerHttpRequest request) {
-        return Optional.ofNullable(request.getHeaders().getFirst("Authorization"))
+    public Mono<String> extractAccessToken(ServerHttpRequest request) {
+        return Mono.justOrEmpty(request.getHeaders().getFirst("Authorization"))
                 .filter(accessToken -> accessToken.startsWith("Bearer "))
                 .map(accessToken -> accessToken.replace("Bearer ", ""));
     }
 
-    public Optional<String> extractHeaderEmail(ServerHttpRequest request) {
-        return Optional.ofNullable(request.getHeaders().getFirst("Email"));
+    public String extractHeaderEmail(ServerHttpRequest request) {
+        return request.getHeaders().getFirst("Email");
     }
 
     public boolean isTokenValid(String email, String token){
         return email != null && token != null && emailAndTokenMap.get(email) != null && emailAndTokenMap.get(email).equals(token);
     }
-
 }
