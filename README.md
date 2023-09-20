@@ -131,11 +131,70 @@ implementation "org.springframework.boot:spring-boot-starter-actuator"
 runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 implementation 'io.micrometer:micrometer-core'
 ```
-
 ###### 첫 3줄은 구성 정보를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
 ###### 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+<br>
 
+##### 알림 서버의 주요 로직 목록.
 
+<details>
+  <summary>
+  <code><b>WebSocket 연결</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/config/WebSocketConfig.java#L19-L22
+###### 다음과 같이 `/notice-service/connect-notice`를 websocket 연결 url로 설정합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/jwt/filter/JwtFilter.java#L19-L31
+###### JWT 토큰 검증을 위한 filter가 존재하기 때문에 HTTP 요청의 헤더를 참조하여 토큰을 검증합니다.
+###### 모니터링을 위해 `/actuator`가 경로에 포함될 경우 인증과정이 생략됩니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/jwt/service/JwtService.java#L11-L39
+###### 토큰을 검증하는 로직이 구현된 JwtService 입니다. JWT 의존성을 끌어오지 않고 인증서버에서 보내준 Email과 AccessToken 값을 이용해서 토큰을 검증합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/handler/NoticeHandler.java#L17-L21
+###### 검증 후 이상이 없다면 Session을 연결하기 위한 함수를 호출합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L20-L24
+###### 세션을 연결할 때 `saveSessionInfo(session)`을 호출합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L44-L47
+###### 요청 파라미터에서 닉네임을 추출하여 닉네임과 SessionId, SessionId와 Session 정보를 Key, Value 쌍으로 저장합니다.
+###### 이렇게 저장된 세션 정보는 알림 메시지를 전송할때 사용됩니다.
+<br>
+
+</details>
+
+<details><summary>
+  <code><b>알림 메시지 전송</b></code>
+</summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L30-L51
+###### kafka broker를 통해 피드에 좋아요를 눌렀을 때 해당 알림 메시지를 보내기 위한 데이터를 가져옵니다.
+###### 가져온 데이터로 `NoticeService::sendNotice`를 호출합니다
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L26-L32
+###### 알림을 받을 유저의 세션을 찾아서 좋아요가 눌러졌다는 메시지를 전송합니다.
+<br>
+
+``` java
+{
+    "topic": "like",
+    "data": {
+        "liker": "admin",
+        "date": 2023090513248392
+    }
+}
+```
+###### 클라이언트는 이와 같은 json 메시지를 수신해서 유저의 스마트폰에 해당 내용을 포함하는 푸시알림을 띄울 수 있습니다.
+
+</details>
 
 </details>
 
