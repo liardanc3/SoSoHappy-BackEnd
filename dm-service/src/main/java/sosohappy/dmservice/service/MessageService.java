@@ -41,6 +41,10 @@ public class MessageService {
         return messageRepository.findMultipleDirectMessage(sender);
     }
 
+    public void closeSession(String nickname){
+        getReceiverSession(nickname).close().subscribe();
+    }
+
     // ----------------------------------------------------------------------------- //
 
     private void saveDirectMessage(WebSocketMessage webSocketMessage) {
@@ -58,7 +62,7 @@ public class MessageService {
 
     private WebSocketMessage sendMessage(WebSocketMessage webSocketMessage) {
         MessageDto messageDto = utils.jsonToObject(webSocketMessage.getPayloadAsText(), MessageDto.class);
-        WebSocketSession receiverSession = getReceiverSession(messageDto);
+        WebSocketSession receiverSession = getReceiverSession(messageDto.getReceiver());
 
         receiverSession.send(
                 Mono.just(receiverSession.textMessage(webSocketMessage.getPayloadAsText()))
@@ -67,8 +71,10 @@ public class MessageService {
         return webSocketMessage;
     }
 
-    private WebSocketSession getReceiverSession(MessageDto messageDto) {
-        String receiverSessionId = nickNameToSessionIdMap.get(messageDto.getReceiver());
+
+    private WebSocketSession getReceiverSession(String receiverNickname) {
+        String receiverSessionId = nickNameToSessionIdMap.get(receiverNickname);
         return sessionIdToSessionMap.get(receiverSessionId);
     }
+
 }
