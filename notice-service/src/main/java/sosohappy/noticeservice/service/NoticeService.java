@@ -31,6 +31,14 @@ public class NoticeService {
         ).subscribe();
     }
 
+    public void closeSession(String nickname){
+        getReceiverSession(nickname).close().subscribe();
+
+        sessionIdToSessionMap.remove(nickNameToSessionIdMap.get(nickname));
+        nickNameToSessionIdMap.remove(nickname);
+    }
+
+
     // ------------------------------------------------------ //
 
     private void saveSessionInfo(WebSocketSession session) {
