@@ -185,14 +185,70 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a679
   <summary>
   <code><b>1:1 채팅 내역 조회</b></code>
   </summary>
-  
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/controller/MessageController.java#L18-L22
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L36-L38
+###### `/findDirectMessage`로 API 호출이 온 경우 Controller 단과 Service 단을 거쳐서 Repository 단의 `findDirectMessage()` 메소드를 호출합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/repository/MessageQueryRepositoryImpl.java#L21-L35
+###### `findDirectMessage()` 메소드에선 `messageRoomId`와 `timeBoundary`를 기준으로 과거의 채팅을 `messageCnt` 만큼 가져와 MessageDto로 매핑 후 반환합니다.
+###### `messageRoomId`는 1:1 채팅에 포함된 두 유저의 닉네임을 정렬하여 ','로 구분지은 String 값이므로 송신자와 수신자에 관계없이 같은 데이터를 참조할 수 있습니다.
+<br>
+
+```java
+[
+    {
+        "sender": "sender_nickname",
+        "receiver": "receiver1_nickname",
+        "date": 2023090905010101,
+        "text": "message s->r1"
+    },
+    {
+        "sender": "sender_nickname",
+        "receiver": "receiver1_nickname",
+        "date": 2023090905066666,
+        "text": "message s->r1"
+    }
+]
+```
+###### 클라이언트는 다음과 같은 식의 json 형태의 데이터를 응답받습니다.
+<br>
+
 </details>
 
 <details>
   <summary>
   <code><b>채팅방 목록 조회</b></code>
   </summary>
-  
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/controller/MessageController.java#L25-L28
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L40-L42
+###### `/findMultipleDirectMessage`로 API 호출이 온 경우 Controller 단과 Service 단을 거쳐서 Repository 단의 `findMultipleDirectMessage()` 메소드를 호출합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/repository/MessageQueryRepositoryImpl.java#L37-L53
+###### `findMultipleDirectMessage()` 메소드에선 송수신자 중 유저의 닉네임이 포함 된 경우의 문서만을 선택한 후 `messageRoomId`로 그룹화하여 최신 채팅 정보만을 루트 문서로 설정 후 반환합니다.
+<br>
+
+```java
+[
+    {
+        "sender": "sender_nickname",
+        "receiver": "receiver1_nickname",
+        "date": 2023090905077777,
+        "text": "message s->r1"
+    },
+    {
+        "sender": "receiver2_nickname",
+        "receiver": "sender_nickname",
+        "date": 2023090905033333,
+        "text": "message r2->s"
+    }
+]
+```
+###### 클라이언트는 다음과 같이 본인이 포함된 채팅의 가장 최신 대화 내역을 내림차순으로 응답받습니다.
+<br>
 </details>
 
 </details>
