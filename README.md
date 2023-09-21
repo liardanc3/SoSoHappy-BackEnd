@@ -109,8 +109,92 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97
 ###### 자세히
  </summary>
 
-내용
+###### 채팅 서버의 주요한 의존성 구성입니다.
+``` java
+implementation 'org.springframework.cloud:spring-cloud-starter-config'
+implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
+testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+implementation "org.springframework.boot:spring-boot-starter-actuator"
+runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+implementation 'io.micrometer:micrometer-core'
+
+implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+```
+###### 첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파받기 위해 추가되었습니다.
+###### 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+###### 마지막 줄은 채팅 데이터를 MongoDB에 저장하기 위해 추가하였습니다.
+<br>
+
+##### 채팅 서버의 주요 로직 목록.
+
+<details>
+  <summary>
+  <code><b>WebSocket 연결</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/config/WebSocketConfig.java#L19-L22
+###### 다음과 같이 `/dm-service/connect-dm`을 websocket 연결 url로 설정합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/jwt/filter/JwtFilter.java#L19-L31
+###### JWT 토큰 검증을 위한 filter가 존재하기 때문에 HTTP 요청의 헤더를 참조하여 토큰을 검증합니다.
+###### 모니터링을 위해 `/actuator`가 경로에 포함될 경우 인증과정이 생략됩니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/jwt/service/JwtService.java#L11-L38
+###### 토큰을 검증하는 로직이 구현된 JwtService 입니다. JWT 의존성을 끌어오지 않고 인증서버에서 보내준 Email과 AccessToken 값을 이용해서 토큰을 검증합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L27-L34
+###### 처음 세션이 연결될 때 `doOnSubscribe()`를 호출합니다.
+###### 요청 파라미터에서 닉네임을 추출하여 닉네임과 SessionId, SessionId와 Session 정보를 Key, Value 쌍으로 저장합니다.
+###### 이렇게 저장된 세션 정보는 채팅을 전송할때 사용됩니다.
+<br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>채팅 전송</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L27-L34
+###### 세션이 연결된 상태에서 유저가 메시지를 보낼 경우 `sendMessage()`를 호출합니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L66-L75
+###### sendMessage 함수는 채팅 데이터에서 수신자 세션 정보를 추출하여 메시지를 보냅니다.
+``` java
+{
+  "sender": "sender_nickname",
+  "receiver": "receiver_nickname",
+  "date": 2023090901010101,
+  "text": "hi~"
+}
+```
+###### 전달되는 메시지는 위와 같은 json 형태의 데이터 입니다.
+<br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L53-L59
+###### 메시지 전달에 성공하면 `doOnNext(this::saveDirectMessage)`를 호출하여 DB에 채팅 데이터를 저장합니다.
+<br>
+
+</details>
+<details>
+  <summary>
+  <code><b>1:1 채팅 내역 조회</b></code>
+  </summary>
   
+</details>
+
+<details>
+  <summary>
+  <code><b>채팅방 목록 조회</b></code>
+  </summary>
+  
+</details>
+
 </details>
 <br>
 
@@ -131,7 +215,7 @@ implementation "org.springframework.boot:spring-boot-starter-actuator"
 runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 implementation 'io.micrometer:micrometer-core'
 ```
-###### 첫 3줄은 구성 정보를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
+###### 첫 3줄은 [구성 정보](#topic--springcloudbus)를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
 ###### 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
 <br>
 
