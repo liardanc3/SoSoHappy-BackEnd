@@ -613,10 +613,3 @@ runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
   ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d5d4c990-b06c-403e-a382-cfa8d1f9525b)
 
 </details>
-  
-  
-
-
-
-
-
