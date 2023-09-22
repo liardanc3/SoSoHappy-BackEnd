@@ -40,16 +40,18 @@
 
 > 프로젝트의 서버단에 포함된 서비스들의 구조를 나타내는 그림입니다.<br><br>
 > 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성[^1]을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br>
+> [^1]: 모든 deployment의 Replica는 메모리 이슈로 1개만 존재합니다.
+> 
 > Mysql, MongoDB 서버는 마운트한 폴더를 지속적으로 사용하게 위해 StatefulSet으로 앱을 배포하였습니다.<br><br>
 > Grafana, Prometheus, Jenkins, Kafka는 워커노드 메모리 이슈로 쿠버네티스에 올리지 않고 VM 내부에서 도커 컨테이너로 실행하였습니다.
 
-[^1]: 모든 deployment의 Replica는 메모리 이슈로 1개만 존재합니다.
 
 <br>
 
 ###  구성 서버 
 최신 구성 정보(property)를 타겟 서버에 전파하기 위해 구현한 서버입니다.
 <details><summary>detail</summary>
+<br>
 
 구성 서버의 주요한 의존성 구성입니다.
 
@@ -101,6 +103,8 @@ property 파일들은 외부에 노출되면 안되는 내용을 포함하기 �
  다이렉트 메시지 송수신을 위한 서버입니다.
 <details><summary>detail</summary>
 
+<br>
+
 채팅 서버의 주요한 의존성 구성입니다.
 ``` java
 implementation 'org.springframework.cloud:spring-cloud-starter-config'
@@ -117,8 +121,8 @@ implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reacti
 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
 마지막 줄은 채팅 데이터를 MongoDB에 저장하기 위해 추가하였습니다.
 <br>
-
-채팅 서버의 주요 로직 목록.
+<br>
+**채팅 서버의 주요 로직 목록.**
 
 <details>
   <summary>
@@ -408,26 +412,33 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97
 ### topic : resign
  인증서버가 탈퇴한 회원 정보를 전파하기 위한 토픽입니다.
  피드서버와는 데이터 정합성을 맞추고, 채팅서버 및 알림서버는 연결된 WebSocket Session을 끊기 위해 사용됩니다. 
-<details><summary>
-  
- 자세히
- </summary>
+<details><summary>detail</summary>
+<br>
 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L90-L93
+유저가 회원탈퇴 했을 때 호출되는 함수 중 하나입니다. 커스텀 애노테이션 `@KafkaProducer`을 통해 해당 함수의 리턴값을 끌어옵니다. <br>이 함수의 리턴값엔 회원탈퇴한 유저의 이메일과 닉네임이 포함됩니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L19-L30
+메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져옵니다.<br>
+이후 이메일과 닉네임을 byte array 형태로 브로커에 전송합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L27-L35
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L44-L49
+채팅 서버나 알림 서버에선 탈퇴한 유저와의 세션 연결을 끊습니다.
+<br>
  
 </details>
 <br>
 
 ### topic : noticeLike
  피드에 좋아요를 눌렀을 때 해당 회원 정보를 전파하기 위한 토픽입니다.
-<details><summary>
-  
- 자세히
- </summary>
+<details><summary>detail</summary>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L86
  유저가 피드에 좋아요를 누르면 호출되는 함수 중 하나입니다. 커스텀 애노테이션 `@KafkaProducer`을 통해 해당 함수의 리턴값을 끌어옵니다.
  이 함수의 리턴값엔 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임이 포함됩니다.
-
 <br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L20-L32
@@ -458,10 +469,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6
 ### Build and Deployment config-service
  구성 서버를 빌드하고 배포하는 stage 입니다. 
 
-<details><summary>
-  
- 자세히
- </summary>
+<details><summary>detail</summary>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L17-L35
  이 스테이지는 크게 3단계로 나누어 집니다.
@@ -496,10 +504,7 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 
 ### Sleep
  구성 서버가 쿠버네티스에 올라가서 완전히 실행될 때까지 기다리는 stage 입니다.
-<details><summary>
-  
- 자세히
- </summary>
+<details><summary>detail</summary>
  
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L37-L41
  구성서버는 다른 서버의 구성정보를 전파해야 하기 때문에 구성 서버가 완전히 로딩되지 않으면 다른 서버가 온전히 실행되지 않습니다.
@@ -508,10 +513,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e35252
 
 ### Build and Deployment other services
  인증, 피드, 채팅, 알림 서버를 빌드하고 배포하는 stage 입니다. 
-<details><summary>
-  
- 자세히
- </summary>
+<details><summary>detail</summary>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L43-L63
  이 스테이지 또한 크게 3단계로 나누어 집니다.
@@ -554,10 +556,7 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 
 ### spring microservices
  각 서비스는 prometheus에 본인의 메트릭 정보를 전달하고 Grafana는 prometheus에서 얻은 서비스의 메트릭 정보를 시각화합니다.
-<details><summary>
-  
- 자세히
- </summary>
+<details><summary>detail</summary>
 
  모든 스프링 서버는 다음과 같은 의존성을 가집니다.
 ``` java
@@ -581,11 +580,7 @@ runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
  MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 통해 본인의 메트릭 정보를 prometheus에 전달하고 Grafana는 prometheus에서 얻은 DB의 메트릭 정보를 시각화합니다.
  MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
 
-<details><summary>
-    
- 자세히
-
-</summary>
+<details><summary>detail</summary>
 
    MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 사용해서 db의 메트릭 데이터를 prometheus에 HTTP GET `exporterIP:Port/metrics`로 전달할 수 있습니다.
   ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/fa13e3c5-0f7d-473f-bd0d-fd89d4174876)
