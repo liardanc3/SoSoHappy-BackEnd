@@ -26,10 +26,13 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
 
-    private final OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
+    private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
+
+    public CustomRequestEntityConverter() {
+        this.converter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
+    }
 
     @Override
     public RequestEntity<?> convert(OAuth2AuthorizationCodeGrantRequest request) {

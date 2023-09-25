@@ -30,7 +30,6 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomRequestEntityConverter customRequestEntityConverter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -58,7 +57,7 @@ public class SecurityConfig {
     @Bean
     public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
         DefaultAuthorizationCodeTokenResponseClient accessTokenResponseClient = new DefaultAuthorizationCodeTokenResponseClient();
-        accessTokenResponseClient.setRequestEntityConverter(customRequestEntityConverter);
+        accessTokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter());
 
         return accessTokenResponseClient;
     }
