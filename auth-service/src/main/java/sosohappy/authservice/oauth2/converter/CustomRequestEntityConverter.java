@@ -40,6 +40,7 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         String provider = request.getClientRegistration().getRegistrationId();
         MultiValueMap<String, String> parameterMap = (MultiValueMap<String, String>) entity.getBody();
 
+        System.out.println("provider = " + provider);
         if(provider.contains("apple")){
             parameterMap.set("client_secret",
                     createClientSecret(
