@@ -75,6 +75,6 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         PEMParser pemParser = new PEMParser(new StringReader(clientSecret));
         PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
 
-        return  new JcaPEMKeyConverter().getPrivateKey(pemKeyPair.getPrivateKeyInfo());
+        return new JcaPEMKeyConverter().getPrivateKey(pemKeyPair.getPrivateKeyInfo());
     }
 }
