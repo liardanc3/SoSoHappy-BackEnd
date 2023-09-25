@@ -55,6 +55,10 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     }
 
     private String createClientSecret(String clientId, String clientSecret, String keyId, String teamId) {
+        System.out.println("clientId = " + clientId);
+        System.out.println("clientSecret = " + clientSecret);
+        System.out.println("keyId = " + keyId);
+        System.out.println("teamId = " + teamId);
         return JWT.create()
                 .withHeader(Map.of("kid", keyId))
                 .withIssuer(teamId)
