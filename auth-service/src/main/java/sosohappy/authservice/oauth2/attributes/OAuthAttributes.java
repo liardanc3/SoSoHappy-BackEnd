@@ -1,4 +1,4 @@
-package sosohappy.authservice.oauth2;
+package sosohappy.authservice.oauth2.attributes;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +15,13 @@ public class OAuthAttributes {
     private String providerId;
 
     public static OAuthAttributes of(String provider, Map<String, Object> attributes) {
-
         if (provider.equals("kakao")) {
             return ofKakao(attributes);
         }
-
-        return ofGoogle(attributes);
+        if (provider.equals("google")){
+            return ofGoogle(attributes);
+        }
+        return ofApple(attributes);
     }
 
     public Map<String, Object> attributes(){
@@ -41,6 +42,13 @@ public class OAuthAttributes {
                 .build();
     }
 
+    private static OAuthAttributes ofApple(Map<String, Object> attributes) {
+        return OAuthAttributes.builder()
+                .provider("apple")
+                .providerId(attributes.get("sub").toString())
+                .email(attributes.get("email").toString())
+                .build();
+    }
 
     public static OAuthAttributes ofGoogle(Map<String, Object> attributes) {
         return OAuthAttributes.builder()
