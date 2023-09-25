@@ -14,6 +14,7 @@ pipeline {
             }
         }
 
+        /*
         stage('Build and Deploy config-service') {
             steps {
                 script {
@@ -39,6 +40,7 @@ pipeline {
                 sleep(time: 120, unit: 'SECONDS')
             }
         }
+        */
 
         stage('Build and Deploy Other Services') {
             steps {
