@@ -25,7 +25,6 @@ import java.security.interfaces.ECPrivateKey;
 import java.util.Date;
 import java.util.Map;
 
-@Component
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
 
     private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
