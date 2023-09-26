@@ -202,7 +202,6 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/jwt/filter/JwtFilter.java#L56-L70
 `reIssueToken()` 메소드에선 reponse Header에 새로운 accessToken과 refreshToken을 세팅하고 클라이언트에 반환합니다.<br>
-인증에 실패했을 때 호출되는 API이므로 403 상태코드를 포함하였습니다.
 <br><br>
 
 </details>
@@ -455,25 +454,25 @@ implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reacti
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/config/WebSocketConfig.java#L19-L22
 다음과 같이 `/dm-service/connect-dm`을 websocket 연결 url로 설정합니다.
 
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/jwt/filter/JwtFilter.java#L19-L31
 JWT 토큰 검증을 위한 filter가 존재하기 때문에 HTTP 요청의 헤더를 참조하여 토큰을 검증합니다.
 모니터링을 위해 `/actuator`가 경로에 포함될 경우 인증과정이 생략됩니다.
 
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/jwt/service/JwtService.java#L11-L38
 토큰을 검증하는 로직이 구현된 JwtService 입니다. JWT 의존성을 끌어오지 않고 인증서버에서 보내준 Email과 AccessToken 값을 이용해서 토큰을 검증합니다.
 
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L27-L34
 처음 세션이 연결될 때 `doOnSubscribe()`를 호출합니다.
 요청 파라미터에서 닉네임을 추출하여 닉네임과 SessionId, SessionId와 Session 정보를 Key, Value 쌍으로 저장합니다.
 이렇게 저장된 세션 정보는 채팅을 전송할때 사용됩니다.
 
-<br>
+<br><br>
 
 </details>
 
@@ -484,7 +483,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a679
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L27-L34
 세션이 연결된 상태에서 유저가 메시지를 보낼 경우 `sendMessage()`를 호출합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L66-L75
 sendMessage 함수는 채팅 데이터에서 수신자 세션 정보를 추출하여 메시지를 보냅니다.
@@ -497,12 +496,12 @@ sendMessage 함수는 채팅 데이터에서 수신자 세션 정보를 추출�
 }
 ```
 전달되는 메시지는 위와 같은 json 형태의 데이터 입니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L53-L59
 메시지 전달에 성공하면 `doOnNext(this::saveDirectMessage)`를 호출하여 DB에 채팅 데이터를 저장합니다.
 
-<br>
+<br><br>
 
 </details>
 <details>
@@ -513,12 +512,12 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a679
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/controller/MessageController.java#L18-L22
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L36-L38
 `/findDirectMessage`로 API 호출이 온 경우 Controller 단과 Service 단을 거쳐서 Repository 단의 `findDirectMessage()` 메소드를 호출합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/repository/MessageQueryRepositoryImpl.java#L21-L35
 `findDirectMessage()` 메소드에선 `messageRoomId`와 `timeBoundary`를 기준으로 과거의 채팅을 `messageCnt` 만큼 가져와 MessageDto로 매핑 후 반환합니다.
 `messageRoomId`는 1:1 채팅에 포함된 두 유저의 닉네임을 정렬하여 ','로 구분지은 String 값이므로 송신자와 수신자에 관계없이 같은 데이터를 참조할 수 있습니다.
-<br>
+<br><br>
 
 ```java
 [
@@ -538,7 +537,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc1
 ```
 클라이언트는 다음과 같은 식의 json 형태의 데이터를 응답받습니다.
 
-<br>
+<br><br>
 
 </details>
 
@@ -550,11 +549,11 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc1
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/controller/MessageController.java#L25-L28
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L40-L42
 `/findMultipleDirectMessage`로 API 호출이 온 경우 Controller 단과 Service 단을 거쳐서 Repository 단의 `findMultipleDirectMessage()` 메소드를 호출합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/b1d508d5a2cdfbd614261e4bc16caeb1d3f0af39/dm-service/src/main/java/sosohappy/dmservice/repository/MessageQueryRepositoryImpl.java#L37-L53
 `findMultipleDirectMessage()` 메소드에선 송수신자 중 유저의 닉네임이 포함 된 경우의 문서만을 선택한 후 `messageRoomId`로 그룹화하여 최신 채팅 정보만을 루트 문서로 설정 후 반환합니다.
-<br>
+<br><br>
 
 ```java
 [
@@ -609,29 +608,29 @@ implementation 'io.micrometer:micrometer-core'
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/config/WebSocketConfig.java#L19-L22
 다음과 같이 `/notice-service/connect-notice`를 websocket 연결 url로 설정합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/jwt/filter/JwtFilter.java#L19-L31
 JWT 토큰 검증을 위한 filter가 존재하기 때문에 HTTP 요청의 헤더를 참조하여 토큰을 검증합니다.
 모니터링을 위해 `/actuator`가 경로에 포함될 경우 인증과정이 생략됩니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/jwt/service/JwtService.java#L11-L39
 토큰을 검증하는 로직이 구현된 JwtService 입니다. JWT 의존성을 끌어오지 않고 인증서버에서 보내준 Email과 AccessToken 값을 이용해서 토큰을 검증합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/handler/NoticeHandler.java#L17-L21
 검증 후 이상이 없다면 Session을 연결하기 위한 함수를 호출합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L20-L24
 세션을 연결할 때 `saveSessionInfo(session)`을 호출합니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L44-L47
 요청 파라미터에서 닉네임을 추출하여 닉네임과 SessionId, SessionId와 Session 정보를 Key, Value 쌍으로 저장합니다.
 이렇게 저장된 세션 정보는 알림 메시지를 전송할때 사용됩니다.
-<br>
+<br><br>
 
 </details>
 
@@ -642,11 +641,11 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e8
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L30-L51
 kafka broker를 통해 피드에 좋아요를 눌렀을 때 해당 알림 메시지를 보내기 위한 데이터를 가져옵니다.
 가져온 데이터로 `NoticeService::sendNotice`를 호출합니다
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L26-L32
 알림을 받을 유저의 세션을 찾아서 좋아요가 눌러졌다는 메시지를 전송합니다.
-<br>
+<br><br>
 
 ``` java
 {
@@ -716,23 +715,19 @@ SSL 인증서를 사용중이기 때문에 443포트를 사용했고, http 80포
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/auth-service/src/main/java/sosohappy/authservice/jwt/service/JwtService.java#L39-L46
 토큰엔 주제와 만료기간과 함께 유저의 이메일이 claim으로 포함됩니다.
 커스텀 애노테이션 `@KafkaProducer` 는 createAccessToken 메소드의 인자 및 반환값으로 전파할 메시지를 설정합니다.
-
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L10-L27
 메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져온 후 email, access token을 byte array 형태로 브로커에 전송합니다.
-
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L10-L25
- 인증이 필요한 다른 서비스에서 해당 메시지를 수신해서 key, value 쌍으로 관리합니다. 이 문서에선 채팅 서버를 예시로 사용합니다.
-
-<br>
+인증이 필요한 다른 서비스에서 해당 메시지를 수신해서 key, value 쌍으로 관리합니다. 이 문서에선 채팅 서버를 예시로 사용합니다.
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/dm-service/src/main/java/sosohappy/dmservice/jwt/service/JwtService.java#L17-L21
  필터에 포함되는 함수입니다. HTTP 요청에 포함된 헤더에서 Email, AccessToken을 추출하고 이 값이 브로커에게 전달받은 Email, AccessToken과 일치하는지 확인합니다.
-
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/dm-service/src/main/java/sosohappy/dmservice/jwt/filter/JwtFilter.java#L20-L29
  일치한다면 다음 작업을 수행하고 그렇지 않다면 403 코드와 함께 다음 작업을 수행하지 않고 반환합니다. 모니터링을 위해 "/actuator"가 경로에 포함되는 경우는 인증과정이 생략됩니다.  
@@ -764,7 +759,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657dd5269c49b7246/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaConsumer.java#L26-L34
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657dd5269c49b7246/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L88
 피드 서버에선 탈퇴한 유저의 피드, 좋아요 목록을 삭제합니다.
-<br>
+<br><br>
 
 </details>
 <br>
@@ -776,18 +771,16 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L86
  유저가 피드에 좋아요를 누르면 호출되는 함수 중 하나입니다. 커스텀 애노테이션 `@KafkaProducer`을 통해 해당 함수의 리턴값을 끌어옵니다.
  이 함수의 리턴값엔 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임이 포함됩니다.
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L20-L32
  메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져옵니다.<br>
  이후 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임을 byte array 형태로 브로커에 전송합니다.
-
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L30-L51
  알림 서버가 이 데이터를 수신해서, 해당 데이터로 notice 서비스의 sendNotice 메소드를 호출합니다.
-
-<br>
+<br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L26-L31
  WebSocket으로 연결된 Session 중 좋아요 알림 메시지를 받아야 할 유저의 Session을 찾아 좋아요를 누른 유저의 닉네임과 피드에 대한 데이터를 전송합니다.
@@ -810,7 +803,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L17-L35
  이 스테이지는 크게 3단계로 나누어 집니다.
-<br>
+<br><br>
 
 ```
 sh "chmod +x gradlew"
@@ -819,16 +812,14 @@ sh "./gradlew build"
 archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
 ```
  spring project를 빌드하는 단계입니다. 이 단계에서 jar 파일을 추출합니다.
-
-<br>
+<br><br>
 
 ```
 sh "docker build -t liardance/config-service:latest ./"
 sh "docker push liardance/config-service:latest"
 ```
  도커 이미지를 생성하고 도커 허브에 push하는 단계입니다.
-
-<br>
+<br><br>
 
 ```
 sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-config-service.yaml"
@@ -854,7 +845,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e35252
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L43-L63
  이 스테이지 또한 크게 3단계로 나누어 집니다.
-<br>
+<br><br>
 
 ```
 sh "chmod +x gradlew"
@@ -863,16 +854,14 @@ sh "./gradlew build"
 archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
 ```
  spring project를 빌드하는 단계입니다. 이 단계에서 jar 파일을 추출합니다.
-
-<br>
+<br><br>
 
 ```
 sh "docker build -t liardance/${serv}-service:latest ./"
 sh "docker push liardance/${serv}-service:latest"
 ```
  도커 이미지를 생성하고 도커 허브에 push하는 단계입니다.
-
-<br>
+<br><br>
 
 ```
 sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${serv}-service.yaml"
@@ -881,8 +870,7 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
  도커 허브에 올라간 이미지로 kubernetes의 deployment로 서비스를 배포하는 단계입니다.
  해당 작업을 인증, 피드, 채팅, 알림서버가 반복하면서 서비스가 배포됩니다.
 </details>
-
-<br>
+<br><br>
 
 # Monitoring
 ![monitoring](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/60079483-b786-4c32-a97d-c838580107ab)
@@ -892,20 +880,28 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 <br>
 
 ### spring microservices
- 각 서비스는 prometheus에 본인의 메트릭 정보를 전달하고 Grafana는 prometheus에서 얻은 서비스의 메트릭 정보를 시각화합니다.
-<details><summary>detail</summary>
+각 서비스는 prometheus에 본인의 메트릭 정보를 전달하고 Grafana는 prometheus에서 얻은 서비스의 메트릭 정보를 시각화합니다.
 
- 모든 스프링 서버는 다음과 같은 의존성을 가집니다.
+<details><summary>detail</summary>
+<br>
+  
+모든 스프링 서버는 다음과 같은 의존성을 가집니다.
 ``` java
 implementation "org.springframework.boot:spring-boot-starter-actuator"
 implementation 'io.micrometer:micrometer-core'
 runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 ```
- 때문에 각 서비스들은 prometheus에 HTTP GET `serverIP:Port/actuator/prometheus`로 본인의 메트릭 정보를 전달할 수 있습니다.
+때문에 각 서비스들은 prometheus에 HTTP GET `serverIP:Port/actuator/prometheus`로 본인의 메트릭 정보를 전달할 수 있습니다.
+<br><br>
+  
 ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/9ec58307-a644-4601-bedf-1019259e85b9)
- 위와 같이 prometheus로 전달된 메트릭 정보는 Grafana가 datasource로 연결하여 수집합니다.
+위와 같이 prometheus로 전달된 메트릭 정보는 Grafana가 datasource로 연결하여 수집합니다.
+<br><br>
+
 ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/2be6f58b-aca5-4ce1-b9fd-2fa20b290a97)
- 수집한 데이터를 대시보드를 통해 시각화합니다.
+수집한 데이터를 대시보드를 통해 시각화합니다.
+
+<br><br>
 ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/b20e083f-c632-4bed-9a29-e12d78cf731d)
 
   
@@ -914,20 +910,27 @@ runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 <br>
 
 ### database
- MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 통해 본인의 메트릭 정보를 prometheus에 전달하고 Grafana는 prometheus에서 얻은 DB의 메트릭 정보를 시각화합니다.
- MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
+MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 통해 본인의 메트릭 정보를 prometheus에 전달하고 Grafana는 prometheus에서 얻은 DB의 메트릭 정보를 시각화합니다.<br>
+MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
 
 <details><summary>detail</summary>
-
-   MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 사용해서 db의 메트릭 데이터를 prometheus에 HTTP GET `exporterIP:Port/metrics`로 전달할 수 있습니다.
-  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/fa13e3c5-0f7d-473f-bd0d-fd89d4174876)
-   위와 같이 prometheus로 전달된 메트릭 정보는 Grafana가 datasource로 연결하여 수집합니다.
-  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/2be6f58b-aca5-4ce1-b9fd-2fa20b290a97)
-
-   MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
-  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/3572c901-d754-454c-a33b-b53e3cf36460)
   
-   수집한 데이터를 대시보드를 통해 시각화합니다.
-  ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d5d4c990-b06c-403e-a382-cfa8d1f9525b)
+<br>
+  
+MongoDB는 [exporter](https://github.com/percona/mongodb_exporter)를 사용해서 db의 메트릭 데이터를 prometheus에 HTTP GET `exporterIP:Port/metrics`로 전달할 수 있습니다.
+<br><br>
+    
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/fa13e3c5-0f7d-473f-bd0d-fd89d4174876)
+위와 같이 prometheus로 전달된 메트릭 정보는 Grafana가 datasource로 연결하여 수집합니다.
+<br><br>
+    
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/2be6f58b-aca5-4ce1-b9fd-2fa20b290a97)
+<br><br>
+ 
+MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해서 datasource를 구성합니다.
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/3572c901-d754-454c-a33b-b53e3cf36460)
+  
+수집한 데이터를 대시보드를 통해 시각화합니다.
+![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d5d4c990-b06c-403e-a382-cfa8d1f9525b)
 
 </details>
