@@ -453,25 +453,21 @@ implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reacti
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/config/WebSocketConfig.java#L19-L22
 다음과 같이 `/dm-service/connect-dm`을 websocket 연결 url로 설정합니다.
-
 <br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/jwt/filter/JwtFilter.java#L19-L31
 JWT 토큰 검증을 위한 filter가 존재하기 때문에 HTTP 요청의 헤더를 참조하여 토큰을 검증합니다.
 모니터링을 위해 `/actuator`가 경로에 포함될 경우 인증과정이 생략됩니다.
-
 <br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/jwt/service/JwtService.java#L11-L38
 토큰을 검증하는 로직이 구현된 JwtService 입니다. JWT 의존성을 끌어오지 않고 인증서버에서 보내준 Email과 AccessToken 값을 이용해서 토큰을 검증합니다.
-
 <br><br>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L27-L34
 처음 세션이 연결될 때 `doOnSubscribe()`를 호출합니다.
 요청 파라미터에서 닉네임을 추출하여 닉네임과 SessionId, SessionId와 Session 정보를 Key, Value 쌍으로 저장합니다.
 이렇게 저장된 세션 정보는 채팅을 전송할때 사용됩니다.
-
 <br><br>
 
 </details>
@@ -487,6 +483,8 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a679
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L66-L75
 sendMessage 함수는 채팅 데이터에서 수신자 세션 정보를 추출하여 메시지를 보냅니다.
+<br><br>
+
 ``` java
 {
   "sender": "sender_nickname",
@@ -500,7 +498,6 @@ sendMessage 함수는 채팅 데이터에서 수신자 세션 정보를 추출�
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/81ab3fd36b9d6c71498b58a6798ba9fe7a57cc01/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L53-L59
 메시지 전달에 성공하면 `doOnNext(this::saveDirectMessage)`를 호출하여 DB에 채팅 데이터를 저장합니다.
-
 <br><br>
 
 </details>
