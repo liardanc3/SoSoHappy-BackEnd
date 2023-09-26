@@ -122,7 +122,82 @@ annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
   <code><b>피드 저장</b></code>
   </summary>
 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L36-L39
+`/saveFeed`로 API 호출이 온 경우 Controller 단을 거쳐 Service 단의 `updateFeed()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L42-L54
+`updateFeed()` 함수에서 Repository 단의 `findByNicknameAndDate()` 메소드를 호출합니다.<br>
+`findByNicknameAndDate()` 함수는 닉네임과 날짜를 입력받으면 해당 날짜에 그 유저가 작성한 피드를 반환합니다(Optional).<br>
+이후 happinessService의 `updateSimilarityMatrix()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L39-L56
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L150-L174
+피드의 카테고리와 행복 지수를 기반으로 2차원 배열을 업데이트 합니다. 이 값을 기준으로 유저에게 카테고리 추천을 하게 됩니다.
+<br>
+이후 피드를 업데이트 합니다.
+<br><br>
 </details>
+
+<details>
+  <summary>
+  <code><b>유저 개인 피드 조회</b></code>
+  </summary>
+  
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L26-L34
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L32-L40
+`/findDayFeed` 와 `/findMonthFeed` 경로로 API가 호출되면 Controller단과 Service단을 거쳐 Repository단의 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/repository/FeedQueryRepositoryImpl.java#L27-L58
+Repository단에선 입력된 닉네임과 날짜를 통해 해당 유저의 피드를 반환합니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>전체 피드 조회</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L46-L51
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L63-L65
+`/findOtherFeed` 경로로 API가 호출되면 Controller단과 Service단을 거쳐 Repository단의 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/repository/FeedQueryRepositoryImpl.java#L118-L144
+`findByNicknameAndDateWithSlicing()` 메소드가 호출되면 슬라이싱을 통해 피드를 반환합니다. 한번에 25개를 초과하는 쿼리가 날라올 경우 예외를 반환합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/domain/dto/SliceResponse.java#L8-L27
+반환된 피드는 Slice 객체 멤버변수 중 불필요한 것들을 제외하고 위 DTO로 변환되어 클라이언트에 반환됩니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>특정 유저 피드 조회</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L58-L63
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L67-L69
+`/findUserFeed` 경로로 API가 호출되면 Controller단과 Service단을 거쳐 Repository단의 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/repository/FeedQueryRepositoryImpl.java#L146-L172
+`findUserFeed()` 메소드가 호출되면 슬라이싱을 통해 피드를 반환합니다. 한번에 25개를 초과하는 쿼리가 날라올 경우 예외를 반환합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/domain/dto/SliceResponse.java#L8-L27
+반환된 피드는 Slice 객체 멤버변수 중 불필요한 것들을 제외하고 위 DTO로 변환되어 클라이언트에 반환됩니다.
+<br><br>
+
+</details>
+
+
+
 
 </details>
 
