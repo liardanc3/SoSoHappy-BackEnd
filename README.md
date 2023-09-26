@@ -82,8 +82,130 @@ property 파일들은 외부에 노출되면 안되는 내용을 포함하기 �
 ###  인증 서버 
 소셜 로그인 및 유저 정보 관련 작업을 수행하는 서버입니다.
 <details><summary>detail</summary>
+<br>
 
-내용
+인증 서버의 주요한 의존성 구성입니다.
+```java
+implementation 'org.springframework.cloud:spring-cloud-starter-config'
+implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
+testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+implementation "org.springframework.boot:spring-boot-starter-actuator"
+runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+implementation 'io.micrometer:micrometer-core'
+
+runtimeOnly 'com.mysql:mysql-connector-j'
+
+implementation 'org.springframework.boot:spring-boot-starter-security'
+implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+implementation 'com.auth0:java-jwt:4.2.1'
+```
+첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파하기 위해 추가되었습니다.
+<br>이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+<br>이후 1줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
+<br>마지막 3줄은 소셜 로그인 구현 및 JWT를 자체적으로 관리하기 위해 추가하였습니다.
+<br>
+<br>
+
+**인증 서버  구현 API 및 주요 로직 목록.**
+
+<details>
+  <summary>
+  <code><b>소셜 로그인</b></code>
+  </summary>
+
+</details>
+  
+
+<details>
+  <summary>
+  <code><b>프로필 설정</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L28-L32
+`/setProfile` 경로로 API 요청이 들어오면 Service 단의 `setProfile()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L83-L98
+`setProfile()` 메소드는 들어온 이메일로 유저를 찾고, 성공적으로 유저를 찾으면 해당 유저의 프로필을 수정합니다.<br>
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>프로필 사진 조회</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L40-L44
+`/findProfileImg` 경로로 API 호출이 들어오면 Service단의 `findProfileImg()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L100-L109
+`findProfileImg()` 메소드는 닉네임으로 유저를 찾아서 해당 유저의 프로필 사진을 클라이언트에 반환합니다.<br>
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>회원 탈퇴</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L34-L38
+`/resign` 경로로 API가 호출되면 Service단의 `resign()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L44-L65
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L113-L115
+`resign()` 메소드는 `produceResign()` 메소드를 호출하고, 이후 DB에 저장된 유저 정보를 삭제합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L17-L31
+```java
+if(kafkaProducer.topic().equals("resign")){
+     String email = (String) joinPoint.getArgs()[0];
+     String nickname = (String) joinPoint.getArgs()[1];
+     kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), nickname.getBytes());
+}
+```
+`produceResign()` 메소드로 전달된 파라미터를 기반으로 kafka broker에 회원탈퇴 했다는 메시지를 전달하기 위해 구현된 코드입니다.<br>
+피드 서버는 해당 메시지를 수신 후 탈퇴한 유저의 피드를 삭제합니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>닉네임 중복 검사</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L22-L26
+`/checkDuplicateNickname` 경로로 API가 호출되면 Service단의 `checkDuplicateNickname()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L67-L81
+`checkDuplicateNickname()` 메소드는 닉네임으로 유저를 조회하여 해당 닉네임을 가진 유저가 있는지 확인하고 결과를 반환합니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>토큰 재발급</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/jwt/filter/JwtFilter.java#L23-L54
+토큰 재발급 API는 Controller단이 아닌 Filter에 구현되었습니다.<br>
+경로에 `/reIssueToken`이 포함된 경우 헤더로 넘어온 기존 accessToken과 Email이 일치하는지, refreshToken이 이 유저의 refreshToken이 맞는지 검증 후 `reIssueToken()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/jwt/filter/JwtFilter.java#L56-L70
+`reIssueToken()` 메소드에선 reponse Header에 새로운 accessToken과 refreshToken을 세팅하고 클라이언트에 반환합니다.<br>
+인증에 실패했을 때 호출되는 API이므로 403 상태코드를 포함하였습니다.
+<br><br>
+
+</details>
   
 </details>
 
@@ -115,7 +237,7 @@ annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 <br>마지막 4줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
 <br>
 <br>
-**피드 서버의 주요 로직 목록.**
+**피드 서버  구현 API 및 주요 로직 목록.**
 
 <details>
   <summary>
@@ -196,8 +318,105 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392
 
 </details>
 
+<details>
+  <summary>
+  <code><b>행복 분석 결과</b></code>
+  </summary>
 
+<br>
+가장 긍정적으로 평가된 카테고리(운동, 여행 등) 3개와, 이를 기반으로 긍정적으로 평가 할 확률이 높은 카테고리를 추천하는 API 입니다.
+<br><br>
 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/controller/HappinessController.java#L20-L23
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L32-L37
+`/analysisHappiness` 경로로 API가 호출되면 Service단의 `analysisHappiness()` 메소드를 호출하고, 이 메소드는 `getBestCategoryList()`, `getRecommendCategoryList()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L117-L138
+`getBestCategoryList()`는 유저의 이번 달 피드를 조회해서 높은 점수를 받은 카테고리 최대 3개를 반환합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L89-L115
+`getRecommendCategoryList()`는 유저의 이번 달 피드 기반으로 긍정적으로 평가 할 확률이 높은 카테고리 최대 10개를 반환합니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>월간 행복 수치</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/controller/HappinessController.java#L25-L28
+`/findMonthHappiness` 경로로 API가 호출되면 Service단의 `findMonthHappiness()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L58-L63
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/repository/FeedQueryRepositoryImpl.java#L88-L102
+이 메소드는 Repository단의 `findHappinessAndDateDtoByNicknameAndDateDto()` 메소드를 호출하여 이번 달 피드의 행복 지수를 가져옵니다.<br>
+행복 지수는 날짜를 기준으로 오름차순으로 정렬되어 클라이언트에 반환됩니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>연간 행복 수치</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/controller/HappinessController.java#L30-L33
+`/findYearHappiness` 경로로 API가 호출되면 Service단의 `findYearHappiness()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/HappinessService.java#L65-L85
+`findYearHappiness()` 함수는 Repository단의 `findMonthHappinessAvgByNicknameAndDate()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/repository/FeedQueryRepositoryImpl.java#L104-L116
+`findMonthHappinessAvgByNicknameAndDate()` 메소드 구현부로, 이 메소드는 이번 달 행복지수의 평균 값을 계산하여 반환합니다.<br>
+서비스단은 1~12월의 평균 행복지수를 날짜 오름차순으로 클라이언트에 반환합니다.
+<br><br>
+</details>
+
+<details>
+  <summary>
+  <code><b>유저 피드 공개여부 변경</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L41-L44
+`/updatePublicStatus` 경로로 API가 호출되면 Service단의 `updatePublicStatus()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L56-L61
+`updatePublicStatus()` 메소드는 닉네임과 날짜를 통해 공개 여부 업데이트가 일어난 피드를 찾아 공개 여부를 변경합니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>좋아요 여부 변경</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L53-L56
+`/updateLike` 경로로 API가 호출되면 Service단의 `updateLike()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L71-L81
+`updateLike()` 메소드에선 닉네임과 날짜로 좋아요가 눌린 피드를 찾아 좋아요 여부를 업데이트 합니다. <br>
+이때 좋아요가 아닌 상태에서 좋아요가 눌렸을 경우 `produceUpdateLike()` 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L90-L93
+`produceUpdateLike()` 메소드를 좋아요를 누른 사람 닉네임, 피드 주인 닉네임과 날짜를 반환합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L19-L30
+값이 성공적으로 반환되면 위 메소드를 통해 Kafka Broker에 좋아요를 누른 사람 닉네임, 피드 주인 닉네임과 날짜 데이터를 전송합니다.
+전송 된 데이터는 알림 서버에서 피드 주인에게 해당 내용을 포함하는 메시지를 보내 푸시알림을 띄울 수 있게 합니다.
+<br><br>
+
+</details>
 
 </details>
 
@@ -226,7 +445,7 @@ implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reacti
 마지막 줄은 채팅 데이터를 MongoDB에 저장하기 위해 추가하였습니다.
 <br>
 <br>
-**채팅 서버의 주요 로직 목록.**
+**채팅 서버  구현 API 및 주요 로직 목록.**
 
 <details>
   <summary>
@@ -381,7 +600,7 @@ implementation 'io.micrometer:micrometer-core'
 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
 <br>
 
-**알림 서버의 주요 로직 목록.**
+**알림 서버  구현 API 및 주요 로직 목록.**
 
 <details>
   <summary>
