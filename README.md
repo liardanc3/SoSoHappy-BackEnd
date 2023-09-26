@@ -39,8 +39,8 @@
 ![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/cc7f1911-f5f6-42d9-87ba-7fc379de7e93)
 
 > 프로젝트의 서버단에 포함된 서비스들의 구조를 나타내는 그림입니다.<br><br>
-> 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성[^1]을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br>
-> [^1]: 모든 deployment의 Replica는 메모리 이슈로 1개만 존재합니다.
+> 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br>
+> 모든 deployment의 Replica는 메모리 이슈로 1개만 존재합니다.<br>
 > 
 > Mysql, MongoDB 서버는 마운트한 폴더를 지속적으로 사용하게 위해 StatefulSet으로 앱을 배포하였습니다.<br><br>
 > Grafana, Prometheus, Jenkins, Kafka는 워커노드 메모리 이슈로 쿠버네티스에 올리지 않고 VM 내부에서 도커 컨테이너로 실행하였습니다.
@@ -934,3 +934,4 @@ MySQL은 prometheus를 경유하지 않고 직접 Grafana와 TCP 연결을 해�
 ![image](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d5d4c990-b06c-403e-a382-cfa8d1f9525b)
 
 </details>
+<br><br>
