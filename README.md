@@ -1,5 +1,5 @@
 <h1>SoSoHappy</h1> 
-<img align="right" src="https://skillicons.dev/icons?i=gcp,kubernetes,docker,kafka,java,spring,mysql,mongodb">
+<img align="right" src="https://skillicons.dev/icons?i=gcp,kubernetes,docker,jenkins,prometheus,grafana,kafka,java,spring,mysql,mongodb">
 
 ![sosohappy-icon-removebg-preview](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/6c3db330-b80f-4837-b286-95f45d0cd6ae)
 
