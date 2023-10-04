@@ -17,6 +17,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequestEntityConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.StringReader;
@@ -24,6 +25,7 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
@@ -44,16 +46,16 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         Object body = entity.getBody();
         System.out.println("body.toString() = " + body.toString());
 
-        MultiValueMap<String, String> parameterMap = (MultiValueMap<String, String>) entity.getBody();
+        LinkedMultiValueMap<String, String> parameterMap = (LinkedMultiValueMap<String, String>) entity.getBody();
 
         System.out.println("provider = " + provider);
         if(provider.contains("apple")){
             parameterMap.set("client_secret",
                     createClientSecret(
-                            parameterMap.get("client_id").get(0),
-                            parameterMap.get("client_secret").get(0),
-                            parameterMap.get("key_id").get(0),
-                            parameterMap.get("team_id").get(0)
+                            parameterMap.getFirst("client_id"),
+                            parameterMap.getFirst("client_secret"),
+                            parameterMap.getFirst("key_id"),
+                            parameterMap.getFirst("team_id")
                     )
             );
         }
