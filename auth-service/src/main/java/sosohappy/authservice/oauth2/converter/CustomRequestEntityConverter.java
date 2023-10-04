@@ -10,6 +10,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.RequestEntity;
@@ -34,9 +35,15 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     }
 
     @Override
-    public RequestEntity<?> convert(OAuth2AuthorizationCodeGrantRequest request) {
+    public RequestEntity<?> convert(@NotNull OAuth2AuthorizationCodeGrantRequest request) {
         RequestEntity<?> entity = converter.convert(request);
         String provider = request.getClientRegistration().getRegistrationId();
+        System.out.println("entity = " + entity);
+        System.out.println("entity.getType() = " + entity.getType());
+        System.out.println("entity.toString() = " + entity.toString());
+        Object body = entity.getBody();
+        System.out.println("body.toString() = " + body.toString());
+
         MultiValueMap<String, String> parameterMap = (MultiValueMap<String, String>) entity.getBody();
 
         System.out.println("provider = " + provider);
