@@ -62,4 +62,11 @@ public class FeedController {
         return feedService.findUserFeed(srcNickname, dstNickname, pageable);
     }
 
+    @PostMapping("/findDetailFeed")
+    public OtherFeedDto findDetailFeed(@RequestParam String srcNickname,
+                                       @RequestParam String dstNickname,
+                                       @RequestParam Long date){
+        return feedService.findDetailFeed(srcNickname, dstNickname, date);
+    }
+
 }

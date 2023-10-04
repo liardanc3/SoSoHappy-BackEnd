@@ -171,6 +171,23 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
         return new SliceImpl<>(feedList, pageable, hasNext);
     }
 
+    @Override
+    public Optional<OtherFeedDto> findBySrcNicknameAndDstNicknameAndDate(String srcNickname, String dstNickname, Long date) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(Projections.constructor(
+                                OtherFeedDto.class,
+                                feed, Expressions.asString(srcNickname)
+                        ))
+                        .from(feed)
+                        .where(
+                                nickNameEq(dstNickname),
+                                dayEq(date)
+                        )
+                        .fetchOne()
+        );
+    }
+
     // ----------------------------------------------------------------- //
 
     private BooleanExpression nickNameEq(String nickname){

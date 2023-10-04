@@ -2,13 +2,9 @@ package sosohappy.feedservice.jwt.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ServerWebExchange;
 import sosohappy.feedservice.exception.ConvertException;
 import sosohappy.feedservice.exception.custom.JWTException;
-import sosohappy.feedservice.kafka.KafkaConsumer;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

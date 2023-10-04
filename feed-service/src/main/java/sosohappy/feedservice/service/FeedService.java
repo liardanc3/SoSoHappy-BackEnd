@@ -68,6 +68,11 @@ public class FeedService {
         return new SliceResponse<>(feedRepository.findUserFeed(srcNickname, dstNickname, pageable));
     }
 
+    public OtherFeedDto findDetailFeed(String srcNickname, String dstNickname, Long date) {
+        return feedRepository.findBySrcNicknameAndDstNicknameAndDate(srcNickname, dstNickname, date)
+                .orElseThrow(FindException::new);
+    }
+
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
                 .map(feed ->  {
@@ -91,4 +96,5 @@ public class FeedService {
     public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return List.of(srcNickname, nicknameAndDateDto.getNickname() + "," + nicknameAndDateDto.getDate());
     }
+
 }
