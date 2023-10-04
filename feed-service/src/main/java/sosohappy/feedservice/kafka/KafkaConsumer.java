@@ -15,7 +15,7 @@ public class KafkaConsumer {
     private final ConcurrentHashMap<String, String> emailAndTokenMap;
     private final FeedService feedService;
 
-    @KafkaListener(topics = "accessToken", groupId = "ASddd2ddxxxcxcdsaxddddsafdadddasdd")
+    @KafkaListener(topics = "accessToken", groupId = "feed-service-accessToken-0000")
     public void addAccessToken(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String accessToken = new String(record.value());
@@ -23,7 +23,7 @@ public class KafkaConsumer {
         emailAndTokenMap.put(email, accessToken);
     }
 
-    @KafkaListener(topics = "resign", groupId = "ljkdadddlj")
+    @KafkaListener(topics = "resign", groupId = "feed-service-resign-0000")
     public void handleResignedUser(ConsumerRecord<byte[], byte[]> record){
 
         String email = new String(record.key());
