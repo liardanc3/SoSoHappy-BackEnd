@@ -25,12 +25,20 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
 
     private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
+
+    @Value("${spring.security.oauth2.client.registration.apple.key-id")
+    private String keyId;
+
+    @Value("${spring.security.oauth2.client.registration.apple.team-id")
+    private String teamId;
+
+    @Value("${spring.security.oauth2.client.registration.apple.client-secret")
+    private String clientSecret;
 
     public CustomRequestEntityConverter() {
         this.converter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
@@ -50,20 +58,16 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
 
         System.out.println("provider = " + provider);
         if(provider.contains("apple")){
-            parameterMap.set("client_secret",
-                    createClientSecret(
-                            parameterMap.getFirst("client_id"),
-                            parameterMap.getFirst("client_secret"),
-                            parameterMap.getFirst("key_id"),
-                            parameterMap.getFirst("team_id")
-                    )
+            parameterMap.set(
+                    "client_secret",
+                    createClientSecret(parameterMap.getFirst("client_id"))
             );
         }
 
         return new RequestEntity<>(parameterMap, entity.getHeaders(), entity.getMethod(), entity.getUrl());
     }
 
-    private String createClientSecret(String clientId, String clientSecret, String keyId, String teamId) {
+    private String createClientSecret(String clientId) {
         System.out.println("clientId = " + clientId);
         System.out.println("clientSecret = " + clientSecret);
         System.out.println("keyId = " + keyId);
