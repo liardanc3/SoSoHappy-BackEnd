@@ -14,10 +14,6 @@ public class OAuthAttributes {
     private String providerId;
 
     public static OAuthAttributes of(String provider, Map<String, Object> attributes) {
-        System.out.println("provider = " + provider);
-        for (String s : attributes.keySet()) {
-            System.out.println(s + " =" +  attributes.get(s));
-        }
         if (provider.equals("kakao")) {
             return ofKakao(attributes);
         }

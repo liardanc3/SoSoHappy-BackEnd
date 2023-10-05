@@ -52,7 +52,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return new DefaultOAuth2User(
                 Collections.singleton(new OAuth2UserAuthority(updatedAttributes)),
                 updatedAttributes,
-                userNameAttributeName
+                provider + updatedAttributes.get("email")
         );
     }
 
