@@ -24,6 +24,7 @@ public class OAuthAttributes {
     }
 
     public Map<String, Object> attributes(){
+        System.out.println("providerId = " + providerId);
         return Map.of(
                 "email", email,
                 "provider", provider,
