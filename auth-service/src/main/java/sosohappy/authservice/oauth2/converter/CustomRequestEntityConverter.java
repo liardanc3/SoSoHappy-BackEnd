@@ -28,6 +28,7 @@ import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
@@ -87,8 +88,13 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     @SneakyThrows
     private PrivateKey parsePrivateKey() {
         Security.addProvider(new BouncyCastleProvider());
+        System.out.println("clientSecret = " + clientSecret);
         PEMParser pemParser = new PEMParser(new StringReader(clientSecret));
         PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
+        Set<String> supportedTypes = pemParser.getSupportedTypes();
+        for (String supportedType : supportedTypes) {
+            System.out.println("supportedType = " + supportedType);
+        }
 
         return new JcaPEMKeyConverter().getPrivateKey(pemKeyPair.getPrivateKeyInfo());
     }
