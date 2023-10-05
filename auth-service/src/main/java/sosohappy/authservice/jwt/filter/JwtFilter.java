@@ -23,13 +23,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 로그인
         if (request.getRequestURI().contains("/oauth2") || request.getRequestURI().contains("actuator")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 토큰 재발급
         if (request.getRequestURI().contains("/reIssueToken")){
             String headerEmail = jwtService.extractHeaderEmail(request);
 
@@ -49,7 +47,6 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // verify
         verifyAccessToken(request, response, filterChain);
     }
 

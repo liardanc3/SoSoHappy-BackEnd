@@ -1,22 +1,20 @@
 package sosohappy.authservice.oauth2.handler;
 
-import lombok.SneakyThrows;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import sosohappy.authservice.entity.User;
-import sosohappy.authservice.jwt.service.JwtService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+import sosohappy.authservice.entity.User;
+import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.repository.UserRepository;
 import sosohappy.authservice.service.UserService;
 
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Component
