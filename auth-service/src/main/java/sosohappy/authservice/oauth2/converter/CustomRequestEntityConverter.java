@@ -15,9 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 
 import java.security.KeyFactory;
 import java.security.Security;
-import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
-import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
@@ -35,9 +33,9 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     public CustomRequestEntityConverter(Environment environment) {
         this.converter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
 
-        this.keyId = environment.getProperty("auth.keyId");
-        this.teamId = environment.getProperty("auth.teamId");
-        this.clientSecret = environment.getProperty("auth.clientSecret");
+        this.keyId = environment.getProperty("spring.security.oauth2.client.registration.apple.keyId");
+        this.teamId = environment.getProperty("spring.security.oauth2.client.registration.apple.teamId");
+        this.clientSecret = environment.getProperty("spring.security.oauth2.client.registration.apple.clientSecret");
     }
 
     @Override
@@ -77,8 +75,6 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
 
         KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
 
-        ECPrivateKey privateKey = (ECPrivateKey) keyFactory.generatePrivate(keySpec);
-
-        return privateKey;
+        return (ECPrivateKey) keyFactory.generatePrivate(keySpec);
     }
 }
