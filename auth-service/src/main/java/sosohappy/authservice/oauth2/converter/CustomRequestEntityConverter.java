@@ -1,18 +1,10 @@
 package sosohappy.authservice.oauth2.converter;
 
-// Reference : https://devcheon.tistory.com/98
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.env.Environment;
 import org.springframework.http.RequestEntity;
@@ -20,15 +12,16 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCo
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequestEntityConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import java.io.StringReader;
-import java.security.PrivateKey;
+import java.security.KeyFactory;
 import java.security.Security;
+import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
+import java.security.spec.ECPrivateKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
@@ -62,8 +55,7 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         System.out.println("provider = " + provider);
         if(provider.contains("apple")){
             parameterMap.set(
-                    "client_secret", "asdasd"
-                    //createClientSecret(parameterMap.getFirst("client_id"))
+                    "client_secret", createClientSecret(parameterMap.getFirst("client_id"))
             );
         }
 
@@ -82,21 +74,21 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
                 .withSubject(clientId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * 60)))
                 .withIssuedAt(new Date(System.currentTimeMillis()))
-                .sign(Algorithm.ECDSA256((ECPrivateKey) parsePrivateKey()));
+                .sign(Algorithm.ECDSA256(parsePrivateKey()));
     }
 
     @SneakyThrows
-    private PrivateKey parsePrivateKey() {
+    private ECPrivateKey parsePrivateKey() {
         Security.addProvider(new BouncyCastleProvider());
-        System.out.println("clientSecret = " + clientSecret);
-        PEMParser pemParser = new PEMParser(new StringReader(clientSecret));
-        System.out.println("pemParser.readObject() = " + pemParser.readObject());
-        PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
-        Set<String> supportedTypes = pemParser.getSupportedTypes();
-        for (String supportedType : supportedTypes) {
-            System.out.println("supportedType = " + supportedType);
-        }
 
-        return new JcaPEMKeyConverter().getPrivateKey(pemKeyPair.getPrivateKeyInfo());
+        byte[] privateKeyBytes = Base64.getDecoder().decode(clientSecret);
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+
+        KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
+
+        ECPrivateKey privateKey = (ECPrivateKey) keyFactory.generatePrivate(keySpec);
+
+        return privateKey;
     }
 }
