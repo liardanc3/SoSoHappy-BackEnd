@@ -23,6 +23,14 @@ public class KafkaConsumer {
         emailAndTokenMap.put(email, accessToken);
     }
 
+    @KafkaListener(topics = "expired", groupId = "feed-service-expired-0000")
+    public void handleExpiredToken(ConsumerRecord<byte[], byte[]> record){
+
+        String email = new String(record.key());
+
+        emailAndTokenMap.remove(email);
+    }
+
     @KafkaListener(topics = "resign", groupId = "feed-service-resign-0000")
     public void handleResignedUser(ConsumerRecord<byte[], byte[]> record){
 
