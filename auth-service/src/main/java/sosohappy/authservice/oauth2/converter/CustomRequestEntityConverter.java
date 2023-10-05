@@ -31,13 +31,13 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
 
     private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
 
-    @Value("${auth.key-id}")
+    @Value("${auth.keyId}")
     private String keyId;
 
-    @Value("${auth.team-id}")
+    @Value("${auth.teamId}")
     private String teamId;
 
-    @Value("${auth.client-secret}")
+    @Value("${auth.clientSecret}")
     private String clientSecret;
 
     public CustomRequestEntityConverter() {
