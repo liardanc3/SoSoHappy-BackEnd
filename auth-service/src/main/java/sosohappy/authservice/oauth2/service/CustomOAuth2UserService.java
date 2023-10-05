@@ -26,18 +26,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         String provider = userRequest.getClientRegistration().getRegistrationId();
-/*        String userNameAttributeName = userRequest
-                .getClientRegistration()
-                .getProviderDetails()
-                .getUserInfoEndpoint()
-                .getUserNameAttributeName();*/
 
         Map<String, Object> attributes = new HashMap<>();
 
-        System.out.println("!!!provider = " + provider);
         if(provider.contains("apple")){
             String idToken = userRequest.getAdditionalParameters().get("id_token").toString();
-            System.out.println("idToken = " + idToken);
             attributes.putAll(decodeAppleToken(idToken));
         } else {
             OAuth2User oAuth2User = new DefaultOAuth2UserService().loadUser(userRequest);

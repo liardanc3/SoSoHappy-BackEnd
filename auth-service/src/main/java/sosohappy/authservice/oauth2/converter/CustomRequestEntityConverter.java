@@ -44,15 +44,9 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     public RequestEntity<?> convert(@NotNull OAuth2AuthorizationCodeGrantRequest request) {
         RequestEntity<?> entity = converter.convert(request);
         String provider = request.getClientRegistration().getRegistrationId();
-        System.out.println("entity = " + entity);
-        System.out.println("entity.getType() = " + entity.getType());
-        System.out.println("entity.toString() = " + entity.toString());
-        Object body = entity.getBody();
-        System.out.println("body.toString() = " + body.toString());
 
         LinkedMultiValueMap<String, String> parameterMap = (LinkedMultiValueMap<String, String>) entity.getBody();
 
-        System.out.println("provider = " + provider);
         if(provider.contains("apple")){
             parameterMap.set(
                     "client_secret", createClientSecret(parameterMap.getFirst("client_id"))
@@ -63,10 +57,6 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     }
 
     private String createClientSecret(String clientId) {
-        System.out.println("clientId = " + clientId);
-        System.out.println("clientSecret = " + clientSecret);
-        System.out.println("keyId = " + keyId);
-        System.out.println("teamId = " + teamId);
         return JWT.create()
                 .withHeader(Map.of("kid", keyId))
                 .withIssuer(teamId)

@@ -27,7 +27,7 @@ public class UserService {
         String provider = String.valueOf(userAttributes.get("provider"));
         String providerId = String.valueOf(userAttributes.get("providerId"));
 
-        userRepository.findByEmail(email)
+        userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
                                 user -> user.updateRefreshToken(refreshToken),
                                 () -> userRepository.save(
