@@ -34,14 +34,11 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
 
     private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
 
-    @Autowired
-    private Environment environment;
-
     private final String keyId;
     private final String teamId;
     private final String clientSecret;
 
-    public CustomRequestEntityConverter() {
+    public CustomRequestEntityConverter(Environment environment) {
         this.converter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
 
         this.keyId = environment.getProperty("auth.keyId");
