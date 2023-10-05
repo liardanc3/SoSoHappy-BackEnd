@@ -62,8 +62,8 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         System.out.println("provider = " + provider);
         if(provider.contains("apple")){
             parameterMap.set(
-                    "client_secret",
-                    createClientSecret(parameterMap.getFirst("client_id"))
+                    "client_secret", "asdasd"
+                    //createClientSecret(parameterMap.getFirst("client_id"))
             );
         }
 
@@ -90,6 +90,7 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         Security.addProvider(new BouncyCastleProvider());
         System.out.println("clientSecret = " + clientSecret);
         PEMParser pemParser = new PEMParser(new StringReader(clientSecret));
+        System.out.println("pemParser.readObject() = " + pemParser.readObject());
         PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
         Set<String> supportedTypes = pemParser.getSupportedTypes();
         for (String supportedType : supportedTypes) {
