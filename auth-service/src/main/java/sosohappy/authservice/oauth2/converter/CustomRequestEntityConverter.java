@@ -11,8 +11,10 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.env.Environment;
 import org.springframework.http.RequestEntity;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequestEntityConverter;
@@ -32,17 +34,19 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
 
     private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
 
-    @Value("${auth.keyId}")
+    @Autowired
+    private Environment environment;
+
     private String keyId;
-
-    @Value("${auth.teamId}")
     private String teamId;
-
-    @Value("${auth.clientSecret}")
     private String clientSecret;
 
     public CustomRequestEntityConverter() {
         this.converter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
+
+        this.keyId = environment.getProperty("auth.keyId");
+        this.teamId = environment.getProperty("auth.teamId");
+        this.clientSecret = environment.getProperty("auth.clientSecret");
     }
 
     @Override
