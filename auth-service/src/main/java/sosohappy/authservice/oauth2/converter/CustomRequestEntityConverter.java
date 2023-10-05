@@ -81,11 +81,11 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
                 .withSubject(clientId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * 60)))
                 .withIssuedAt(new Date(System.currentTimeMillis()))
-                .sign(Algorithm.ECDSA256((ECPrivateKey) parsePrivateKey(clientSecret)));
+                .sign(Algorithm.ECDSA256((ECPrivateKey) parsePrivateKey()));
     }
 
     @SneakyThrows
-    private static PrivateKey parsePrivateKey(String clientSecret) {
+    private PrivateKey parsePrivateKey() {
         Security.addProvider(new BouncyCastleProvider());
         PEMParser pemParser = new PEMParser(new StringReader(clientSecret));
         PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
