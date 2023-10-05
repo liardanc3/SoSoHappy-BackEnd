@@ -19,7 +19,7 @@ public class KafkaConsumer {
     private final Utils utils;
     private final ConcurrentHashMap<String, String> emailAndTokenMap;
 
-    @KafkaListener(topics = "accessToken", groupId = "hjkjdd")
+    @KafkaListener(topics = "accessToken", groupId = "notice-service-accessToken-0000")
     public void addAccessToken(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String accessToken = new String(record.value());
@@ -27,7 +27,15 @@ public class KafkaConsumer {
         emailAndTokenMap.put(email, accessToken);
     }
 
-    @KafkaListener(topics = "noticeLike", groupId = "Asdasddas")
+    @KafkaListener(topics = "expired", groupId = "notice-service-expired-0000")
+    public void handleExpiredToken(ConsumerRecord<byte[], byte[]> record){
+
+        String email = new String(record.key());
+
+        emailAndTokenMap.remove(email);
+    }
+
+    @KafkaListener(topics = "noticeLike", groupId = "notice-service-noticeLike-0000")
     public void noticeLike(ConsumerRecord<byte[], byte[]> record){
         String liker = new String(record.key());
         String[] nicknameAndDateStr = new String(record.value()).split(",");
@@ -50,7 +58,7 @@ public class KafkaConsumer {
         );
     }
 
-    @KafkaListener(topics = "resign", groupId = "ljkdadddlj")
+    @KafkaListener(topics = "resign", groupId = "notice-service-resign-0000")
     public void handleResignedUser(ConsumerRecord<byte[], byte[]> record){
 
         String email = new String(record.key());
