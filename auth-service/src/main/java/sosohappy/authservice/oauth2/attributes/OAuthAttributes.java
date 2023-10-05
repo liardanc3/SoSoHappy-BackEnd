@@ -10,14 +10,13 @@ import java.util.Map;
 public class OAuthAttributes {
 
     private String email;
-    private String name;
     private String provider;
     private String providerId;
 
     public static OAuthAttributes of(String provider, Map<String, Object> attributes) {
         System.out.println("provider = " + provider);
         for (String s : attributes.keySet()) {
-            System.out.println("s = " + s);
+            System.out.println(s + " =" +  attributes.get(s));
         }
         if (provider.equals("kakao")) {
             return ofKakao(attributes);
@@ -31,7 +30,6 @@ public class OAuthAttributes {
     public Map<String, Object> attributes(){
         return Map.of(
                 "email", email,
-                "name", name,
                 "provider", provider,
                 "providerId", providerId
         );
@@ -42,7 +40,6 @@ public class OAuthAttributes {
                 .provider("kakao")
                 .providerId(attributes.get("id").toString())
                 .email(((Map<String, Object>) attributes.get("kakao_account")).get("email").toString())
-                .name(((Map<String, Object>) attributes.get("properties")).get("nickname").toString())
                 .build();
     }
 
@@ -59,7 +56,6 @@ public class OAuthAttributes {
                 .provider("google")
                 .providerId(attributes.get("sub").toString())
                 .email(attributes.get("email").toString())
-                .name(attributes.get("name").toString())
                 .build();
     }
 
