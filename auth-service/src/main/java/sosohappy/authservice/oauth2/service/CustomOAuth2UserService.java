@@ -34,9 +34,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         Map<String, Object> attributes = new HashMap<>();
 
-        System.out.println("provider = " + provider);
+        System.out.println("!!!provider = " + provider);
         if(provider.contains("apple")){
             String idToken = userRequest.getAdditionalParameters().get("id_token").toString();
+            System.out.println("idToken = " + idToken);
             attributes.putAll(decodeAppleToken(idToken));
         } else {
             OAuth2User oAuth2User = new DefaultOAuth2UserService().loadUser(userRequest);
