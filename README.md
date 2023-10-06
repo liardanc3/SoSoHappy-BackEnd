@@ -133,7 +133,7 @@ SecurityFilterChain을 빈으로 정의하여 Spring Security 필터 체인을 �
 JWT 토큰을 이용하여 로그인하므로 csrf, 기본 로그인 화면, http 기본 인증 및 세션은 비활성화 하였습니다.
 <br><br>
 
-``java
+```java
 .oauth2Login(loginConfigurer -> loginConfigurer
                 .tokenEndpoint(tokenEndpointConfig -> tokenEndpointConfig
                     .accessTokenResponseClient(accessTokenResponseClient())
@@ -145,12 +145,41 @@ JWT 토큰을 이용하여 로그인하므로 csrf, 기본 로그인 화면, htt
                 .failureHandler(oAuth2LoginFailureHandler)
 )                
 ```
+
 OAuth2 로그인 설정 구성입니다.<br>
-유저가 로그인을 한 후 받은 코드로 OAuth2 공급자에게게 액세스토큰 요청을 하기 위한 `tokenEndpoint`, 받은 토큰으로 유저 정보를 로드하기 위한 `userInfoEndpoint`, 유저 정보 로드까지 성공했을 경우 실행되는 로직인 successHandler, 실패했을 때 실행되는 로직인 failureHandler가 포함됩니다.
+유저가 로그인을 한 후 받은 코드로 OAuth2 공급자에게게 액세스토큰 요청을 하기 위한 `tokenEndpoint`, 받은 토큰으로 유저 정보를 로드하기 위한 `userInfoEndpoint`, 유저 정보 로드까지 성공했을 경우 실행되는 로직인 `successHandler`, 실패했을 때 실행되는 로직인 `failureHandler`가 포함됩니다.
 <br><br>
 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/config/SecurityConfig.java#L52-L58
+유저가 로그인을 한 후 서버는 tokenEndPoint의 `accessTokenResponseClient()`를 호출합니다.<br>
+이때 `accessTokenResponseClient()` 메소드는 `CustomRequestEntityConverter()` 컨버터를 호출합니다.
+<br><br>
 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/converter/CustomRequestEntityConverter.java#L41-L66
+컨버터는 Apple 소셜로그인을 위해 구성되었습니다.<br>
+Apple 소셜 로그인의 경우 id token을 요청하기 위해 key값과 key-id, client-id, team-id등 개발자 계정 정보가 포함된 JWT 토큰(client secret)을 요청에 포함해야 합니다. 때문에 provider가 Apple인 경우 이 값을 세팅하는 과정이 조건분기로 추가됩니다.
+<br><br>
 
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/service/CustomOAuth2UserService.java#L22-L65
+앞선 시큐리티 구성의 `userInfoEndpoint`에 구성된 `CustomOAuth2UserService`입니다.<br>
+Google, kakao의 경우 액세스토큰, Apple의 경우 id token을 받아온 후 위 로직이 실행됩니다.<br>
+Google, Kakao는 요청을 검증하고 사용자 정보를 응답으로 반환합니다. `DefaultOAuth2UserService().loadUser(userRequest)`가 이 과정을 포함하며 Map에 정보 유저를 세팅합니다.<br>
+Apple은 id token에 이미 사용자 정보가 포함되어 있습니다. 때문에 `decodeAppleToken()` 메소드를 실행하여 Map에 정보 유저를 세팅합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/attributes/OAuthAttributes.java#L12-L24
+정보 유저를 담기 위한 Class `OAuthAttributes`의 일부입니다.<br>
+각 공급자에게서 받은 정보 중 email, provider, providerId만을 선택하여 저장하기 위해 사용됩니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/handler/OAuth2LoginSuccessHandler.java#L28-L48
+로그인이 성공했을 때 호출되는 메소드입니다.<br>
+accessToken와 refreshToken을 생성하고, 이메일, 닉네임과 함께 헤더에 실어 보냄과 동시에 `userService::signIn`을 호출하여 회원가입 처리합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/handler/OAuth2LoginFailureHandler.java#L16-L19
+로그인이 실패했을 때 호출되는 메소드입니다.<br>
+클라이언트에 상태코드 403을 반환하며 플로우가 종료됩니다.
 
 </details>
   
