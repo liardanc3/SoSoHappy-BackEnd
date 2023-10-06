@@ -25,6 +25,7 @@
   + [topic : springCloudBus](#topic--springcloudbus)
   + [topic : accessToken](#topic--accesstoken)
   + [topic : resign](#topic--resign)
+  + [topic : expired](#topic--expired)
   + [topic : noticeLike](#topic--noticelike)
 - [CI/CD](#cicd)
   + [build and deployment config-service](#build-and-deployment-config-service)
@@ -37,7 +38,7 @@
 <br>
   
 # Microservices
-![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/cc7f1911-f5f6-42d9-87ba-7fc379de7e93)
+![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/e5b0e50a-9403-4753-98a2-cb88e28b24e0)
 
 > 프로젝트의 서버단에 포함된 서비스들의 구조를 나타내는 그림입니다.<br><br>
 > 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br>
@@ -691,7 +692,7 @@ SSL 인증서를 사용중이기 때문에 443포트를 사용했고, http 80포
 <br>
 
 # Message Queue
-![messagequeue](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/aba78396-19f2-40c2-b3f4-44ec31b50c5a)
+![messagequeue](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/49bca3a0-b7d2-4231-8659-99f7a5e6a343)
 
 > 프로젝트의 서버단에서 사용된 미들웨어 Kafka의 토픽 및 pub/sub 구조를 나타내는 그림입니다. 
 > 싱글 브로커로 구성 되어 있으며 실선은 publish, 점선은 subscribe를 의미합니다.
@@ -760,6 +761,14 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657
 <br><br>
 
 </details>
+<br>
+
+### topic : expired
+ access token이 만료되었을 때 해당 정보를 전파하기 위한 토픽입니다.
+ <details><summary>detail</summary>
+   
+</details>
+
 <br>
 
 ### topic : noticeLike
