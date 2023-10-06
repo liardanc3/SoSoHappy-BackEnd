@@ -180,6 +180,7 @@ accessToken와 refreshToken을 생성하고, 이메일, 닉네임과 함께 헤�
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/handler/OAuth2LoginFailureHandler.java#L16-L19
 로그인이 실패했을 때 호출되는 메소드입니다.<br>
 클라이언트에 상태코드 403을 반환하며 플로우가 종료됩니다.
+<br><br>
 
 </details>
   
@@ -228,7 +229,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa
 `resign()` 메소드는 `produceResign()` 메소드를 호출하고, 이후 DB에 저장된 유저 정보를 삭제합니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L17-L31
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L22-L46
 ```java
 if(kafkaProducer.topic().equals("resign")){
      String email = (String) joinPoint.getArgs()[0];
@@ -701,8 +702,8 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e8
 <details><summary>
   <code><b>알림 메시지 전송</b></code>
 </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L30-L51
+  
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L38-L59
 kafka broker를 통해 피드에 좋아요를 눌렀을 때 해당 알림 메시지를 보내기 위한 데이터를 가져옵니다.
 가져온 데이터로 `NoticeService::sendNotice`를 호출합니다
 <br><br>
@@ -781,11 +782,11 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97
 커스텀 애노테이션 `@KafkaProducer` 는 createAccessToken 메소드의 인자 및 반환값으로 전파할 메시지를 설정합니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L10-L27
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L22-L44
 메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져온 후 email, access token을 byte array 형태로 브로커에 전송합니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L10-L25
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L18-L25
 인증이 필요한 다른 서비스에서 해당 메시지를 수신해서 key, value 쌍으로 관리합니다. 이 문서에선 채팅 서버를 예시로 사용합니다.
 <br><br>
 
@@ -815,12 +816,12 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72
 이후 이메일과 닉네임을 byte array 형태로 브로커에 전송합니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L27-L35
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L35-L43
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L44-L49
 채팅 서버나 알림 서버에선 탈퇴한 유저와의 세션 연결을 끊습니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657dd5269c49b7246/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaConsumer.java#L26-L34
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaConsumer.java#L34-L42
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657dd5269c49b7246/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L88
 피드 서버에선 탈퇴한 유저의 피드, 좋아요 목록을 삭제합니다.
 <br><br>
@@ -858,12 +859,12 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6
  이 함수의 리턴값엔 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임이 포함됩니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L20-L32
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L19-L30
  메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져옵니다.<br>
  이후 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임을 byte array 형태로 브로커에 전송합니다.
 <br><br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L30-L51
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L38-L59
  알림 서버가 이 데이터를 수신해서, 해당 데이터로 notice 서비스의 sendNotice 메소드를 호출합니다.
 <br><br>
 
