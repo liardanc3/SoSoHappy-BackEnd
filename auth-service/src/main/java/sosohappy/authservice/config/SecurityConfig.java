@@ -12,22 +12,16 @@ import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationC
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import sosohappy.authservice.jwt.filter.JwtFilter;
-import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.oauth2.converter.CustomRequestEntityConverter;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginFailureHandler;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginSuccessHandler;
 import sosohappy.authservice.oauth2.service.CustomOAuth2UserService;
-import sosohappy.authservice.repository.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -52,7 +46,6 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                 )
-                .addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class)
                 .build();
     }
 
@@ -64,9 +57,5 @@ public class SecurityConfig {
         return accessTokenResponseClient;
     }
 
-    @Bean
-    public JwtFilter jwtAuthenticationProcessingFilter() {
-        return new JwtFilter(jwtService, userRepository);
-    }
 }
 
