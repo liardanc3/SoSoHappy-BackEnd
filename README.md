@@ -67,8 +67,8 @@ implementation 'org.springframework.cloud:spring-cloud-config-server'
 testImplementation 'org.springframework.kafka:spring-kafka-test'
 ```
 
-첫 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-이후 3줄은 property의 최신 정보를 전파하기 위해 추가하였습니다.
+- 첫 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+- 이후 3줄은 property의 최신 정보를 전파하기 위해 추가하였습니다.
 
 <br>
 
@@ -102,12 +102,14 @@ implementation 'org.springframework.boot:spring-boot-starter-security'
 implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 implementation 'com.auth0:java-jwt:4.2.1'
 ```
-첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파하기 위해 추가되었습니다.
-<br>이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-<br>이후 1줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
-<br>마지막 3줄은 소셜 로그인 구현 및 JWT를 자체적으로 관리하기 위해 추가하였습니다.
+
+- 첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파하기 위해 추가되었습니다.
+- 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+- 이후 1줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
+- 마지막 3줄은 소셜 로그인 구현 및 JWT를 자체적으로 관리하기 위해 추가하였습니다.
 <br>
 <br>
+
 **인증 서버  구현 API 및 주요 로직 목록.**
 <details>
   <summary>
@@ -299,11 +301,13 @@ implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
 annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 ```
-첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파받기 위해 추가되었습니다.
-<br>이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-<br>마지막 4줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
+
+- 첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파받기 위해 추가되었습니다.
+- 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+- 마지막 4줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
 <br>
 <br>
+
 **피드 서버  구현 API 및 주요 로직 목록.**
 
 <details>
@@ -368,6 +372,22 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392
 <details>
   <summary>
   <code><b>특정 유저 피드 조회</b></code>
+  </summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/73fa02a02295c294668fe155a20e57886185001f/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L65-L70
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/73fa02a02295c294668fe155a20e57886185001f/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L71-L74
+`/findDetailFeed` 경로로 API가 호출되면 Controller단과 Service단을 거쳐 Repository단의 메소드를 호출합니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/73fa02a02295c294668fe155a20e57886185001f/feed-service/src/main/java/sosohappy/feedservice/repository/FeedQueryRepositoryImpl.java#L174-L189
+`findBySrcNicknameAndDstNicknameAndDate()` 메소드가 호출되면 닉네임과 날짜가 동일한 피드 1개를 DTO로 변환하여 반환합니다.
+<br><br>
+
+</details>
+
+<details>
+  <summary>
+  <code><b>특정 유저 피드 리스트 조회</b></code>
   </summary>
 
 https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5ac060daafbee1fe7d5ae3d392afa408f37f686b/feed-service/src/main/java/sosohappy/feedservice/controller/FeedController.java#L58-L63
@@ -507,11 +527,13 @@ implementation 'io.micrometer:micrometer-core'
 
 implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 ```
-첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파받기 위해 추가되었습니다.
-이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-마지막 줄은 채팅 데이터를 MongoDB에 저장하기 위해 추가하였습니다.
+
+- 첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파받기 위해 추가되었습니다.
+- 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+- 마지막 줄은 채팅 데이터를 MongoDB에 저장하기 위해 추가하였습니다.
 <br>
 <br>
+
 **채팅 서버  구현 API 및 주요 로직 목록.**
 
 <details>
@@ -660,8 +682,9 @@ implementation "org.springframework.boot:spring-boot-starter-actuator"
 runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 implementation 'io.micrometer:micrometer-core'
 ```
-첫 3줄은 [구성 정보](#topic--springcloudbus)를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
-이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+
+- 첫 3줄은 [구성 정보](#topic--springcloudbus)를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
+- 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
 <br>
 
 **알림 서버  구현 API 및 주요 로직 목록.**
