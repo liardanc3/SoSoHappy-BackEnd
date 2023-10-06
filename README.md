@@ -93,28 +93,10 @@ implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
 testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 implementation "org.springframework.boot:spring-boot-starter-actuator"
-runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-implementation 'io.micrometer:micrometer-core'
+runtimeOnly 'io.micrometer:micrometer-regist션은 사용하지 않았습니다.
+<br><br>
 
-runtimeOnly 'com.mysql:mysql-connector-j'
 
-implementation 'org.springframework.boot:spring-boot-starter-security'
-implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-implementation 'com.auth0:java-jwt:4.2.1'
-```
-첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파하기 위해 추가되었습니다.
-<br>이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-<br>이후 1줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
-<br>마지막 3줄은 소셜 로그인 구현 및 JWT를 자체적으로 관리하기 위해 추가하였습니다.
-<br>
-<br>
-
-**인증 서버  구현 API 및 주요 로직 목록.**
-
-<details>
-  <summary>
-  <code><b>소셜 로그인</b></code>
-  </summary>
 
 </details>
   
