@@ -37,14 +37,14 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .oauth2Login(loginConfigurer -> loginConfigurer
-                        .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler(oAuth2LoginFailureHandler)
                         .tokenEndpoint(tokenEndpointConfig -> tokenEndpointConfig
                                 .accessTokenResponseClient(accessTokenResponseClient())
                         )
                         .userInfoEndpoint(userEndpointConfig -> userEndpointConfig
                                 .userService(customOAuth2UserService)
                         )
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)
                 )
                 .build();
     }
