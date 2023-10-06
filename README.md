@@ -93,8 +93,62 @@ implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
 testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 implementation "org.springframework.boot:spring-boot-starter-actuator"
-runtimeOnly 'io.micrometer:micrometer-regist션은 사용하지 않았습니다.
+runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+implementation 'io.micrometer:micrometer-core'
+
+runtimeOnly 'com.mysql:mysql-connector-j'
+
+implementation 'org.springframework.boot:spring-boot-starter-security'
+implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+implementation 'com.auth0:java-jwt:4.2.1'
+```
+첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파하기 위해 추가되었습니다.
+<br>이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
+<br>이후 1줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
+<br>마지막 3줄은 소셜 로그인 구현 및 JWT를 자체적으로 관리하기 위해 추가하였습니다.
+<br>
+<br>
+**인증 서버  구현 API 및 주요 로직 목록.**
+<details>
+  <summary>
+  <code><b>소셜 로그인</b></code>
+  </summary>
+  
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/0f9c4ed20a606b2c5d257f11ed11c24289f549f0/auth-service/src/main/java/sosohappy/authservice/config/SecurityConfig.java#L30-L50
+SecurityFilterChain을 빈으로 정의하여 Spring Security 필터 체인을 구성하는 코드입니다.
 <br><br>
+
+```java
+...
+
+  .csrf(AbstractHttpConfigurer::disable)
+  .formLogin(AbstractHttpConfigurer::disable)
+  .httpBasic(AbstractHttpConfigurer::disable)
+  .sessionManagement(sessionConfigurer -> sessionConfigurer
+    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+  )
+
+...
+```
+JWT 토큰을 이용하여 로그인하므로 csrf, 기본 로그인 화면, http 기본 인증 및 세션은 비활성화 하였습니다.
+<br><br>
+
+``java
+.oauth2Login(loginConfigurer -> loginConfigurer
+                .tokenEndpoint(tokenEndpointConfig -> tokenEndpointConfig
+                    .accessTokenResponseClient(accessTokenResponseClient())
+                )
+                .userInfoEndpoint(userEndpointConfig -> userEndpointConfig
+                    .userService(customOAuth2UserService)
+                )
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler(oAuth2LoginFailureHandler)
+)                
+```
+OAuth2 로그인 설정 구성입니다.<br>
+유저가 로그인을 한 후 받은 코드로 OAuth2 공급자에게게 액세스토큰 요청을 하기 위한 `tokenEndpoint`, 받은 토큰으로 유저 정보를 로드하기 위한 `userInfoEndpoint`, 유저 정보 로드까지 성공했을 경우 실행되는 로직인 successHandler, 실패했을 때 실행되는 로직인 failureHandler가 포함됩니다.
+<br><br>
+
 
 
 
