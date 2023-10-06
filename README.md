@@ -766,6 +766,19 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657
 ### topic : expired
  access token이 만료되었을 때 해당 정보를 전파하기 위한 토픽입니다.
  <details><summary>detail</summary>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/49f7e26902ac3cf3904d969c537e177d78102efd/auth-service/src/main/java/sosohappy/authservice/config/ExecutorConfig.java#L9-L16
+위와 같이 스레드 1개를 사용하는 `ScheduledExecutorService`가 Bean으로 등록되어 있습니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/49f7e26902ac3cf3904d969c537e177d78102efd/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L22-L46
+access token을 발행하고 kafka에 메시지를 보내는 시점에 만료 메시지도 보내기 위한 스케쥴을 설정합니다.<br>
+36000000ms는 access token의 유효 기간입니다. 36000000ms 후 "expired" 토픽으로 이메일이 전송됩니다.
+<br><br>
+
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/49f7e26902ac3cf3904d969c537e177d78102efd/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaConsumer.java#L26-L32
+피드, 채팅, 알림서버는 이 메시지를 수신하고 해당 유저의 토큰 정보를 삭제합니다. 따라서 토큰이 만료되었을 경우 접근이 허가되지 않습니다.
+
    
 </details>
 
