@@ -15,6 +15,11 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/oauth2/test")
+    public String test(){
+        return "auth-service on";
+    }
+
     @ConvertException(target = ServerException.class)
     @GetMapping("/checkDuplicateNickname")
     public DuplicateDto checkDuplicateNickname(String nickname){
