@@ -1,8 +1,10 @@
 package sosohappy.dmservice.controller;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import sosohappy.dmservice.exception.annotation.ConvertException;
 import sosohappy.dmservice.exception.custom.FindMessageException;
 import sosohappy.dmservice.domain.dto.MessageDto;
@@ -25,5 +27,10 @@ public class MessageController {
     @PostMapping("/findMultipleDirectMessage")
     public Flux<MessageDto> findMultipleDirectMessage(@RequestPart String sender){
         return messageService.findMultipleDirectMessage(sender);
+    }
+
+    @GetMapping("/test-actuator")
+    public Mono<String> test(){
+        return Mono.just("dm-service on");
     }
 }
