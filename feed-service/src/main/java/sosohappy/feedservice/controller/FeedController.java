@@ -18,9 +18,9 @@ public class FeedController {
 
     private final FeedService feedService;
 
-    @GetMapping("/test")
+    @GetMapping("/test-actuator")
     public String test(){
-        return "test";
+        return "feed-service on";
     }
 
     @PostMapping("/findMonthFeed")
