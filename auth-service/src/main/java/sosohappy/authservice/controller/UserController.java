@@ -15,7 +15,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/oauth2/test")
+    @GetMapping("/test-actuator")
     public String test(){
         return "auth-service on";
     }
