@@ -2,7 +2,7 @@ package sosohappy.dmservice.jwt.filter;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -18,15 +18,20 @@ public class JwtFilter implements WebFilter {
 
     @NotNull
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        return jwtService.verifyAccessToken(exchange)
-                .flatMap(isValid -> {
-                    if (!exchange.getRequest().getURI().getPath().contains("actuator") && !isValid) {
-                        exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(403));
-                        return exchange.getResponse().setComplete();
-                    } else {
+    public Mono<Void> filter(@NotNull ServerWebExchange exchange, @NotNull WebFilterChain chain) {
+        return Mono.defer(() -> {
+            if (exchange.getRequest().getURI().getPath().contains("actuator")) {
+                return chain.filter(exchange);
+            }
+
+            return jwtService.verifyAccessToken(exchange)
+                    .flatMap(isValid -> {
+                        if (!isValid) {
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                            return exchange.getResponse().setComplete();
+                        }
                         return chain.filter(exchange);
-                    }
-                });
+                    });
+        });
     }
 }

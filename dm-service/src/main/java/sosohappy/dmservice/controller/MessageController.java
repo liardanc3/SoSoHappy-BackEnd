@@ -1,14 +1,13 @@
 package sosohappy.dmservice.controller;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
+import sosohappy.dmservice.domain.dto.MessageDto;
 import sosohappy.dmservice.exception.annotation.ConvertException;
 import sosohappy.dmservice.exception.custom.FindMessageException;
-import sosohappy.dmservice.domain.dto.MessageDto;
-import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
 import sosohappy.dmservice.service.MessageService;
 
 @RestController
