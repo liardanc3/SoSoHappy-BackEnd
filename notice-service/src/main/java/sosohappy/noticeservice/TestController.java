@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 public class TestController {
 
     @GetMapping("/test-actuator")
-    public Mono<String> test(){
+    public Mono<String> test() {
         return Mono.just("notice-service on");
     }
 }
