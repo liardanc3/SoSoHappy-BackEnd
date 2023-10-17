@@ -1,13 +1,13 @@
 package sosohappy.authservice.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import sosohappy.authservice.entity.*;
-import sosohappy.authservice.exception.ConvertException;
-import sosohappy.authservice.exception.ServerException;
 import sosohappy.authservice.service.UserService;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,27 +20,33 @@ public class UserController {
         return "auth-service on";
     }
 
-    @ConvertException(target = ServerException.class)
     @GetMapping("/checkDuplicateNickname")
     public DuplicateDto checkDuplicateNickname(String nickname){
         return userService.checkDuplicateNickname(nickname);
     }
 
-    @ConvertException(target = ServerException.class)
     @PostMapping("/setProfile")
     public SetProfileDto setProfile(UserRequestDto userRequestDto){
         return userService.setProfile(userRequestDto);
     }
 
-    @ConvertException(target = ServerException.class)
     @PostMapping("/resign")
     public ResignDto resign(String email){
         return userService.resign(email);
     }
 
-    @ConvertException(target = ServerException.class)
     @PostMapping(value = "/findProfileImg")
     public UserResponseDto findProfileImg(String nickname) {
         return userService.findProfileImg(nickname);
+    }
+
+    @PostMapping("/signIn")
+    public void signInWithPKCE(@ModelAttribute SignInDto signInDto, HttpServletResponse httpServletResponse) {
+        userService.signInWithPKCE(signInDto, httpServletResponse);
+    }
+
+    @PostMapping("/getAuthorizeCode")
+    public Map<String, String> getAuthorizeCode(String codeChallenge){
+        return userService.getAuthorizeCode(codeChallenge);
     }
 }

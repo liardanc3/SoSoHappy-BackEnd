@@ -1,26 +1,36 @@
 package sosohappy.authservice.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import sosohappy.authservice.entity.*;
+import sosohappy.authservice.exception.custom.ForbiddenException;
+import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+@EnableScheduling
 @RequiredArgsConstructor
 @Service
 @Transactional
 public class UserService {
 
+    private Map<String, String> authorizeCodeAndChallengeMap = new HashMap<>();
+
+    private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
+    private final PasswordEncoder passwordEncoder;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -108,9 +118,58 @@ public class UserService {
                 .orElseGet(() -> UserResponseDto.builder().build());
     }
 
+    public Map<String, String> getAuthorizeCode(String codeChallenge) {
+        String authorizeCode = UUID.randomUUID().toString();
+        authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
+
+        return Map.of("authorizeCode", authorizeCode);
+    }
+
+    public void signInWithPKCE(SignInDto signInDto, HttpServletResponse response) {
+
+        String email = signInDto.getEmail();
+        String provider = signInDto.getProvider();
+        String providerId = signInDto.getProviderId();
+
+        String authorizeCode = signInDto.getAuthorizeCode();
+        String codeVerifier = signInDto.getCodeVerifier();
+
+        String encodedCodeChallenge = passwordEncoder.encode(codeVerifier);
+
+        if(authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
+            Map<String, Object> userAttributes = Map.of(
+                    "email", email,
+                    "provider", provider,
+                    "providerId", providerId
+            );
+
+            String accessToken = jwtService.createAccessToken(email);
+            String refreshToken = jwtService.createRefreshToken(email);
+
+            jwtService.setAccessTokenOnHeader(response, accessToken);
+            jwtService.setRefreshTokenOnHeader(response, refreshToken);
+
+            User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
+
+            response.setHeader("Nickname", user != null ? user.getNickname() : null);
+            response.setHeader("Email", email);
+
+            signIn(userAttributes, refreshToken);
+        }
+        else {
+            throw new ForbiddenException();
+        }
+
+    }
+
     // --------------------------------------------------------------- //
 
     @KafkaProducer(topic = "resign")
     private void produceResign(String email, String nickname){
+    }
+
+    @Scheduled(fixedRate = 600000)
+    public void deleteAuthorizeCodeAndChallengeMap(){
+        authorizeCodeAndChallengeMap.clear();
     }
 }

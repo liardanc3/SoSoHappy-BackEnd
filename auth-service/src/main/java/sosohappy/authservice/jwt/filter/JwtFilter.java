@@ -20,15 +20,25 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
+    private static String signIn = "/signIn";
+    private static String actuator = "/actuator";
+    private static String oauth2 = "/oauth2";
+    private static String reIssueToken = "/reIssueToken";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getRequestURI().contains("/oauth2") || request.getRequestURI().contains("actuator")) {
+        boolean isSignIn = request.getRequestURI().contains(signIn);
+        boolean isActuator = request.getRequestURI().contains(actuator);
+        boolean isOAuth2 = request.getRequestURI().contains(oauth2);
+        boolean isReIssueToken = request.getRequestURI().contains(reIssueToken);
+
+        if (isSignIn || isActuator || isOAuth2) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (request.getRequestURI().contains("/reIssueToken")){
+        if (isReIssueToken){
             String headerEmail = jwtService.extractHeaderEmail(request);
 
             String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))
@@ -38,7 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     .filter(token -> jwtService.isTokenValid(token, headerEmail))
                     .orElse(null);
 
-            if (tokenEmail != null && headerEmail.equals(tokenEmail) && refreshToken != null) {
+            if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
                 return;
             }
