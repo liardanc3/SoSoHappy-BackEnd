@@ -127,6 +127,13 @@ public class UserService {
         System.out.println("authorizeCode = " + authorizeCode);
         System.out.println("codeChallenge = " + codeChallenge);
 
+        for (String s : authorizeCodeAndChallengeMap.keySet()) {
+            System.out.println("s = " + s);
+        }
+        for (String value : authorizeCodeAndChallengeMap.values()) {
+            System.out.println("value = " + value);
+        }
+
         return Map.of("authorizeCode", authorizeCode);
     }
 
