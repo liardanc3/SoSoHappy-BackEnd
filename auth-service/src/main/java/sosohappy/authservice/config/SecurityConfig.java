@@ -62,9 +62,5 @@ public class SecurityConfig {
         return accessTokenResponseClient;
     }
 
-    @Bean
-    public MessageDigest messageDigest() throws NoSuchAlgorithmException {
-        return MessageDigest.getInstance("SHA-512");
-    }
 }
 

@@ -2,6 +2,7 @@ package sosohappy.authservice.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,6 +16,7 @@ import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,6 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
-    private final MessageDigest messageDigest;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -119,15 +120,14 @@ public class UserService {
                 .orElseGet(() -> UserResponseDto.builder().build());
     }
 
-    public Map<String, String> getAuthorizeCode(String codeChallenge) {
+    public Map<String, String> getAuthorizeCode(String codeChallenge){
         String authorizeCode = UUID.randomUUID().toString();
-
-        messageDigest.reset();
         authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
 
         return Map.of("authorizeCode", authorizeCode);
     }
 
+    @SneakyThrows
     public void signInWithPKCE(SignInDto signInDto, HttpServletResponse response) {
 
         String email = signInDto.getEmail();
@@ -136,6 +136,8 @@ public class UserService {
 
         String authorizeCode = signInDto.getAuthorizeCode();
         String codeVerifier = signInDto.getCodeVerifier();
+
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
         messageDigest.reset();
         messageDigest.update(codeVerifier.getBytes());
