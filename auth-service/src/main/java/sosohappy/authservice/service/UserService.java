@@ -28,7 +28,7 @@ import java.util.UUID;
 @Transactional
 public class UserService {
 
-    private Map<String, String> authorizeCodeAndChallengeMap = new HashMap<>();
+    private static Map<String, String> authorizeCodeAndChallengeMap = new HashMap<>();
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -124,6 +124,9 @@ public class UserService {
         String authorizeCode = UUID.randomUUID().toString();
         authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
 
+        System.out.println("authorizeCode = " + authorizeCode);
+        System.out.println("codeChallenge = " + codeChallenge);
+
         return Map.of("authorizeCode", authorizeCode);
     }
 
@@ -136,6 +139,9 @@ public class UserService {
 
         String authorizeCode = signInDto.getAuthorizeCode();
         String codeVerifier = signInDto.getCodeVerifier();
+
+        System.out.println("codeVerifier = " + codeVerifier);
+        System.out.println("authorizeCode = " + authorizeCode);
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
