@@ -15,6 +15,7 @@ import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -134,6 +135,7 @@ public class UserService {
             System.out.println("value = " + value);
         }
 
+        System.out.println("size = " + authorizeCodeAndChallengeMap.size());
         return Map.of("authorizeCode", authorizeCode);
     }
 
@@ -154,10 +156,9 @@ public class UserService {
 
         messageDigest.reset();
         messageDigest.update(codeVerifier.getBytes());
+        String encodedCodeChallenge = String.format("%064x", new BigInteger(1, messageDigest.digest()));
 
-        byte[] encodedCodeChallenge = messageDigest.digest();
-
-        if(Arrays.equals(authorizeCodeAndChallengeMap.get(authorizeCode).getBytes(), encodedCodeChallenge)){
+        if(authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
             Map<String, Object> userAttributes = Map.of(
                     "email", email,
                     "provider", provider,
