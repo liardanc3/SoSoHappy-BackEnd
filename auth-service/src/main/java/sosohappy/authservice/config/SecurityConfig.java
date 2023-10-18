@@ -19,6 +19,9 @@ import sosohappy.authservice.oauth2.handler.OAuth2LoginFailureHandler;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginSuccessHandler;
 import sosohappy.authservice.oauth2.service.CustomOAuth2UserService;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -60,8 +63,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new MessageDigestPasswordEncoder("SHA-512");
+    public MessageDigest messageDigest() throws NoSuchAlgorithmException {
+        return MessageDigest.getInstance("SHA-512");
     }
 }
 

@@ -1,4 +1,4 @@
-def services = ['auth', 'feed', 'dm', 'notice']
+def services = ['auth']
 pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker-credential')

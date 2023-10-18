@@ -9,7 +9,7 @@ import sosohappy.authservice.exception.custom.ForbiddenException;
 @RestControllerAdvice
 public class ExceptionAdvice {
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(ForbiddenException.class)
     public void handleForbiddenException(){
     }

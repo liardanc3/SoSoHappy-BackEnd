@@ -6,7 +6,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.authservice.entity.*;
@@ -15,6 +14,8 @@ import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.repository.UserRepository;
 
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
-    private final PasswordEncoder passwordEncoder;
+    private final MessageDigest messageDigest;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -120,6 +121,8 @@ public class UserService {
 
     public Map<String, String> getAuthorizeCode(String codeChallenge) {
         String authorizeCode = UUID.randomUUID().toString();
+
+        messageDigest.reset();
         authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
 
         return Map.of("authorizeCode", authorizeCode);
@@ -134,9 +137,12 @@ public class UserService {
         String authorizeCode = signInDto.getAuthorizeCode();
         String codeVerifier = signInDto.getCodeVerifier();
 
-        String encodedCodeChallenge = passwordEncoder.encode(codeVerifier);
+        messageDigest.reset();
+        messageDigest.update(codeVerifier.getBytes());
 
-        if(authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
+        byte[] encodedCodeChallenge = messageDigest.digest();
+
+        if(Arrays.equals(authorizeCodeAndChallengeMap.get(authorizeCode).getBytes(), encodedCodeChallenge)){
             Map<String, Object> userAttributes = Map.of(
                     "email", email,
                     "provider", provider,
@@ -155,6 +161,7 @@ public class UserService {
             response.setHeader("Email", email);
 
             signIn(userAttributes, refreshToken);
+
         }
         else {
             throw new ForbiddenException();
