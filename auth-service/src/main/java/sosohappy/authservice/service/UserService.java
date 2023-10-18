@@ -125,17 +125,6 @@ public class UserService {
         String authorizeCode = UUID.randomUUID().toString();
         authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
 
-        System.out.println("authorizeCode = " + authorizeCode);
-        System.out.println("codeChallenge = " + codeChallenge);
-
-        for (String s : authorizeCodeAndChallengeMap.keySet()) {
-            System.out.println("s = " + s);
-        }
-        for (String value : authorizeCodeAndChallengeMap.values()) {
-            System.out.println("value = " + value);
-        }
-
-        System.out.println("size = " + authorizeCodeAndChallengeMap.size());
         return Map.of("authorizeCode", authorizeCode);
     }
 
@@ -148,9 +137,6 @@ public class UserService {
 
         String authorizeCode = signInDto.getAuthorizeCode();
         String codeVerifier = signInDto.getCodeVerifier();
-
-        System.out.println("codeVerifier = " + codeVerifier);
-        System.out.println("authorizeCode = " + authorizeCode);
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
