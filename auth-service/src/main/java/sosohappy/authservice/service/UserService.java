@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.authservice.entity.*;
+import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
@@ -122,6 +123,10 @@ public class UserService {
     }
 
     public Map<String, String> getAuthorizeCode(String codeChallenge){
+        if(codeChallenge == null){
+            throw new BadRequestException();
+        }
+
         String authorizeCode = UUID.randomUUID().toString();
         authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
 
@@ -133,6 +138,11 @@ public class UserService {
 
         String email = signInDto.getEmail();
         String provider = signInDto.getProvider();
+
+        if(!provider.equals("apple") && !provider.equals("google") && !provider.equals("kakao")){
+            throw new ForbiddenException();
+        }
+
         String providerId = signInDto.getProviderId();
 
         String authorizeCode = signInDto.getAuthorizeCode();
@@ -145,6 +155,9 @@ public class UserService {
         String encodedCodeChallenge = String.format("%064x", new BigInteger(1, messageDigest.digest()));
 
         if(authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
+
+            authorizeCodeAndChallengeMap.remove(authorizeCode);
+
             Map<String, Object> userAttributes = Map.of(
                     "email", email,
                     "provider", provider,

@@ -2,6 +2,7 @@ package sosohappy.authservice.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import sosohappy.authservice.entity.*;
@@ -46,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/getAuthorizeCode")
-    public Map<String, String> getAuthorizeCode(String codeChallenge){
+    public Map<String, String> getAuthorizeCode(@NotNull String codeChallenge){
         return userService.getAuthorizeCode(codeChallenge);
     }
 }
