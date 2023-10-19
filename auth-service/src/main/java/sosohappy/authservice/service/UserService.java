@@ -172,8 +172,8 @@ public class UserService {
 
             User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
 
-            response.setHeader("Nickname", user != null ? user.getNickname() : null);
-            response.setHeader("Email", email);
+            response.setHeader("nickname", user != null ? user.getNickname() : "INITIAL_USER");
+            response.setHeader("email", email);
 
             signIn(userAttributes, refreshToken);
 
