@@ -41,7 +41,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
 
-        response.setHeader("nickname", user != null ? user.getNickname() : "INITIAL_USER");
+        response.setHeader("nickname", user != null ? user.getNickname() : null);
         response.setHeader("email", email);
 
         userService.signIn(userAttributes, refreshToken);
