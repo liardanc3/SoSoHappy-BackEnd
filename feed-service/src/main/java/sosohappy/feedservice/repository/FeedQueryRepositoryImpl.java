@@ -128,8 +128,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 ))
                 .from(feed)
                 .where(
-                        isDayFind(date)
+                        isDayFind(date),
+                        nickNameEq(nickname).not()
                 )
+                .orderBy(feed.date.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -158,6 +160,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .where(
                         nickNameEq(dstNickname)
                 )
+                .orderBy(feed.date.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
