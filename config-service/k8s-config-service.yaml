@@ -34,4 +34,4 @@ spec:
       targetPort: 8888
   type: LoadBalancer
   externalIPs:
-    - 10.178.0.5
+    - 10.178.0.2
