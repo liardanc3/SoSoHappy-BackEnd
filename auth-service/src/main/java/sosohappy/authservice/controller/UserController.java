@@ -41,6 +41,11 @@ public class UserController {
         return userService.findProfileImg(nickname);
     }
 
+    @PostMapping(value = "/findIntroduction")
+    public Map<String, String> findIntroduction(String nickname) {
+        return userService.findIntroduction(nickname);
+    }
+
     @PostMapping("/signIn")
     public void signInWithPKCE(@ModelAttribute SignInDto signInDto, HttpServletResponse httpServletResponse) {
         userService.signInWithPKCE(signInDto, httpServletResponse);

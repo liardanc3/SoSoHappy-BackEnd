@@ -133,6 +133,10 @@ public class UserService {
         return Map.of("authorizeCode", authorizeCode);
     }
 
+    public Map<String, String> findIntroduction(String nickname) {
+        return Map.of("Introduce", userRepository.findIntroductionByNickname(nickname).orElse(""));
+    }
+
     @SneakyThrows
     public void signInWithPKCE(SignInDto signInDto, HttpServletResponse response) {
 
@@ -194,4 +198,6 @@ public class UserService {
     public void deleteAuthorizeCodeAndChallengeMap(){
         authorizeCodeAndChallengeMap.clear();
     }
+
+
 }
