@@ -1,10 +1,10 @@
 spring:
   cloud:
     config:
-      uri: https://sosohappy.net/config-service
+      uri: https://sosohappy.dev/config-service
       name: notice-config
   config:
-    import: optional:configserver:https://sosohappy.net/config-service
+    import: optional:configserver:https://sosohappy.dev/config-service
   webflux:
     base-path: /notice-service
 
