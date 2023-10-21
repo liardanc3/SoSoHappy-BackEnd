@@ -134,7 +134,7 @@ public class UserService {
     }
 
     public Map<String, String> findIntroduction(String nickname) {
-        return Map.of("Introduce", userRepository.findIntroductionByNickname(nickname).orElse(""));
+        return Map.of("Introduce", userRepository.findByNickname(nickname).get().getIntroduction());
     }
 
     @SneakyThrows
