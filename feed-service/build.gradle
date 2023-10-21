@@ -60,7 +60,7 @@ tasks.named('test') {
 }
 
 
-def querydslDir = "$buildDir/generated/inunavi"
+def querydslDir = "$buildDir/generated/feed-service"
 
 clean {
 	delete file (querydslDir)
