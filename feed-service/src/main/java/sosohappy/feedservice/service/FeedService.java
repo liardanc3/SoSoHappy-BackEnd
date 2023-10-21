@@ -31,12 +31,11 @@ public class FeedService {
 
     public List<UserFeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
-                .filter(list -> !list.isEmpty())
-                .orElseThrow(FindException::new);
+                .orElse(List.of());
     }
     public UserFeedDto findDayFeed(NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto)
-                .orElseThrow(FindException::new);
+                .orElse(null);
     }
 
     public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
