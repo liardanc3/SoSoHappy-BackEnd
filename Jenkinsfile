@@ -46,8 +46,10 @@ pipeline {
                             sh "./gradlew clean"
                             sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
-                            sh "docker build -t liardance/${serv}-service:latest ./"
-                            sh "docker push liardance/${serv}-service:latest"
+	                    docker.withRegistry('https://registry.hub.docker.com', 'docker-credential'){
+                            	dockerImage = docker.build("liardance/${serv}-service:latest")
+                            	dockerImage.push()     
+                            }
                             sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config apply -f k8s-${serv}-service.yaml"
 			    sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deployment ${serv}-deployment"
                         }
