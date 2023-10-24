@@ -14,7 +14,6 @@ import sosohappy.authservice.repository.UserRepository;
 import java.io.IOException;
 import java.util.Optional;
 
-@Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
