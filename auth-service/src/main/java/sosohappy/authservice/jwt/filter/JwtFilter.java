@@ -28,6 +28,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println(request.getRequestURI());
+        
         boolean isSignIn = request.getRequestURI().contains(signIn);
         boolean isActuator = request.getRequestURI().contains(actuator);
         boolean isOAuth2 = request.getRequestURI().contains(oauth2);
@@ -39,6 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (isReIssueToken){
+            System.out.println("in REISSUETOKEN");
             String headerEmail = jwtService.extractHeaderEmail(request);
 
             String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))
