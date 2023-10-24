@@ -18,6 +18,7 @@ import sosohappy.authservice.oauth2.converter.CustomRequestEntityConverter;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginFailureHandler;
 import sosohappy.authservice.oauth2.handler.OAuth2LoginSuccessHandler;
 import sosohappy.authservice.oauth2.service.CustomOAuth2UserService;
+import sosohappy.authservice.jwt.filter.JwtFilter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
