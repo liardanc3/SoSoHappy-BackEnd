@@ -34,6 +34,7 @@ public class Feed {
     @Column
     private Integer happiness;
 
+    @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "MEDIUMBLOB")
     private String text;
 
