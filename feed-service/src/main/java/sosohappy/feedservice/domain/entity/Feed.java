@@ -34,7 +34,7 @@ public class Feed {
     @Column
     private Integer happiness;
 
-    @Column
+    @Column(columnDefinition = "MEDIUMBLOB")
     private String text;
 
     @Column
