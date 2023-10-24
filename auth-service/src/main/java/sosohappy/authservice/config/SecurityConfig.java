@@ -20,6 +20,7 @@ import sosohappy.authservice.oauth2.handler.OAuth2LoginSuccessHandler;
 import sosohappy.authservice.oauth2.service.CustomOAuth2UserService;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.jwt.filter.JwtFilter;
+import sosohappy.authservice.repository.UserRepository;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
@@ -35,7 +36,8 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final Environment environment;
-    private final JwtFilter jwtFilter;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -66,6 +68,12 @@ public class SecurityConfig {
         accessTokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter(environment));
 
         return accessTokenResponseClient;
+    }
+
+    @Bean
+    public JwtFilter jwtAuthenticationProcessingFilter() {
+        JwtFilter jwtAuthenticationFilter = new JwtFilter(jwtService, userRepository);
+        return jwtAuthenticationFilter;
     }
 }
 
