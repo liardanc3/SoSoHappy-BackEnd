@@ -62,5 +62,9 @@ public class SecurityConfig {
         return accessTokenResponseClient;
     }
 
+    @Bean
+    public JwtFilter jwtAuthenticationProcessingFilter() {
+        return new JwtFilter(jwtService, userRepository);
+    }
 }
 
