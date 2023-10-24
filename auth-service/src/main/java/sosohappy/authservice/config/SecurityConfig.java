@@ -35,6 +35,7 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final Environment environment;
+    private final JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -55,7 +56,7 @@ public class SecurityConfig {
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler)
                 )
-                .addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class)
+                .addFilterAfter(jwtFilter, LogoutFilter.class)
                 .build();
     }
 
@@ -65,11 +66,6 @@ public class SecurityConfig {
         accessTokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter(environment));
 
         return accessTokenResponseClient;
-    }
-
-    @Bean
-    public JwtFilter jwtAuthenticationProcessingFilter() {
-        return new JwtFilter(jwtService, userRepository);
     }
 }
 
