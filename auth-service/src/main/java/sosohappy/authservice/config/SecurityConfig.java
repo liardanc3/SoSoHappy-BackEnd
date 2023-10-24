@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler)
                 )
-                .addFilterAfter(jwtFilter, LogoutFilter.class)
+                .addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class)
                 .build();
     }
 
