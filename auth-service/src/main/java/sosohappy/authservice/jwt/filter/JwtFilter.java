@@ -70,7 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         },
                         () -> {
                             try {
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                                response.sendError(HttpServletResponse.SC_OK);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }

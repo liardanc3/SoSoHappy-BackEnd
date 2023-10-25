@@ -140,8 +140,8 @@ public class UserService {
     @SneakyThrows
     public void signInWithPKCE(SignInDto signInDto, HttpServletResponse response) {
 
-        String email = signInDto.getEmail();
         String provider = signInDto.getProvider();
+        String email = signInDto.getEmail() + "+" + provider;
 
         if(!provider.equals("apple") && !provider.equals("google") && !provider.equals("kakao")){
             throw new ForbiddenException();
@@ -158,7 +158,7 @@ public class UserService {
         messageDigest.update(codeVerifier.getBytes());
         String encodedCodeChallenge = String.format("%064x", new BigInteger(1, messageDigest.digest()));
 
-        if(authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
+        if(authorizeCodeAndChallengeMap.containsKey(authorizeCode) && authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
 
             authorizeCodeAndChallengeMap.remove(authorizeCode);
 

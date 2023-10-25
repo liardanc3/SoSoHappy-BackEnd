@@ -30,8 +30,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Map<String, Object> userAttributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
 
-        String email = String.valueOf(userAttributes.get("email"));
         String provider = String.valueOf(userAttributes.get("provider"));
+        String email = userAttributes.get("email") + "+" + provider;
 
         String accessToken = jwtService.createAccessToken(email);
         String refreshToken = jwtService.createRefreshToken(email);
