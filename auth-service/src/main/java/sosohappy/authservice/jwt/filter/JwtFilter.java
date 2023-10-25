@@ -21,6 +21,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     private static String signIn = "/signIn";
+    private static String getAuthorizeCode = "/getAuthorizeCode";
     private static String actuator = "/actuator";
     private static String oauth2 = "/oauth2";
     private static String reIssueToken = "/reIssueToken";
@@ -28,20 +29,18 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println(request.getRequestURI());
-        
         boolean isSignIn = request.getRequestURI().contains(signIn);
         boolean isActuator = request.getRequestURI().contains(actuator);
         boolean isOAuth2 = request.getRequestURI().contains(oauth2);
         boolean isReIssueToken = request.getRequestURI().contains(reIssueToken);
+        boolean isGetAuthorizeCode = request.getRequestURI().contains(getAuthorizeCode);
 
-        if (isSignIn || isActuator || isOAuth2) {
+        if (isSignIn || isActuator || isOAuth2 || isGetAuthorizeCode) {
             filterChain.doFilter(request, response);
             return;
         }
 
         if (isReIssueToken){
-            System.out.println("in REISSUETOKEN");
             String headerEmail = jwtService.extractHeaderEmail(request);
 
             String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))

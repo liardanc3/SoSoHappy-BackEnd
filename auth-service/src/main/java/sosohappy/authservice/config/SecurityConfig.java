@@ -8,8 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
@@ -24,8 +22,6 @@ import sosohappy.authservice.repository.UserRepository;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -72,8 +68,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtFilter jwtAuthenticationProcessingFilter() {
-        JwtFilter jwtAuthenticationFilter = new JwtFilter(jwtService, userRepository);
-        return jwtAuthenticationFilter;
+        return new JwtFilter(jwtService, userRepository);
     }
 }
 
