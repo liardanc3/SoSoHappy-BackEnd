@@ -20,6 +20,8 @@ public class KafkaConsumer {
         String email = new String(record.key());
         String accessToken = new String(record.value());
 
+        System.out.println("email = " + email);
+        System.out.println("accessToken = " + accessToken);
         emailAndTokenMap.put(email, accessToken);
     }
 
