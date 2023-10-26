@@ -3,8 +3,6 @@ package sosohappy.feedservice.jwt.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sosohappy.feedservice.exception.ConvertException;
-import sosohappy.feedservice.exception.custom.JWTException;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +13,6 @@ public class JwtService {
 
     private final ConcurrentHashMap<String, String> emailAndTokenMap;
 
-    @ConvertException(target = JWTException.class)
     public boolean verifyAccessToken(HttpServletRequest request) {
         return extractAccessToken(request)
                 .filter(token -> isTokenValid(extractHeaderEmail(request).orElse(null), token))

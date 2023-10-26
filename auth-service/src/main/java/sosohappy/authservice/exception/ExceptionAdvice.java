@@ -5,7 +5,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
 
 @RestControllerAdvice
