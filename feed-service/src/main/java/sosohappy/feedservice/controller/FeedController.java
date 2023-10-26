@@ -1,5 +1,10 @@
 package sosohappy.feedservice.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,54 +23,49 @@ public class FeedController {
 
     private final FeedService feedService;
 
-    @GetMapping("/test-actuator")
-    public String test(){
-        return "feed-service on";
-    }
-
     @PostMapping("/findMonthFeed")
-    public List<UserFeedDto> findMonthFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public List<UserFeedDto> findMonthFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
         return feedService.findMonthFeed(nicknameAndDateDto);
     }
 
     @PostMapping("/findDayFeed")
-    public UserFeedDto findDayFeed(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public UserFeedDto findDayFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
         return feedService.findDayFeed(nicknameAndDateDto);
     }
 
     @PostMapping("/saveFeed")
-    public UpdateResultDto saveFeed(@ModelAttribute UpdateFeedDto updateFeedDto){
+    public UpdateResultDto saveFeed(@ModelAttribute @Valid UpdateFeedDto updateFeedDto){
         return feedService.updateFeed(updateFeedDto);
     }
 
     @PostMapping("/updatePublicStatus")
-    public UpdateResultDto updatePublicStatus(@ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public UpdateResultDto updatePublicStatus(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
         return feedService.updatePublicStatus(nicknameAndDateDto);
     }
 
     @GetMapping("/findOtherFeed")
-    public SliceResponse<OtherFeedDto> findOtherDayFeed(@RequestParam String nickname,
-                                                        @RequestParam @Nullable Long date,
+    public SliceResponse<OtherFeedDto> findOtherDayFeed(@RequestParam @Valid @NotEmpty String nickname,
+                                                        @RequestParam Long date,
                                                         @PageableDefault(size = 7) Pageable pageable){
         return feedService.findOtherFeed(nickname, date == null ? -1 : date, pageable);
     }
 
     @PostMapping("/updateLike")
-    public Map<String, Boolean> updateLike(String srcNickname, @ModelAttribute NicknameAndDateDto nicknameAndDateDto){
+    public Map<String, Boolean> updateLike(@Valid @Size(min = 1, max = 10) String srcNickname, @ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
         return feedService.updateLike(srcNickname, nicknameAndDateDto);
     }
 
     @GetMapping("/findUserFeed")
-    public SliceResponse<OtherFeedDto> findUserFeed(@RequestParam String srcNickname,
-                                                    @RequestParam String dstNickname,
+    public SliceResponse<OtherFeedDto> findUserFeed(@Valid @Size(min = 1, max = 10) @RequestParam String srcNickname,
+                                                    @Valid @Size(min = 1, max = 10) @RequestParam String dstNickname,
                                                     @PageableDefault(size = 7) Pageable pageable){
         return feedService.findUserFeed(srcNickname, dstNickname, pageable);
     }
 
     @PostMapping("/findDetailFeed")
-    public OtherFeedDto findDetailFeed(@RequestParam String srcNickname,
-                                       @RequestParam String dstNickname,
-                                       @RequestParam Long date){
+    public OtherFeedDto findDetailFeed(@Valid @Size(min = 1, max = 10) @RequestParam String srcNickname,
+                                       @Valid @Size(min = 1, max = 10) @RequestParam String dstNickname,
+                                       @Valid @Min(value = 2000000000000000L) @Max(value = 9999999999999999L) @RequestParam Long date){
         return feedService.findDetailFeed(srcNickname, dstNickname, date);
     }
 

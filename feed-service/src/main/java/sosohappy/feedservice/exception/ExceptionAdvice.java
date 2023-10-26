@@ -1,6 +1,7 @@
 package sosohappy.feedservice.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,9 +10,8 @@ import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.exception.custom.ValidException;
 
-
 @RestControllerAdvice
-public class ResponseExceptionHandler {
+public class ExceptionAdvice {
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(UpdateException.class)
@@ -29,7 +29,10 @@ public class ResponseExceptionHandler {
     public void handleValidException(){
     }
 
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public void handleMethodArgumentNotValidException(){
+    }
 
 }
 
