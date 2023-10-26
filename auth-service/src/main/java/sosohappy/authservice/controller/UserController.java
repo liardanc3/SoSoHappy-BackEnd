@@ -18,8 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/checkDuplicateNickname")
-    public DuplicateDto checkDuplicateNickname(@Valid @NotEmpty String nickname){
-        return userService.checkDuplicateNickname(nickname);
+    public DuplicateDto checkDuplicateNickname(@Valid NicknameDto nicknameDto){
+        return userService.checkDuplicateNickname(nicknameDto.getNickname());
     }
 
     @PostMapping("/setProfile")
@@ -28,18 +28,18 @@ public class UserController {
     }
 
     @PostMapping("/resign")
-    public ResignDto resign(@Valid @NotEmpty String email){
-        return userService.resign(email);
+    public ResignDto resign(@Valid EmailDto emailDto){
+        return userService.resign(emailDto.getEmail());
     }
 
     @PostMapping("/findProfileImg")
-    public UserResponseDto findProfileImg(@Valid @NotEmpty String nickname) {
-        return userService.findProfileImg(nickname);
+    public UserResponseDto findProfileImg(@Valid NicknameDto nicknameDto) {
+        return userService.findProfileImg(nicknameDto.getNickname());
     }
 
     @PostMapping(value = "/findIntroduction")
-    public Map<String, String> findIntroduction(@Valid @NotEmpty String nickname) {
-        return userService.findIntroduction(nickname);
+    public Map<String, String> findIntroduction(@Valid NicknameDto nicknameDto) {
+        return userService.findIntroduction(nicknameDto.getNickname());
     }
 
     @PostMapping("/signIn")
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/getAuthorizeCode")
-    public Map<String, String> getAuthorizeCode(@Valid @NotNull String codeChallenge){
-        return userService.getAuthorizeCode(codeChallenge);
+    public Map<String, String> getAuthorizeCode(@Valid CodeChallengeDto codeChallengeDto){
+        return userService.getAuthorizeCode(codeChallengeDto.getCodeChallenge());
     }
 }
