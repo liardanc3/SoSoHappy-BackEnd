@@ -15,6 +15,7 @@ import sosohappy.authservice.repository.UserRepository;
 import sosohappy.authservice.service.UserService;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -41,7 +42,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
 
-        response.setHeader("nickname", user != null ? user.getNickname() : null);
+        response.setHeader("nickname", user != null && user.getNickname().length() > 10 ? null : Objects.requireNonNull(user).getNickname());
         response.setHeader("email", email);
 
         userService.signIn(userAttributes, refreshToken);

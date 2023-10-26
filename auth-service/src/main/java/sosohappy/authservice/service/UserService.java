@@ -19,10 +19,7 @@ import sosohappy.authservice.repository.UserRepository;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @EnableScheduling
 @RequiredArgsConstructor
@@ -47,6 +44,7 @@ public class UserService {
                                 () -> userRepository.save(
                                         User.builder()
                                                 .email(email)
+                                                .nickname(UUID.randomUUID().toString())
                                                 .provider(provider)
                                                 .providerId(providerId)
                                                 .refreshToken(refreshToken)
@@ -176,7 +174,7 @@ public class UserService {
 
             User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
 
-            response.setHeader("nickname", user != null ? user.getNickname() : null);
+            response.setHeader("nickname", user != null && user.getNickname().length() > 10 ? null : Objects.requireNonNull(user).getNickname());
             response.setHeader("email", email);
 
             signIn(userAttributes, refreshToken);
