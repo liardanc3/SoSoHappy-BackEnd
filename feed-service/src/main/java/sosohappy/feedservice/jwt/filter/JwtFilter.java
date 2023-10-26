@@ -19,10 +19,10 @@ public class JwtFilter extends OncePerRequestFilter {
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-        if(!request.getRequestURI().contains("actuator") && !jwtService.verifyAccessToken(request)){
+        /*if(!request.getRequestURI().contains("actuator") && !jwtService.verifyAccessToken(request)){
             response.sendError(403);
             return;
-        }
+        }*/
 
         filterChain.doFilter(request, response);
     }
