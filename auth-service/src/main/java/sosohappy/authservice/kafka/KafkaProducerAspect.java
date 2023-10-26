@@ -25,7 +25,6 @@ public class KafkaProducerAspect {
         if(kafkaProducer.topic().equals("accessToken")){
             String email = (String) joinPoint.getArgs()[0];
             kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), ((String) result).getBytes());
-
             scheduledExecutorService.schedule(
                     () -> {
                         kafkaTemplate.send("expired", email.getBytes(), null);

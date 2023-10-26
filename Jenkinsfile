@@ -46,7 +46,7 @@ pipeline {
                             sh "./gradlew clean"
                             sh "./gradlew build"
                             archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
-	                    docker.withRegistry('https://registry.hub.docker.com', 'docker-credential'){
+	                        docker.withRegistry('https://registry.hub.docker.com', 'docker-credential'){
                             	dockerImage = docker.build("liardance/${serv}-service:latest")
                             	dockerImage.push()     
                             }
