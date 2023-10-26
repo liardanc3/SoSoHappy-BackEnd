@@ -1,14 +1,24 @@
 package sosohappy.authservice.entity;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
 public class SignInDto {
 
+    @NotEmpty
     private String codeVerifier;
-    private String authorizeCode;
-    private String email;
-    private String provider;
-    private String providerId;
 
+    @NotEmpty
+    private String authorizeCode;
+
+    @NotEmpty @Email
+    private String email;
+
+    @NotEmpty
+    private String provider;
+
+    @NotEmpty
+    private String providerId;
 }
