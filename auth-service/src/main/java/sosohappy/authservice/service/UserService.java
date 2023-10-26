@@ -174,7 +174,7 @@ public class UserService {
 
             User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
 
-            response.setHeader("nickname", user != null && user.getNickname().length() > 10 ? null : Objects.requireNonNull(user).getNickname());
+            response.setHeader("nickname", user != null && user.getNickname().length() > 10 ? Objects.requireNonNull(user).getNickname() : null);
             response.setHeader("email", email);
 
             signIn(userAttributes, refreshToken);
