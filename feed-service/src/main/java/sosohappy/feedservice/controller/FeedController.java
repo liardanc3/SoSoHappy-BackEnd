@@ -45,7 +45,7 @@ public class FeedController {
 
     @GetMapping("/findOtherFeed")
     public SliceResponse<OtherFeedDto> findOtherDayFeed(@RequestParam String nickname,
-                                                        @RequestParam Long date,
+                                                        @RequestParam @Nullable Long date,
                                                         @PageableDefault(size = 7) Pageable pageable){
         return feedService.findOtherFeed(nickname, date == null ? -1 : date, pageable);
     }
