@@ -41,8 +41,14 @@ public class User {
 
     @SneakyThrows
     public void updateProfile(UserRequestDto userRequestDto)  {
-        this.profileImg = userRequestDto.getProfileImg().getBytes();
-        this.nickname = userRequestDto.getNickname();
-        this.introduction = userRequestDto.getIntroduction();
+        if(userRequestDto.getProfileImg() != null){
+            this.profileImg = userRequestDto.getProfileImg().getBytes();
+        }
+        if(userRequestDto.getNickname() != null){
+            this.nickname = userRequestDto.getNickname();
+        }
+        if(userRequestDto.getIntroduction() != null){
+            this.introduction = userRequestDto.getIntroduction();
+        }
     }
 }
