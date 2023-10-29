@@ -28,7 +28,7 @@ public class UpdateFeedDto {
 
     private List<MultipartFile> imageList;
 
-    @NotEmpty
+    @NotNull
     private Boolean isPublic;
 
 }
