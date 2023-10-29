@@ -1,9 +1,6 @@
 package sosohappy.feedservice.domain.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +19,7 @@ public class UpdateFeedDto {
     @NotEmpty
     private String weather;
 
-    @NotEmpty
+    @NotNull
     private Integer happiness;
 
     private List<String> categoryList;
