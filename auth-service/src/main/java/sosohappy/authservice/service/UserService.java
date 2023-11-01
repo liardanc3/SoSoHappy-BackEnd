@@ -174,6 +174,7 @@ public class UserService {
 
             User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
 
+            response.setCharacterEncoding("UTF-8");
             response.setHeader("nickname", user != null && user.getNickname() != null ? Objects.requireNonNull(user).getNickname() : null);
             response.setHeader("email", email);
 
