@@ -20,3 +20,5 @@ logging:
     org:
       apache:
         kafka: WARN
+
+
