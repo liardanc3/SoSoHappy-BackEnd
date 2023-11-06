@@ -19,6 +19,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * deprecated
+ * <br>
+ * https://support.google.com/faqs/answer/12284343?hl=ko
+ */
+
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {

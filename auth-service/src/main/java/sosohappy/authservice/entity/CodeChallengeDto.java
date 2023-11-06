@@ -8,4 +8,5 @@ public class CodeChallengeDto {
 
     @NotEmpty
     private String codeChallenge;
+
 }

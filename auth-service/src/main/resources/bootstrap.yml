@@ -1,4 +1,6 @@
 spring:
+  main:
+    banner-mode: off
   cloud:
     config:
       uri: https://sosohappy.dev/config-service
@@ -19,6 +21,3 @@ logging:
       apache:
         kafka: WARN
 
-
-a:
-  b: "c"

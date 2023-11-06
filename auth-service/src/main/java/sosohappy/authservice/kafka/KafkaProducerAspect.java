@@ -25,11 +25,7 @@ public class KafkaProducerAspect {
         if(kafkaProducer.topic().equals("accessToken")){
             String email = (String) joinPoint.getArgs()[0];
 
-            System.out.println(email + " create send accessToken");
-
             kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), ((String) result).getBytes());
-
-            System.out.println(email + " finish send accessToken");
 
             scheduledExecutorService.schedule(
                     () -> {
