@@ -3,6 +3,7 @@ package sosohappy.authservice.service;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Slf4j
 public class UserService {
 
     private static Map<String, String> authorizeCodeAndChallengeMap = new HashMap<>();
@@ -199,6 +201,9 @@ public class UserService {
             signIn(userAttributes, refreshToken);
 
             if(provider.equals("apple")){
+
+                log.info("checkPoint1");
+
                 handleAppleUserSignIn(email, signInDto.getAuthorizationCode());
             }
         }
@@ -226,6 +231,8 @@ public class UserService {
             add("grant_type", grantType);
         }};
 
+        log.info("checkPoint2");
+
         HttpHeaders headers = new HttpHeaders();
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -233,8 +240,13 @@ public class UserService {
 
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
 
+        log.info("checkPoint3");
+
         try {
             ResponseEntity<TokenResponseDto> response = restTemplate.postForEntity(tokenURI, httpEntity, TokenResponseDto.class);
+
+            log.info("checkPoint4");
+            System.out.println("response : " + response);
 
             if(response.getStatusCode().is2xxSuccessful()){
                 String appleRefreshToken = Objects.requireNonNull(response.getBody()).getRefresh_token();

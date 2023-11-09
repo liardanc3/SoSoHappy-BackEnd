@@ -84,7 +84,7 @@ public class LogAspect {
         String sessionId = request.getSession().getId();
 
         sb.append(String.format("RESPONSE ERROR %s : %s\n\n", servletPath, email != null ? email : sessionId));
-        sb.append(ex.getClass());
+        sb.append(Arrays.toString(ex.getStackTrace()));
 
         log.info(sb.toString());
     }
