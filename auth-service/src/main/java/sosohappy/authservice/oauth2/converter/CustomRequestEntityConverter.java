@@ -2,6 +2,7 @@ package sosohappy.authservice.oauth2.converter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,8 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     private final String keyId;
     private final String teamId;
     private final String clientSecret;
+
+    @Getter
     private final String clientId;
 
     public CustomRequestEntityConverter(Environment environment) {

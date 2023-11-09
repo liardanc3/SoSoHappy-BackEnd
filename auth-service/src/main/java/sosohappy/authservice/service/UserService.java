@@ -4,8 +4,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -38,14 +40,8 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
-    private final CustomRequestEntityConverter customRequestEntityConverter;
     private final RestTemplate restTemplate;
-
-    @Value("${spring.security.oauth2.client.registration.apple.clientId}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.provider.apple.token-uri}")
-    private String tokenURI;
+    private final CustomRequestEntityConverter customRequestEntityConverter;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -220,11 +216,12 @@ public class UserService {
 
     private void handleAppleUserSignIn(String email, String authorizationCode){
         String clientSecret = customRequestEntityConverter.createClientSecret();
+        String tokenURI = "https://appleid.apple.com/auth/token";
         String grantType = "authorization_code";
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
             add("code", authorizationCode);
-            add("client_id", clientId);
+            add("client_id", customRequestEntityConverter.getClientId());
             add("client_secret", clientSecret);
             add("grant_type", grantType);
         }};
@@ -264,7 +261,7 @@ public class UserService {
         String revokeURI = "https://appleid.apple.com/auth/revoke";
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
-            add("client_id", clientId);
+            add("client_id", customRequestEntityConverter.getClientId());
             add("client_secret", clientSecret);
             add("token", appleRefreshToken);
             add("token_type_hint", "refresh_token");
@@ -290,6 +287,5 @@ public class UserService {
     public void deleteAuthorizeCodeAndChallengeMap(){
         authorizeCodeAndChallengeMap.clear();
     }
-
 
 }

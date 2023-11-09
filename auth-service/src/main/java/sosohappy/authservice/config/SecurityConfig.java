@@ -21,8 +21,6 @@ import sosohappy.authservice.jwt.filter.JwtFilter;
 import sosohappy.authservice.repository.UserRepository;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
-
-
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
