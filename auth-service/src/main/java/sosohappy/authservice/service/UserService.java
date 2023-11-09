@@ -263,6 +263,8 @@ public class UserService {
             }
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
+            log.info(e.getResponseBodyAsString());
             throw new ForbiddenException();
         }
 
