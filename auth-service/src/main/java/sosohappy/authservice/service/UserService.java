@@ -4,21 +4,27 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import sosohappy.authservice.entity.*;
 import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
+import sosohappy.authservice.exception.custom.UnAuthorizedException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
+import sosohappy.authservice.oauth2.converter.CustomRequestEntityConverter;
 import sosohappy.authservice.repository.UserRepository;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @EnableScheduling
@@ -32,6 +38,14 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
+    private final CustomRequestEntityConverter customRequestEntityConverter;
+    private final RestTemplate restTemplate;
+
+    @Value("${spring.security.oauth2.client.registration.apple.clientId}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.client.provider.apple.token-uri}")
+    private String tokenURI;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -56,16 +70,18 @@ public class UserService {
     public ResignDto resign(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> {
+                    boolean revokeResult = handleAppleUserResign(user.getAppleRefreshToken());
 
-                    userServiceProvider.getObject()
-                            .produceResign(user.getEmail(), user.getNickname());
-
-                    userRepository
-                            .delete(user);
+                    if(revokeResult){
+                        userServiceProvider.getObject()
+                                .produceResign(user.getEmail(), user.getNickname());
+                        userRepository
+                                .delete(user);
+                    }
 
                     return ResignDto.builder()
                             .email(email)
-                            .success(true)
+                            .success(revokeResult)
                             .build();
                 })
                 .orElseGet(() ->
@@ -75,6 +91,7 @@ public class UserService {
                                 .build()
                 );
     }
+
 
     public DuplicateDto checkDuplicateNickname(String nickname) {
         return userRepository.findByNickname(nickname)
@@ -185,6 +202,9 @@ public class UserService {
 
             signIn(userAttributes, refreshToken);
 
+            if(provider.equals("apple")){
+                handleAppleUserSignIn(email, signInDto.getAuthorizationCode());
+            }
         }
         else {
             throw new ForbiddenException();
@@ -196,6 +216,74 @@ public class UserService {
 
     @KafkaProducer(topic = "resign")
     private void produceResign(String email, String nickname){
+    }
+
+    private void handleAppleUserSignIn(String email, String authorizationCode){
+        String clientSecret = customRequestEntityConverter.createClientSecret();
+        String grantType = "authorization_code";
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
+            add("code", authorizationCode);
+            add("client_id", clientId);
+            add("client_secret", clientSecret);
+            add("grant_type", grantType);
+        }};
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<TokenResponseDto> response = restTemplate.postForEntity(tokenURI, httpEntity, TokenResponseDto.class);
+
+            if(response.getStatusCode().is2xxSuccessful()){
+                String appleRefreshToken = Objects.requireNonNull(response.getBody()).getRefresh_token();
+
+                userRepository.findByEmail(email)
+                        .ifPresentOrElse(
+                                user -> user.updateRefreshToken(appleRefreshToken),
+                                () -> {
+                                    throw new UnAuthorizedException();
+                                }
+                        );
+            } else {
+                throw new ForbiddenException();
+            }
+
+        } catch (HttpClientErrorException e) {
+            throw new ForbiddenException();
+        }
+
+    }
+
+    private boolean handleAppleUserResign(String appleRefreshToken) {
+        String clientSecret = customRequestEntityConverter.createClientSecret();
+        String revokeURI = "https://appleid.apple.com/auth/revoke";
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
+            add("client_id", clientId);
+            add("client_secret", clientSecret);
+            add("token", appleRefreshToken);
+            add("token_type_hint", "refresh_token");
+        }};
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(revokeURI, httpEntity, String.class);
+
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (HttpClientErrorException e) {
+            throw new ForbiddenException();
+        }
     }
 
     @Scheduled(fixedRate = 600000)

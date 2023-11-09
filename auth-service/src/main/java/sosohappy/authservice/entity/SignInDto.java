@@ -21,4 +21,6 @@ public class SignInDto {
 
     @NotEmpty
     private String providerId;
+
+    private String authorizationCode;
 }

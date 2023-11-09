@@ -24,11 +24,12 @@ import java.util.Map;
 @Component
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
 
-    private OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
+    private final OAuth2AuthorizationCodeGrantRequestEntityConverter converter;
 
     private final String keyId;
     private final String teamId;
     private final String clientSecret;
+    private final String clientId;
 
     public CustomRequestEntityConverter(Environment environment) {
         this.converter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
@@ -36,6 +37,7 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         this.keyId = environment.getProperty("spring.security.oauth2.client.registration.apple.keyId");
         this.teamId = environment.getProperty("spring.security.oauth2.client.registration.apple.teamId");
         this.clientSecret = environment.getProperty("spring.security.oauth2.client.registration.apple.clientSecret");
+        this.clientId = environment.getProperty("spring.security.oauth2.client.registration.apple.clientId");
     }
 
     @Override
@@ -47,14 +49,14 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
 
         if(provider.contains("apple")){
             parameterMap.set(
-                    "client_secret", createClientSecret(parameterMap.getFirst("client_id"))
+                    "client_secret", createClientSecret()
             );
         }
 
         return new RequestEntity<>(parameterMap, entity.getHeaders(), entity.getMethod(), entity.getUrl());
     }
 
-    private String createClientSecret(String clientId) {
+    public String createClientSecret() {
         return JWT.create()
                 .withHeader(Map.of("kid", keyId))
                 .withIssuer(teamId)

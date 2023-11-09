@@ -2,6 +2,7 @@ package sosohappy.authservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import sosohappy.authservice.entity.UserRequestDto;
 
 @Entity
 @Getter
@@ -35,6 +36,9 @@ public class User {
     @Column
     private String refreshToken;
 
+    @Column
+    private String appleRefreshToken;
+
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
@@ -50,5 +54,9 @@ public class User {
         if(userRequestDto.getIntroduction() != null){
             this.introduction = userRequestDto.getIntroduction();
         }
+    }
+
+    public void updateAppleRefreshToken(String appleRefreshToken){
+        this.appleRefreshToken = appleRefreshToken;
     }
 }
