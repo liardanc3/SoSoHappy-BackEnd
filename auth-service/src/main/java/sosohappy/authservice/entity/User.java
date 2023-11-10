@@ -62,4 +62,8 @@ public class User {
     public void updateAppleRefreshToken(String appleRefreshToken){
         this.appleRefreshToken = appleRefreshToken;
     }
+
+    public void updateDeviceToken(String deviceToken){
+        this.deviceToken = deviceToken;
+    }
 }

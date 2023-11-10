@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import sosohappy.authservice.entity.*;
 import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
-import sosohappy.authservice.exception.custom.UnAuthorizedException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.oauth2.converter.CustomRequestEntityConverter;
@@ -51,10 +50,17 @@ public class UserService {
         String provider = String.valueOf(userAttributes.get("provider"));
         String providerId = String.valueOf(userAttributes.get("providerId"));
         String deviceToken = String.valueOf(userAttributes.get("deviceToken"));
+        String appleRefreshToken = String.valueOf(userAttributes.get("appleRefreshToken"));
+
+        produceDeviceToken(email, deviceToken);
 
         userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
-                                user -> user.updateRefreshToken(refreshToken),
+                                user -> {
+                                    user.updateRefreshToken(refreshToken);
+                                    user.updateDeviceToken(deviceToken);
+                                    user.updateAppleRefreshToken(appleRefreshToken);
+                                },
                                 () -> userRepository.save(
                                         User.builder()
                                                 .email(email)
@@ -181,7 +187,8 @@ public class UserService {
                     "email", email,
                     "provider", provider,
                     "providerId", providerId,
-                    "deviceToken", signInDto.getDeviceToken()
+                    "deviceToken", signInDto.getDeviceToken(),
+                    "appleRefreshToken", provider.equals("apple") ? getAppleRefreshToken(email, signInDto.getAuthorizationCode()) : ""
             );
 
             String accessToken = jwtService.createAccessToken(email);
@@ -195,13 +202,6 @@ public class UserService {
             response.setCharacterEncoding("UTF-8");
             response.setHeader("nickname", user != null && user.getNickname() != null ? Objects.requireNonNull(user).getNickname() : null);
             response.setHeader("email", email);
-
-            if(provider.equals("apple")){
-
-                log.info("checkPoint1");
-
-                handleAppleUserSignIn(email, signInDto.getAuthorizationCode());
-            }
 
             signIn(userAttributes, refreshToken);
         }
@@ -236,7 +236,7 @@ public class UserService {
         return authorizeCodeAndChallengeMap.containsKey(authorizeCode) && authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge);
     }
 
-    private void handleAppleUserSignIn(String email, String authorizationCode){
+    private String getAppleRefreshToken(String email, String authorizationCode){
         String clientSecret = customRequestEntityConverter.createClientSecret();
         String tokenURI = "https://appleid.apple.com/auth/token";
         String grantType = "authorization_code";
@@ -266,15 +266,7 @@ public class UserService {
             System.out.println("response : " + response);
 
             if(response.getStatusCode().is2xxSuccessful()){
-                String appleRefreshToken = Objects.requireNonNull(response.getBody()).getRefresh_token();
-
-                userRepository.findByEmail(email)
-                        .ifPresentOrElse(
-                                user -> user.updateRefreshToken(appleRefreshToken),
-                                () -> {
-                                    throw new UnAuthorizedException();
-                                }
-                        );
+                return Objects.requireNonNull(response.getBody()).getRefresh_token();
             } else {
                 throw new ForbiddenException();
             }
