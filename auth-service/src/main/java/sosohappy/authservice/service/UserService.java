@@ -187,7 +187,7 @@ public class UserService {
                     "email", email,
                     "provider", provider,
                     "providerId", providerId,
-                    "deviceToken", signInDto.getDeviceToken(),
+                    "deviceToken", "asdasd",
                     "appleRefreshToken", provider.equals("apple") ? getAppleRefreshToken(signInDto.getAuthorizationCode()) : ""
             );
 
