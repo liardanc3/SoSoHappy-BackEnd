@@ -188,7 +188,7 @@ public class UserService {
                     "provider", provider,
                     "providerId", providerId,
                     "deviceToken", signInDto.getDeviceToken(),
-                    "appleRefreshToken", provider.equals("apple") ? getAppleRefreshToken(email, signInDto.getAuthorizationCode()) : ""
+                    "appleRefreshToken", provider.equals("apple") ? getAppleRefreshToken(signInDto.getAuthorizationCode()) : ""
             );
 
             String accessToken = jwtService.createAccessToken(email);
@@ -200,7 +200,7 @@ public class UserService {
             User user = userRepository.findByEmailAndProvider(email, provider).orElse(null);
 
             response.setCharacterEncoding("UTF-8");
-            response.setHeader("nickname", user != null && user.getNickname() != null ? Objects.requireNonNull(user).getNickname() : null);
+            response.setHeader("nickname", user != null && user.getNickname() != null ? user.getNickname() : null);
             response.setHeader("email", email);
 
             signIn(userAttributes, refreshToken);
@@ -210,7 +210,6 @@ public class UserService {
         }
 
     }
-
 
     // --------------------------------------------------------------- //
 
@@ -236,7 +235,7 @@ public class UserService {
         return authorizeCodeAndChallengeMap.containsKey(authorizeCode) && authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge);
     }
 
-    private String getAppleRefreshToken(String email, String authorizationCode){
+    private String getAppleRefreshToken(String authorizationCode){
         String clientSecret = customRequestEntityConverter.createClientSecret();
         String tokenURI = "https://appleid.apple.com/auth/token";
         String grantType = "authorization_code";
