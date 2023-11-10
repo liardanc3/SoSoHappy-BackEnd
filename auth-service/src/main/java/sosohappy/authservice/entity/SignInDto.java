@@ -23,4 +23,6 @@ public class SignInDto {
     private String providerId;
 
     private String authorizationCode;
+
+    private String deviceToken;
 }

@@ -28,6 +28,7 @@ import sosohappy.authservice.repository.UserRepository;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @EnableScheduling
@@ -49,6 +50,7 @@ public class UserService {
         String email = String.valueOf(userAttributes.get("email"));
         String provider = String.valueOf(userAttributes.get("provider"));
         String providerId = String.valueOf(userAttributes.get("providerId"));
+        String deviceToken = String.valueOf(userAttributes.get("deviceToken"));
 
         userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
@@ -60,6 +62,7 @@ public class UserService {
                                                 .provider(provider)
                                                 .providerId(providerId)
                                                 .refreshToken(refreshToken)
+                                                .deviceToken(deviceToken)
                                                 .build()
                                 )
                         );
@@ -160,30 +163,25 @@ public class UserService {
 
         String provider = signInDto.getProvider();
         String email = signInDto.getEmail() + "+" + provider;
+        String providerId = signInDto.getProviderId();
+        String authorizeCode = signInDto.getAuthorizeCode();
+        String codeVerifier = signInDto.getCodeVerifier();
 
         if(!provider.equals("apple") && !provider.equals("google") && !provider.equals("kakao")){
             throw new ForbiddenException();
         }
 
-        String providerId = signInDto.getProviderId();
+        String encodedCodeChallenge = encode(codeVerifier);
 
-        String authorizeCode = signInDto.getAuthorizeCode();
-        String codeVerifier = signInDto.getCodeVerifier();
-
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-
-        messageDigest.reset();
-        messageDigest.update(codeVerifier.getBytes());
-        String encodedCodeChallenge = String.format("%064x", new BigInteger(1, messageDigest.digest()));
-
-        if(authorizeCodeAndChallengeMap.containsKey(authorizeCode) && authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge)){
+        if(isValidUser(authorizeCode, encodedCodeChallenge)){
 
             authorizeCodeAndChallengeMap.remove(authorizeCode);
 
             Map<String, Object> userAttributes = Map.of(
                     "email", email,
                     "provider", provider,
-                    "providerId", providerId
+                    "providerId", providerId,
+                    "deviceToken", signInDto.getDeviceToken()
             );
 
             String accessToken = jwtService.createAccessToken(email);
@@ -192,13 +190,11 @@ public class UserService {
             jwtService.setAccessTokenOnHeader(response, accessToken);
             jwtService.setRefreshTokenOnHeader(response, refreshToken);
 
-            User user = userRepository.findByEmailAndProvider(email,provider).orElse(null);
+            User user = userRepository.findByEmailAndProvider(email, provider).orElse(null);
 
             response.setCharacterEncoding("UTF-8");
             response.setHeader("nickname", user != null && user.getNickname() != null ? Objects.requireNonNull(user).getNickname() : null);
             response.setHeader("email", email);
-
-            signIn(userAttributes, refreshToken);
 
             if(provider.equals("apple")){
 
@@ -206,6 +202,8 @@ public class UserService {
 
                 handleAppleUserSignIn(email, signInDto.getAuthorizationCode());
             }
+
+            signIn(userAttributes, refreshToken);
         }
         else {
             throw new ForbiddenException();
@@ -213,10 +211,29 @@ public class UserService {
 
     }
 
+
     // --------------------------------------------------------------- //
 
     @KafkaProducer(topic = "resign")
-    private void produceResign(String email, String nickname){
+    private List<String> produceResign(String email, String nickname){
+        return List.of(email, nickname);
+    }
+
+    @KafkaProducer(topic = "deviceToken")
+    private List<String> produceDeviceToken(String email, String deviceToken){
+        return List.of(email, deviceToken);
+    }
+
+    private String encode(String codeVerifier) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+
+        messageDigest.reset();
+        messageDigest.update(codeVerifier.getBytes());
+        return String.format("%064x", new BigInteger(1, messageDigest.digest()));
+    }
+
+    private boolean isValidUser(String authorizeCode, String encodedCodeChallenge) {
+        return authorizeCodeAndChallengeMap.containsKey(authorizeCode) && authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge);
     }
 
     private void handleAppleUserSignIn(String email, String authorizationCode){
@@ -293,6 +310,8 @@ public class UserService {
 
             return response.getStatusCode().is2xxSuccessful();
         } catch (HttpClientErrorException e) {
+            System.out.println("e.getMessage() = " + e.getMessage());
+            System.out.println("e.getResponseBodyAsString() = " + e.getResponseBodyAsString());
             throw new ForbiddenException();
         }
     }

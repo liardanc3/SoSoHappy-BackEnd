@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,9 +38,19 @@ public class KafkaProducerAspect {
         }
 
         if(kafkaProducer.topic().equals("resign")){
-            String email = (String) joinPoint.getArgs()[0];
-            String nickname = (String) joinPoint.getArgs()[1];
+            List<String> resultList = (List<String>) result;
+
+            String email = resultList.get(0);
+            String nickname = resultList.get(1);
             kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), nickname.getBytes());
+        }
+
+        if(kafkaProducer.topic().equals("deviceToken")){
+            List<String> resultList = (List<String>) result;
+
+            String email = resultList.get(0);
+            String deviceToken = resultList.get(1);
+            kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), deviceToken.getBytes());
         }
 
     }

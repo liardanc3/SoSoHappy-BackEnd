@@ -37,6 +37,9 @@ public class User {
     private String refreshToken;
 
     @Column
+    private String deviceToken;
+
+    @Column
     private String appleRefreshToken;
 
     public void updateRefreshToken(String refreshToken) {
