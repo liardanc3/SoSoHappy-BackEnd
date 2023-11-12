@@ -1,5 +1,6 @@
 package sosohappy.feedservice.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -34,8 +35,8 @@ public class FeedController {
     }
 
     @PostMapping("/saveFeed")
-    public UpdateResultDto saveFeed(@ModelAttribute @Valid UpdateFeedDto updateFeedDto){
-        return feedService.updateFeed(updateFeedDto);
+    public UpdateResultDto saveFeed(@ModelAttribute @Valid UpdateFeedDto updateFeedDto, HttpServletRequest request){
+        return feedService.updateFeed(updateFeedDto, request);
     }
 
     @PostMapping("/updatePublicStatus")

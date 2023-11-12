@@ -43,4 +43,12 @@ public class KafkaConsumer {
         feedService.deleteDataOfResignedUser(nickname);
     }
 
+    @KafkaListener(topics = "nickname", groupId = "feed-service-nickname-0000")
+    public void handleUpdateNickname(ConsumerRecord<byte[], byte[]> record){
+
+        String before = new String(record.key());
+        String after = new String(record.value());
+
+        feedService.updateNickname(before, after);
+    }
 }

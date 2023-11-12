@@ -1,6 +1,7 @@
 package sosohappy.feedservice.service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -38,7 +39,7 @@ public class FeedService {
                 .orElse(null);
     }
 
-    public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
+    public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto, HttpServletRequest request) {
         return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())
                 .map(feed -> {
                     happinessService.updateSimilarityMatrix(feed, updateFeedDto);
@@ -82,6 +83,10 @@ public class FeedService {
                     return responseDto;
                 })
                 .orElseThrow(FindException::new);
+    }
+
+    public void updateNickname(String srcNickname, String dstNickname){
+        feedRepository.updateFeedNickname(srcNickname, dstNickname);
     }
 
     public void deleteDataOfResignedUser(String nickname){

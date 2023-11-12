@@ -2,7 +2,9 @@ package sosohappy.feedservice.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import sosohappy.feedservice.domain.dto.HappinessAndCategoryDto;
 import sosohappy.feedservice.domain.entity.Feed;
 
@@ -17,7 +19,12 @@ public interface FeedRepository extends JpaRepository<Feed, Long>, FeedQueryRepo
     @Query("SELECT DISTINCT c FROM Feed f JOIN f.categoryList c")
     List<String> findAllCategories();
 
+    @Modifying
+    @Query("update Feed f set f.nickname = :after where f.nickname = :before")
+    void updateFeedNickname(@Param("before") String before, @Param("after") String after);
+
     void deleteByNickname(String nickname);
 
     List<Feed> findByLikeNicknameSetContaining(String nickname);
+
 }
