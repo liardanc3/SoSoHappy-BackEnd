@@ -5,6 +5,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import sosohappy.noticeservice.kafka.KafkaConsumer;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final ConcurrentHashMap<String, String> emailAndTokenMap;
+    private final ConcurrentHashMap<String, String> emailAndTokenMap = KafkaConsumer.emailAndAccessTokenMap;
 
     public Mono<Boolean> verifyAccessToken(ServerWebExchange exchange) {
         return extractAccessToken(exchange.getRequest())
