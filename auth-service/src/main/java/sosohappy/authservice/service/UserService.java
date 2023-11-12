@@ -237,6 +237,10 @@ public class UserService {
             add("grant_type", grantType);
         }};
 
+        for (Map.Entry<String, List<String>> stringListEntry : params.entrySet()) {
+            System.out.println(stringListEntry.getKey() + " : " + stringListEntry.getValue().get(0));
+        }
+
         log.info("checkPoint2");
 
         HttpHeaders headers = new HttpHeaders();
