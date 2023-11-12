@@ -52,6 +52,8 @@ public class User {
     @KafkaProducer(topic = "nickname")
     @SneakyThrows
     public List<String> updateProfile(UserRequestDto userRequestDto)  {
+        String originNickname = this.nickname;
+
         if(userRequestDto.getProfileImg() != null){
             this.profileImg = userRequestDto.getProfileImg().getBytes();
         }
@@ -62,7 +64,7 @@ public class User {
             this.introduction = userRequestDto.getIntroduction();
         }
 
-        return List.of(email, nickname);
+        return List.of(originNickname, nickname);
     }
 
     public void updateAppleRefreshToken(String appleRefreshToken){
