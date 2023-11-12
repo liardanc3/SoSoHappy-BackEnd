@@ -53,6 +53,14 @@ public class KafkaProducerAspect {
             kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), deviceToken.getBytes());
         }
 
+        if(kafkaProducer.topic().equals("nickname")){
+            List<String> resultList = (List<String>) result;
+
+            String email = resultList.get(0);
+            String nickname = resultList.get(1);
+            kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), nickname.getBytes());
+        }
+
     }
 
 }

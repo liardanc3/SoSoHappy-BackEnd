@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import sosohappy.authservice.entity.*;
 import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
+import sosohappy.authservice.exception.custom.UnAuthorizedException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.oauth2.converter.CustomRequestEntityConverter;
@@ -52,8 +53,6 @@ public class UserService {
         String deviceToken = String.valueOf(userAttributes.get("deviceToken"));
         String appleRefreshToken = String.valueOf(userAttributes.get("appleRefreshToken"));
 
-        produceDeviceToken(email, deviceToken);
-
         userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
                                 user -> {
@@ -61,29 +60,34 @@ public class UserService {
                                     user.updateDeviceToken(deviceToken);
                                     user.updateAppleRefreshToken(appleRefreshToken);
                                 },
-                                () -> userRepository.save(
-                                        User.builder()
-                                                .email(email)
-                                                .nickname(UUID.randomUUID().toString())
-                                                .provider(provider)
-                                                .providerId(providerId)
-                                                .refreshToken(refreshToken)
-                                                .deviceToken(deviceToken)
-                                                .build()
-                                )
+                                () -> {
+                                    User user = userRepository.save(
+                                            User.builder()
+                                                    .email(email)
+                                                    .nickname(UUID.randomUUID().toString())
+                                                    .provider(provider)
+                                                    .providerId(providerId)
+                                                    .refreshToken(refreshToken)
+                                                    .build()
+                                    );
+                                    user.updateDeviceToken(deviceToken);
+                                }
                         );
     }
 
     public ResignDto resign(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> {
-                    boolean revokeResult = handleAppleUserResign(user.getAppleRefreshToken());
+
+                    boolean revokeResult = true;
+
+                    if(user.getProvider().equals("apple")){
+                        revokeResult = handleAppleUserResign(user.getAppleRefreshToken());
+                    }
 
                     if(revokeResult){
-                        userServiceProvider.getObject()
-                                .produceResign(user.getEmail(), user.getNickname());
-                        userRepository
-                                .delete(user);
+                        userServiceProvider.getObject().produceResign(user.getEmail(), user.getNickname());
+                        userRepository.delete(user);
                     }
 
                     return ResignDto.builder()
@@ -91,12 +95,7 @@ public class UserService {
                             .success(revokeResult)
                             .build();
                 })
-                .orElseGet(() ->
-                        ResignDto.builder()
-                                .email(email)
-                                .success(false)
-                                .build()
-                );
+                .orElseThrow(UnAuthorizedException::new);
     }
 
 
@@ -120,17 +119,13 @@ public class UserService {
         return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
                     user.updateProfile(userRequestDto);
+
                     return SetProfileDto.builder()
                             .email(user.getEmail())
                             .success(true)
                             .build();
                 })
-                .orElseGet(() ->
-                        SetProfileDto.builder()
-                                .email(userRequestDto.getEmail())
-                                .success(false)
-                                .build()
-                );
+                .orElseThrow(UnAuthorizedException::new);
     }
 
     public UserResponseDto findProfileImg(String nickname) {
@@ -211,16 +206,11 @@ public class UserService {
 
     }
 
-    // --------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------------------------------ //
 
     @KafkaProducer(topic = "resign")
     private List<String> produceResign(String email, String nickname){
         return List.of(email, nickname);
-    }
-
-    @KafkaProducer(topic = "deviceToken")
-    private List<String> produceDeviceToken(String email, String deviceToken){
-        return List.of(email, deviceToken);
     }
 
     private String encode(String codeVerifier) throws NoSuchAlgorithmException {

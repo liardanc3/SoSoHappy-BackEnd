@@ -3,6 +3,9 @@ package sosohappy.authservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import sosohappy.authservice.entity.UserRequestDto;
+import sosohappy.authservice.kafka.KafkaProducer;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,8 +49,9 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+    @KafkaProducer(topic = "nickname")
     @SneakyThrows
-    public void updateProfile(UserRequestDto userRequestDto)  {
+    public List<String> updateProfile(UserRequestDto userRequestDto)  {
         if(userRequestDto.getProfileImg() != null){
             this.profileImg = userRequestDto.getProfileImg().getBytes();
         }
@@ -57,13 +61,18 @@ public class User {
         if(userRequestDto.getIntroduction() != null){
             this.introduction = userRequestDto.getIntroduction();
         }
+
+        return List.of(email, nickname);
     }
 
     public void updateAppleRefreshToken(String appleRefreshToken){
         this.appleRefreshToken = appleRefreshToken;
     }
 
-    public void updateDeviceToken(String deviceToken){
+    @KafkaProducer(topic = "deviceToken")
+    public List<String> updateDeviceToken(String deviceToken){
         this.deviceToken = deviceToken;
+
+        return List.of(email, deviceToken);
     }
 }
