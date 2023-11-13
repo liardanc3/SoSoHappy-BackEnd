@@ -1,10 +1,13 @@
 package sosohappy.authservice.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +26,7 @@ import sosohappy.authservice.exception.custom.ForbiddenException;
 import sosohappy.authservice.exception.custom.UnAuthorizedException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
-import sosohappy.authservice.oauth2.converter.CustomRequestEntityConverter;
+import sosohappy.authservice.oauth2.apple.AppleOAuth2Delegator;
 import sosohappy.authservice.repository.UserRepository;
 
 import java.math.BigInteger;
@@ -43,8 +46,7 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
-    private final RestTemplate restTemplate;
-    private final CustomRequestEntityConverter customRequestEntityConverter;
+    private final AppleOAuth2Delegator appleOAuth2Delegator;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -82,7 +84,7 @@ public class UserService {
                     boolean revokeResult = true;
 
                     if(user.getProvider().equals("apple")){
-                        revokeResult = handleAppleUserResign(user.getAppleRefreshToken());
+                        revokeResult = appleOAuth2Delegator.handleAppleUserResign(user.getAppleRefreshToken());
                     }
 
                     if(revokeResult){
@@ -183,7 +185,8 @@ public class UserService {
                     "provider", provider,
                     "providerId", providerId,
                     "deviceToken", "asdasd",
-                    "appleRefreshToken", provider.equals("apple") ? getAppleRefreshToken(signInDto.getAuthorizationCode()) : ""
+                    "appleRefreshToken", provider.equals("apple") ?
+                            appleOAuth2Delegator.getAppleRefreshToken(signInDto.getAuthorizationCode()) : ""
             );
 
             String accessToken = jwtService.createAccessToken(email);
@@ -223,82 +226,6 @@ public class UserService {
 
     private boolean isValidUser(String authorizeCode, String encodedCodeChallenge) {
         return authorizeCodeAndChallengeMap.containsKey(authorizeCode) && authorizeCodeAndChallengeMap.get(authorizeCode).equals(encodedCodeChallenge);
-    }
-
-    private String getAppleRefreshToken(String authorizationCode){
-        String clientSecret = customRequestEntityConverter.createClientSecret();
-        String tokenURI = "https://appleid.apple.com/auth/token";
-        String grantType = "authorization_code";
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
-            add("code", authorizationCode);
-            add("client_id", customRequestEntityConverter.getClientId());
-            add("client_secret", clientSecret);
-            add("grant_type", grantType);
-        }};
-
-        for (Map.Entry<String, List<String>> stringListEntry : params.entrySet()) {
-            System.out.println(stringListEntry.getKey() + " : " + stringListEntry.getValue().get(0));
-        }
-
-        log.info("checkPoint2");
-
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
-
-        log.info("checkPoint3");
-
-        try {
-            ResponseEntity<TokenResponseDto> response = restTemplate.postForEntity(tokenURI, httpEntity, TokenResponseDto.class);
-
-            log.info("checkPoint4");
-            System.out.println("response : " + response);
-
-            if(response.getStatusCode().is2xxSuccessful()){
-                return Objects.requireNonNull(response.getBody()).getRefresh_token();
-            } else {
-                throw new ForbiddenException();
-            }
-
-        } catch (HttpClientErrorException e) {
-            log.info(e.getMessage());
-            log.info(e.getResponseBodyAsString());
-            throw new ForbiddenException();
-        }
-
-    }
-
-    private boolean handleAppleUserResign(String appleRefreshToken) {
-        String clientSecret = customRequestEntityConverter.createClientSecret();
-        String revokeURI = "https://appleid.apple.com/auth/revoke";
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
-            add("client_id", customRequestEntityConverter.getClientId());
-            add("client_secret", clientSecret);
-            add("token", appleRefreshToken);
-            add("token_type_hint", "refresh_token");
-        }};
-
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
-
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(revokeURI, httpEntity, String.class);
-
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException e) {
-            System.out.println("e.getMessage() = " + e.getMessage());
-            System.out.println("e.getResponseBodyAsString() = " + e.getResponseBodyAsString());
-            throw new ForbiddenException();
-        }
     }
 
     @Scheduled(fixedRate = 600000)
