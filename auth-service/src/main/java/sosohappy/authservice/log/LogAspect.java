@@ -31,24 +31,19 @@ public class LogAspect {
 
         sb.append(String.format("REQUEST %s : %s\n\n", servletPath, email != null ? email : sessionId));
 
-        Object[] args = joinPoint.getArgs();
-        for (Object arg : args) {
-            String str = arg.toString();
-
-            sb.append(str);
-        }
+        Arrays.stream(joinPoint.getArgs())
+                .filter(obj -> obj.toString().length() <= 5000)
+                .forEach(sb::append);
 
         request.getHeaderNames().asIterator().forEachRemaining(
-                headerName -> {
-                    sb.append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n");
-                }
+                headerName -> sb.append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n")
         );
 
         log.info(sb.toString());
     }
 
     @AfterReturning(value = "execution(* sosohappy.authservice.controller.*.*(..))", returning = "result")
-    public void handleAfterReturning(JoinPoint joinPoint, Object result) {
+    public void handleAfterReturning(Object result) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
 
