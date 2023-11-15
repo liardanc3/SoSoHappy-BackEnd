@@ -54,6 +54,7 @@ public class AppleOAuth2Delegator {
             add("client_id", clientId);
             add("client_secret", clientSecret);
             add("grant_type", grantType);
+            add("redirect_uri", "https://sosohappy.dev/auth-service/login/oauth2/code/apple");
         }};
 
         HttpHeaders headers = new HttpHeaders();
