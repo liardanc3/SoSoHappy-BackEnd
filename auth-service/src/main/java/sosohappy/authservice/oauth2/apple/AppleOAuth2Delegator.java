@@ -71,6 +71,7 @@ public class AppleOAuth2Delegator {
 
         try {
             ResponseEntity<TokenResponseDto> response = restTemplate.postForEntity(tokenURI, httpEntity, TokenResponseDto.class);
+            log.info(response.toString());
 
             if(response.getStatusCode().is2xxSuccessful()){
                 return Objects.requireNonNull(response.getBody()).getRefresh_token();

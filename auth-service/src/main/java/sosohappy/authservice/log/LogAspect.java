@@ -55,7 +55,7 @@ public class LogAspect {
 
         sb.append(String.format("RESPONSE %d %s : %s\n\n", response.getStatus(), servletPath, email != null ? email : sessionId));
 
-        sb.append(result);
+        sb.append(result.toString(), 0, Math.min(result.toString().length(), 1000));
         sb.append("\n");
 
         for (String headerName : response.getHeaderNames()) {

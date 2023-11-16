@@ -186,7 +186,7 @@ public class UserService {
                     "providerId", providerId,
                     "deviceToken", "asdasd",
                     "appleRefreshToken", provider.equals("apple") ?
-                            appleOAuth2Delegator.getAppleRefreshToken(signInDto.getAuthorizationCode()) : ""
+                            appleOAuth2Delegator.getAppleRefreshToken(signInDto.getAuthorizationCode()) : "-"
             );
 
             String accessToken = jwtService.createAccessToken(email);
