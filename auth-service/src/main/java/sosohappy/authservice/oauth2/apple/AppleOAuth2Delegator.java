@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import sosohappy.authservice.entity.TokenResponseDto;
 import sosohappy.authservice.exception.custom.ForbiddenException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
@@ -45,12 +46,16 @@ public class AppleOAuth2Delegator {
     private String clientId;
 
     public String getAppleRefreshToken(String authorizationCode){
+
+        byte[] decodedBytes = Base64.getDecoder().decode(authorizationCode);
+        String utf8AuthorizationCode = new String(decodedBytes, StandardCharsets.UTF_8);
+
         String clientSecret = createClientSecret();
         String tokenURI = "https://appleid.apple.com/auth/token";
         String grantType = "authorization_code";
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(){{
-            add("code", authorizationCode);
+            add("code", utf8AuthorizationCode);
             add("client_id", clientId);
             add("client_secret", clientSecret);
             add("grant_type", grantType);
