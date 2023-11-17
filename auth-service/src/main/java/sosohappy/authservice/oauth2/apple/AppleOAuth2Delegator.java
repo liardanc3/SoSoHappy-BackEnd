@@ -80,8 +80,7 @@ public class AppleOAuth2Delegator {
             }
 
         } catch (HttpClientErrorException e) {
-            log.info(e.getMessage());
-            log.info(e.getResponseBodyAsString());
+            log.error(e.getMessage());
             throw new ForbiddenException();
         }
 
@@ -110,8 +109,8 @@ public class AppleOAuth2Delegator {
 
             return response.getStatusCode().is2xxSuccessful();
         } catch (HttpClientErrorException e) {
-            System.out.println("e.getMessage() = " + e.getMessage());
-            System.out.println("e.getResponseBodyAsString() = " + e.getResponseBodyAsString());
+            log.error(e.getMessage());
+
             throw new ForbiddenException();
         }
     }
