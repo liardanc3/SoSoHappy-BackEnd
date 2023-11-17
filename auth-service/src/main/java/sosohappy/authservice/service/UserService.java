@@ -1,31 +1,21 @@
 package sosohappy.authservice.service;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import sosohappy.authservice.entity.*;
 import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
 import sosohappy.authservice.exception.custom.UnAuthorizedException;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.kafka.KafkaProducer;
+import sosohappy.authservice.model.dto.*;
+import sosohappy.authservice.model.entity.User;
 import sosohappy.authservice.oauth2.apple.AppleOAuth2Delegator;
 import sosohappy.authservice.repository.UserRepository;
 

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import sosohappy.authservice.entity.User;
+import sosohappy.authservice.model.entity.User;
 import sosohappy.authservice.jwt.service.JwtService;
 import sosohappy.authservice.repository.UserRepository;
 

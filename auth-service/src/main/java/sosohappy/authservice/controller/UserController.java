@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sosohappy.authservice.entity.*;
+import sosohappy.authservice.model.dto.*;
 import sosohappy.authservice.service.UserService;
 
 import java.util.Map;

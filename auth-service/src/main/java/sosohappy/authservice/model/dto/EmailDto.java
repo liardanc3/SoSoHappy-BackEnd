@@ -1,4 +1,4 @@
-package sosohappy.authservice.entity;
+package sosohappy.authservice.model.dto;
 
 import jakarta.validation.constraints.Email;
 import lombok.Data;

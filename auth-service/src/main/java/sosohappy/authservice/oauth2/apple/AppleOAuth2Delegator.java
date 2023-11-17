@@ -16,7 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import sosohappy.authservice.entity.TokenResponseDto;
+import sosohappy.authservice.model.dto.TokenResponseDto;
 import sosohappy.authservice.exception.custom.ForbiddenException;
 
 import java.nio.charset.StandardCharsets;

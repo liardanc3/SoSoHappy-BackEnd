@@ -1,4 +1,4 @@
-package sosohappy.authservice.entity;
+package sosohappy.authservice.model.dto;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;

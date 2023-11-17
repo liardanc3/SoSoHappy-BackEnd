@@ -2,7 +2,7 @@ package sosohappy.authservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import sosohappy.authservice.entity.User;
+import sosohappy.authservice.model.entity.User;
 
 import java.util.Optional;
 

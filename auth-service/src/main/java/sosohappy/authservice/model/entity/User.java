@@ -1,9 +1,9 @@
-package sosohappy.authservice.entity;
+package sosohappy.authservice.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import sosohappy.authservice.entity.UserRequestDto;
 import sosohappy.authservice.kafka.KafkaProducer;
+import sosohappy.authservice.model.dto.UserRequestDto;
 
 import java.util.List;
 

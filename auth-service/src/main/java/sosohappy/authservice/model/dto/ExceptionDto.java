@@ -1,4 +1,4 @@
-package sosohappy.authservice.entity;
+package sosohappy.authservice.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
