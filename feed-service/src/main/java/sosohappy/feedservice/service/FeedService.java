@@ -70,7 +70,7 @@ public class FeedService {
 
     public OtherFeedDto findDetailFeed(String srcNickname, String dstNickname, Long date) {
         return feedRepository.findBySrcNicknameAndDstNicknameAndDate(srcNickname, dstNickname, date)
-                .orElseThrow(FindException::new);
+                .orElse(null);
     }
 
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
@@ -82,7 +82,7 @@ public class FeedService {
                     }
                     return responseDto;
                 })
-                .orElseThrow(FindException::new);
+                .orElseGet(() -> Map.of("like", false));
     }
 
     public void updateNickname(String srcNickname, String dstNickname){
@@ -95,6 +95,8 @@ public class FeedService {
         feedRepository.findByLikeNicknameSetContaining(nickname)
                 .forEach(feed -> feed.getLikeNicknameSet().remove(nickname));
     }
+
+    // --------------------------------------------------------------------------------------------------- //
 
     @KafkaProducer(topic = "noticeLike")
     public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
