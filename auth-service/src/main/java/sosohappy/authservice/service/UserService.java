@@ -60,6 +60,7 @@ public class UserService {
                                                     .provider(provider)
                                                     .providerId(providerId)
                                                     .refreshToken(refreshToken)
+                                                    .appleRefreshToken(appleRefreshToken)
                                                     .build()
                                     );
                                     user.updateDeviceToken(deviceToken);
