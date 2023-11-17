@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Arrays;
+
 @Aspect
 @Component
 @Slf4j
@@ -29,12 +31,14 @@ public class LogAspect {
 
         sb.append(String.format("REQUEST %s : %s\n\n", servletPath, email != null ? email : sessionId));
 
-        Object[] args = joinPoint.getArgs();
-        for (Object arg : args) {
-            String str = arg.toString();
+        Arrays.stream(joinPoint.getArgs())
+                .filter(obj -> obj.toString().length() <= 5000)
+                .forEach(sb::append);
 
-            sb.append(str);
-        }
+        request.getHeaderNames().asIterator().forEachRemaining(
+                headerName -> sb.append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n")
+        );
+
         log.info(sb.toString());
     }
 
@@ -51,15 +55,14 @@ public class LogAspect {
 
         sb.append(String.format("RESPONSE %d %s : %s\n\n", response.getStatus(), servletPath, email != null ? email : sessionId));
 
-        sb.append(result);
-        sb.append("\n");
-
-        for (String headerName : response.getHeaderNames()) {
-            String str = response.getHeader(headerName);
-
-            sb.append(headerName).append(" : ").append(str).append("\n");
-
+        if(result != null){
+            sb.append(result.toString(), 0, Math.min(result.toString().length(), 1000));
+            sb.append("\n");
         }
+
+        request.getHeaderNames().asIterator().forEachRemaining(
+                headerName -> sb.append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n")
+        );
 
         log.info(sb.toString());
     }
@@ -75,7 +78,7 @@ public class LogAspect {
         String sessionId = request.getSession().getId();
 
         sb.append(String.format("RESPONSE ERROR %s : %s\n\n", servletPath, email != null ? email : sessionId));
-        sb.append(ex.getClass());
+        sb.append(Arrays.toString(ex.getStackTrace()), 0, Math.min(Arrays.toString(ex.getStackTrace()).length(), 1000));
 
         log.info(sb.toString());
     }
