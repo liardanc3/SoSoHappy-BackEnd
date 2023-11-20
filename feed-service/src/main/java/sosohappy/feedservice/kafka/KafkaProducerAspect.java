@@ -17,7 +17,7 @@ public class KafkaProducerAspect {
     private final KafkaTemplate<byte[], byte[]> kafkaTemplate;
 
     @AfterReturning(value = "@annotation(kafkaProducer)", returning = "result")
-    public void handleKafkaProducer(JoinPoint joinPoint, KafkaProducer kafkaProducer, Object result){
+    public void handleKafkaProducer(KafkaProducer kafkaProducer, Object result){
 
         if(kafkaProducer.topic().equals("noticeLike")){
             List<String> likeResult = (List<String>) result;
