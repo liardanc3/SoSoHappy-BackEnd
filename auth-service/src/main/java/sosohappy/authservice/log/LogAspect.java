@@ -13,6 +13,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Aspect
 @Component
@@ -32,6 +33,7 @@ public class LogAspect {
         sb.append(String.format("REQUEST %s : %s\n\n", servletPath, email != null ? email : sessionId));
 
         Arrays.stream(joinPoint.getArgs())
+                .filter(Objects::nonNull)
                 .filter(obj -> obj.toString().length() <= 5000)
                 .forEach(sb::append);
 
