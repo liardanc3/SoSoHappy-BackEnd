@@ -62,8 +62,8 @@ public class LogAspect {
             sb.append("\n");
         }
 
-        request.getHeaderNames().asIterator().forEachRemaining(
-                headerName -> sb.append(headerName).append(" : ").append(request.getHeader(headerName)).append("\n")
+        response.getHeaderNames().iterator().forEachRemaining(
+                headerName -> sb.append(headerName).append(" : ").append(response.getHeader(headerName)).append("\n")
         );
 
         log.info(sb.toString());
