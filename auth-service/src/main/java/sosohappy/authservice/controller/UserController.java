@@ -44,8 +44,8 @@ public class UserController {
     }
 
     @PostMapping("/signIn")
-    public void signInWithPKCE(@ModelAttribute @Valid SignInDto signInDto, HttpServletResponse httpServletResponse) {
-        userService.signInWithPKCE(signInDto, httpServletResponse);
+    public NicknameDto signInWithPKCE(@ModelAttribute @Valid SignInDto signInDto, HttpServletResponse httpServletResponse) {
+        return userService.signInWithPKCE(signInDto, httpServletResponse);
     }
 
     @PostMapping("/getAuthorizeCode")

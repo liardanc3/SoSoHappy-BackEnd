@@ -20,6 +20,7 @@ import sosohappy.authservice.oauth2.apple.AppleOAuth2Delegator;
 import sosohappy.authservice.repository.UserRepository;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -153,7 +154,7 @@ public class UserService {
     }
 
     @SneakyThrows
-    public void signInWithPKCE(SignInDto signInDto, HttpServletResponse response) {
+    public NicknameDto signInWithPKCE(SignInDto signInDto, HttpServletResponse response) {
 
         String provider = signInDto.getProvider();
         String email = signInDto.getEmail() + "+" + provider;
@@ -189,10 +190,11 @@ public class UserService {
             User user = userRepository.findByEmailAndProvider(email, provider).orElse(null);
 
             response.setCharacterEncoding("UTF-8");
-            response.setHeader("nickname", user != null && user.getNickname() != null ? user.getNickname() : null);
-            response.setHeader("email", email);
+            response.setHeader("email", new String(email.getBytes(), StandardCharsets.UTF_8));
 
             signIn(userAttributes, refreshToken);
+
+            return new NicknameDto(user != null && user.getNickname().length() <= 10 ? user.getNickname() : "");
         }
         else {
             throw new ForbiddenException();
@@ -222,6 +224,7 @@ public class UserService {
     @Scheduled(fixedRate = 600000)
     public void deleteAuthorizeCodeAndChallengeMap(){
         authorizeCodeAndChallengeMap.clear();
+        log.info("clear AuthorizeCodeAndChallengeMap");
     }
 
 }
