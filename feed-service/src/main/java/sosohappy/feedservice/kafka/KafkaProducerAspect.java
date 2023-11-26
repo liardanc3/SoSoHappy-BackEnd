@@ -1,7 +1,6 @@
 package sosohappy.feedservice.kafka;
 
 import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,10 +20,11 @@ public class KafkaProducerAspect {
 
         if(kafkaProducer.topic().equals("noticeLike")){
             List<String> likeResult = (List<String>) result;
-            String key = likeResult.get(0);
-            String value = likeResult.get(1);
 
-            kafkaTemplate.send(kafkaProducer.topic(), key.getBytes(), value.getBytes());
+            String srcNickname = likeResult.get(0);
+            String emailAndDate = likeResult.get(1);
+
+            kafkaTemplate.send(kafkaProducer.topic(), srcNickname.getBytes(), emailAndDate.getBytes());
         }
 
     }

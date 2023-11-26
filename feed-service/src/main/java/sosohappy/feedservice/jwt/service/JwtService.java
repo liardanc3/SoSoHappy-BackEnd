@@ -3,15 +3,13 @@ package sosohappy.feedservice.jwt.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import sosohappy.feedservice.kafka.KafkaConsumer;
 
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-
-    private final ConcurrentHashMap<String, String> emailAndTokenMap;
 
     public boolean verifyAccessToken(HttpServletRequest request) {
         return extractAccessToken(request)
@@ -30,7 +28,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String email, String token){
-        return email != null && token != null && emailAndTokenMap.get(email) != null && emailAndTokenMap.get(email).equals(token);
+        return email != null && token != null && KafkaConsumer.emailAndTokenMap.get(email) != null && KafkaConsumer.emailAndTokenMap.get(email).equals(token);
     }
 
 }

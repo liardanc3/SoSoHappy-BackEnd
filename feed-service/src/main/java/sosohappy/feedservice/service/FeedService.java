@@ -14,6 +14,7 @@ import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
+import sosohappy.feedservice.kafka.KafkaConsumer;
 import sosohappy.feedservice.kafka.KafkaProducer;
 import sosohappy.feedservice.repository.FeedRepository;
 
@@ -100,7 +101,7 @@ public class FeedService {
 
     @KafkaProducer(topic = "noticeLike")
     public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
-        return List.of(srcNickname, nicknameAndDateDto.getNickname() + "," + nicknameAndDateDto.getDate());
+        return List.of(srcNickname, KafkaConsumer.nicknameAndEmailMap.get(nicknameAndDateDto.getNickname()) + "," + nicknameAndDateDto.getDate());
     }
 
 }

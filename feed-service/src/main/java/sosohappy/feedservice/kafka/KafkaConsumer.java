@@ -12,7 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class KafkaConsumer {
 
-    private final ConcurrentHashMap<String, String> emailAndTokenMap;
+    public static final ConcurrentHashMap<String, String> emailAndTokenMap = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> emailAndNicknameMap = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> nicknameAndEmailMap = new ConcurrentHashMap<>();
+
     private final FeedService feedService;
 
     @KafkaListener(topics = "accessToken", groupId = "feed-service-accessToken-0000")
@@ -20,14 +23,11 @@ public class KafkaConsumer {
         String email = new String(record.key());
         String accessToken = new String(record.value());
 
-        System.out.println("email = " + email);
-        System.out.println("accessToken = " + accessToken);
         emailAndTokenMap.put(email, accessToken);
     }
 
     @KafkaListener(topics = "expired", groupId = "feed-service-expired-0000")
     public void handleExpiredToken(ConsumerRecord<byte[], byte[]> record){
-
         String email = new String(record.key());
 
         emailAndTokenMap.remove(email);
@@ -35,20 +35,25 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "resign", groupId = "feed-service-resign-0000")
     public void handleResignedUser(ConsumerRecord<byte[], byte[]> record){
-
         String email = new String(record.key());
         String nickname = new String(record.value());
 
         emailAndTokenMap.remove(email);
+
         feedService.deleteDataOfResignedUser(nickname);
     }
 
-    @KafkaListener(topics = "nickname", groupId = "feed-service-nickname-0000")
-    public void handleUpdateNickname(ConsumerRecord<byte[], byte[]> record){
+    @KafkaListener(topics = "emailAndNickname", groupId = "feed-service-emailAndNickname-0000")
+    public void handleUpdateEmailAndNickname(ConsumerRecord<byte[], byte[]> record){
+        String email = new String(record.key());
+        String nickname = new String(record.value());
 
-        String before = new String(record.key());
-        String after = new String(record.value());
+        String originNickname = emailAndNicknameMap.get(email);
 
-        feedService.updateNickname(before, after);
+        nicknameAndEmailMap.remove(originNickname);
+        emailAndNicknameMap.put(email, nickname);
+        nicknameAndEmailMap.put(nickname, email);
+
+        feedService.updateNickname(originNickname, nickname);
     }
 }

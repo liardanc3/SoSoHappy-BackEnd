@@ -18,9 +18,10 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class HappinessService {
 
-    private final ConcurrentHashMap<String, Integer> categoryToIndexMap;
-    private final ConcurrentHashMap<Integer, String> indexToCategoryMap;
-    private final AtomicReference<List<List<Integer>>> atomicSimilarityMatrix;
+    private static final ConcurrentHashMap<String, Integer> categoryToIndexMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, String> indexToCategoryMap = new ConcurrentHashMap<>();
+    private static final AtomicReference<List<List<Integer>>> atomicSimilarityMatrix = new AtomicReference<>();
+
     private final FeedRepository feedRepository;
 
     @PostConstruct
