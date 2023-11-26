@@ -21,19 +21,22 @@ public class NoticeService {
 
     private final FirebaseMessaging firebaseMessaging;
 
-    public void sendNotice() throws FirebaseMessagingException {
-        Message message = Message.builder()
-                .setNotification(
-                        Notification.builder()
-                                .setTitle("a")
-                                .setBody("b")
-                                .build()
-                )
-                .setTopic("like")
-                .build();
+    public Mono<Void> sendNotice(String srcNickname, Long date, String deviceToken) {
+        return Mono.defer(() -> {
+            Message message = Message.builder()
+                    .setNotification(
+                            Notification.builder()
+                                    .setTitle("a")
+                                    .setBody("b")
+                                    .build()
+                    )
+                    .setTopic("like")
+                    .build();
 
+            firebaseMessaging.sendAsync(message);
 
-        firebaseMessaging.sendAsync(message);
+            return Mono.empty();
+        });
     }
 
 }

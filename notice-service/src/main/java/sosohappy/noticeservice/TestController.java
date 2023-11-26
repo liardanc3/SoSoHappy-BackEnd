@@ -14,7 +14,7 @@ public class TestController {
     private final NoticeService noticeService;
 
     @GetMapping("/test-actuator")
-    public void test() throws FirebaseMessagingException {
-        noticeService.sendNotice();
+    public Mono<Void> test() throws FirebaseMessagingException {
+        return noticeService.sendNotice("hello", 2023112610101010L, "asdasd");
     }
 }
