@@ -49,9 +49,10 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
-    @KafkaProducer(topic = "nickname")
+    @KafkaProducer(topic = "emailAndNickname")
     @SneakyThrows
     public List<String> updateProfile(UserRequestDto userRequestDto)  {
+        boolean nicknameEdited = false;
         String originNickname = this.nickname;
 
         if(userRequestDto.getProfileImg() != null){
@@ -59,12 +60,15 @@ public class User {
         }
         if(userRequestDto.getNickname() != null){
             this.nickname = userRequestDto.getNickname();
+            if(!this.nickname.equals(originNickname)){
+                nicknameEdited = true;
+            }
         }
         if(userRequestDto.getIntroduction() != null){
             this.introduction = userRequestDto.getIntroduction();
         }
 
-        return List.of(originNickname, nickname);
+        return List.of(nicknameEdited ? email : "", nickname);
     }
 
     public void updateAppleRefreshToken(String appleRefreshToken){
