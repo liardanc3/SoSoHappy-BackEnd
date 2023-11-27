@@ -26,11 +26,12 @@ public class NoticeService {
             Message message = Message.builder()
                     .setNotification(
                             Notification.builder()
-                                    .setTitle("a")
-                                    .setBody("b")
+                                    .setTitle("좋아요 알림")
+                                    .setBody(srcNickname + " 님이 내 피드에 좋아요를 눌렀습니다.")
                                     .build()
                     )
-                    .setTopic("like")
+                    .setToken(deviceToken)
+                    .putData("date", date.toString())
                     .build();
 
             firebaseMessaging.sendAsync(message);
