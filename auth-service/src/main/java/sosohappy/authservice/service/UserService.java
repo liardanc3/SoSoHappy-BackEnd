@@ -160,6 +160,7 @@ public class UserService {
         String email = signInDto.getEmail() + "+" + provider;
         String providerId = signInDto.getProviderId();
         String authorizeCode = signInDto.getAuthorizeCode();
+        String deviceToken = signInDto.getDeviceToken();
         String codeVerifier = signInDto.getCodeVerifier();
 
         if(!provider.equals("apple") && !provider.equals("google") && !provider.equals("kakao")){
@@ -176,7 +177,7 @@ public class UserService {
                     "email", email,
                     "provider", provider,
                     "providerId", providerId,
-                    "deviceToken", "asdasd",
+                    "deviceToken", deviceToken,
                     "appleRefreshToken", provider.equals("apple") ?
                             appleOAuth2Delegator.getAppleRefreshToken(signInDto.getAuthorizationCode()) : "-"
             );

@@ -26,6 +26,6 @@ public class SignInDto {
     @Nullable
     private String authorizationCode;
 
-    @Nullable
+    @NotEmpty
     private String deviceToken;
 }
