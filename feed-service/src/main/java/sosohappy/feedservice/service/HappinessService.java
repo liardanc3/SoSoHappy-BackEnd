@@ -58,9 +58,30 @@ public class HappinessService {
 
     public List<HappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(feedRepository.findHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
-                .filter(monthHappinessAndDateDtoList -> !monthHappinessAndDateDtoList.isEmpty())
-                .orElseThrow(FindException::new);
+                .map(this::fillMonthHappinessAndDateDtoList)
+                .orElseThrow(RuntimeException::new);
+    }
 
+    private List<HappinessAndDateDto> fillMonthHappinessAndDateDtoList(List<HappinessAndDateDto> monthHappinessAndDateDtoList) {
+        int lastDayOfMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
+        double[] check = new double[32];
+
+        for (HappinessAndDateDto happinessAndDateDto : monthHappinessAndDateDtoList) {
+            int day = Integer.parseInt(happinessAndDateDto.getFormattedDate());
+            Double happiness = happinessAndDateDto.getHappiness();
+
+            check[day] = happiness;
+        }
+
+        List<HappinessAndDateDto> filledList = new ArrayList<>();
+
+        for(int i=1; i<=lastDayOfMonth; i++){
+            filledList.add(
+                    new HappinessAndDateDto(check[i],Integer.toString(i))
+            );
+        }
+
+        return filledList;
     }
 
     public List<HappinessAndDateDto> findYearHappiness(NicknameAndDateDto nicknameAndDateDto) {
@@ -73,13 +94,7 @@ public class HappinessService {
             Double happiness = feedRepository.findMonthHappinessAvgByNicknameAndDate(nicknameAndDateDto.getNickname(), date)
                     .orElse(0.0);
 
-            if(happiness >= 1){
-                result.add(new HappinessAndDateDto(happiness, date));
-            }
-        }
-
-        if(result.isEmpty()){
-            throw new FindException();
+            result.add(new HappinessAndDateDto(happiness, date));
         }
 
         return result;
