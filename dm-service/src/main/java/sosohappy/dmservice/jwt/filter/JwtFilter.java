@@ -1,37 +1,29 @@
 package sosohappy.dmservice.jwt.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
+import org.springframework.web.filter.OncePerRequestFilter;
 import sosohappy.dmservice.jwt.service.JwtService;
 
 @Component
 @RequiredArgsConstructor
-public class JwtFilter implements WebFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    @NotNull
+    @SneakyThrows
     @Override
-    public Mono<Void> filter(@NotNull ServerWebExchange exchange, @NotNull WebFilterChain chain) {
-        return Mono.defer(() -> {
-            if (exchange.getRequest().getURI().getPath().contains("actuator")) {
-                return chain.filter(exchange);
-            }
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+        if(!request.getRequestURI().contains("actuator") && !jwtService.verifyAccessToken(request)){
+            response.sendError(403);
+            return;
+        }
 
-            return jwtService.verifyAccessToken(exchange)
-                    .flatMap(isValid -> {
-                        if (!isValid) {
-                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-                            return exchange.getResponse().setComplete();
-                        }
-                        return chain.filter(exchange);
-                    });
-        });
+        filterChain.doFilter(request, response);
     }
+
 }

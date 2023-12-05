@@ -2,7 +2,7 @@ package sosohappy.dmservice.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,13 +12,16 @@ import sosohappy.dmservice.domain.collection.Message;
 import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
 import sosohappy.dmservice.domain.dto.MessageDto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Repository
 @RequiredArgsConstructor
 public class MessageQueryRepositoryImpl implements MessageQueryRepository{
 
-    private final ReactiveMongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    public Flux<MessageDto> findDirectMessage(FindDirectMessageFilter findDirectMessageFilter){
+    public List<MessageDto> findDirectMessage(FindDirectMessageFilter findDirectMessageFilter){
         String messageRoomId = findDirectMessageFilter.getMessageRoomId();
         Long timeBoundary = findDirectMessageFilter.getTimeBoundary();
         Integer messageCnt = findDirectMessageFilter.getMessageCnt();
@@ -31,10 +34,12 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
 
                         Message.class
                 )
-                .map(MessageDto::new);
+                .stream()
+                .map(MessageDto::new)
+                .collect(Collectors.toList());
     }
 
-    public Flux<MessageDto> findMultipleDirectMessage(String sender){
+    public List<MessageDto> findMultipleDirectMessage(String sender){
         return mongoTemplate.aggregate(
                 Aggregation.newAggregation(
                         Aggregation.match(
@@ -49,6 +54,6 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
                 ),
                 "message",
                 Message.class
-        ).map(MessageDto::new);
+            ).getMappedResults().stream().map(MessageDto::new).collect(Collectors.toList());
     }
 }
