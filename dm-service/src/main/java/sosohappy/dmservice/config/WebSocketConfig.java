@@ -1,25 +1,19 @@
 package sosohappy.dmservice.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-import sosohappy.dmservice.handler.MessageHandler;
-
-import java.util.Map;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
+@EnableWebSocket
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebFluxConfigurer {
+public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final MessageHandler handler;
+    private final WebSocketHandler webSocketHandler;
 
-    @Bean
-    public HandlerMapping handlerMapping(){
-        return new SimpleUrlHandlerMapping(Map.of("/dm-service/connect-dm", handler), 1);
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(webSocketHandler, "/connect-dm");
     }
-
-
 }
