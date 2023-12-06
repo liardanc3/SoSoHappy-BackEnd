@@ -10,13 +10,18 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import sosohappy.feedservice.domain.dto.*;
-import sosohappy.feedservice.domain.entity.Feed;
+import sosohappy.feedservice.domain.entity.*;
 import sosohappy.feedservice.exception.custom.ValidException;
 
 import java.util.List;
 import java.util.Optional;
 
-import static sosohappy.feedservice.domain.entity.QFeed.*;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
+import static sosohappy.feedservice.domain.entity.QFeed.feed;
+import static sosohappy.feedservice.domain.entity.QFeedImage.feedImage;
+import static sosohappy.feedservice.domain.entity.QFeedCategory.feedCategory;
+import static sosohappy.feedservice.domain.entity.QFeedLikeNickname.feedLikeNickname;
 
 @Repository
 @RequiredArgsConstructor
@@ -117,16 +122,15 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     @Override
     public Slice<OtherFeedDto> findByNicknameAndDateWithSlicing(String nickname, Long date, Pageable pageable) {
-        if(pageable.getPageSize() > 25){
+        if(pageable.getPageSize() > 99){
             throw new ValidException();
         }
 
         List<OtherFeedDto> feedList = queryFactory
-                .select(Projections.constructor(
-                        OtherFeedDto.class,
-                        feed, Expressions.asString(nickname)
-                ))
-                .from(feed)
+                .selectFrom(feed)
+                .leftJoin(feed.feedImages, feedImage)
+                .leftJoin(feed.feedCategories, feedCategory)
+                .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
                         isDayFind(date),
                         nickNameEq(nickname).not()
@@ -134,7 +138,18 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .orderBy(feed.date.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .fetch();
+                .transform(
+                        groupBy(feed.id).list(
+                            Projections.constructor(
+                                    OtherFeedDto.class,
+                                    feed,
+                                    list(Projections.constructor(Long.class, feedImage.id)),
+                                    list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                    list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname)),
+                                    Expressions.asString(nickname)
+                            )
+                        )
+                );
 
         boolean hasNext = false;
         if (feedList.size() > pageable.getPageSize()){

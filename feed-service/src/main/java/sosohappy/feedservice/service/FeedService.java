@@ -1,26 +1,19 @@
 package sosohappy.feedservice.service;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.integration.annotation.Default;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
-import sosohappy.feedservice.exception.custom.FindException;
 import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.kafka.KafkaConsumer;
 import sosohappy.feedservice.kafka.KafkaProducer;
+import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +21,7 @@ import java.util.Optional;
 public class FeedService {
 
     private final FeedRepository feedRepository;
+    private final FeedLikeNicknameRepository feedLikeNicknameRepository;
     private final HappinessService happinessService;
     private final ObjectProvider<FeedService> feedServiceObjectProvider;
 
@@ -40,7 +34,7 @@ public class FeedService {
                 .orElse(null);
     }
 
-    public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto, HttpServletRequest request) {
+    public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
         return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())
                 .map(feed -> {
                     happinessService.updateSimilarityMatrix(feed, updateFeedDto);
@@ -77,7 +71,7 @@ public class FeedService {
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
                 .map(feed ->  {
-                    Map<String, Boolean> responseDto = Map.of("like", feed.updateLike(srcNickname));
+                    Map<String, Boolean> responseDto = Map.of("like", updateLike(feed, srcNickname));
                     if(responseDto.get("like")){
                         feedServiceObjectProvider.getObject().produceUpdateLike(srcNickname, nicknameAndDateDto);
                     }
@@ -92,9 +86,6 @@ public class FeedService {
 
     public void deleteDataOfResignedUser(String nickname){
         feedRepository.deleteByNickname(nickname);
-
-        feedRepository.findByLikeNicknameSetContaining(nickname)
-                .forEach(feed -> feed.getLikeNicknameSet().remove(nickname));
     }
 
     // --------------------------------------------------------------------------------------------------- //
@@ -102,6 +93,18 @@ public class FeedService {
     @KafkaProducer(topic = "noticeLike")
     public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
         return List.of(srcNickname, KafkaConsumer.nicknameAndEmailMap.get(nicknameAndDateDto.getNickname()) + "," + nicknameAndDateDto.getDate());
+    }
+
+    private boolean updateLike(Feed feed, String srcNickname){
+        return feedLikeNicknameRepository.findByFeedAndNickname(feed, srcNickname)
+                .map(feedLikeNickname -> {
+                    feed.getFeedLikeNicknames().remove(feedLikeNickname);
+                    return false;
+                })
+                .orElseGet(() -> {
+                    feed.like(srcNickname);
+                    return true;
+                });
     }
 
 }

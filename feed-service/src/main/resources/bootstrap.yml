@@ -1,10 +1,45 @@
+server:
+  port: 8891
+  servlet:
+    context-path: /feed-service
+
 spring:
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  application:
+    name: feed-service
   cloud:
     config:
       uri: https://sosohappy.dev/config-service
       name: feed-config
+      enabled: true
+    bus:
+      enabled: true
+      destination: springCloudBus
   config:
     import: optional:configserver:https://sosohappy.dev/config-service
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://34.64.113.5:3306/feed_db?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    bootstrap-servers: http://34.64.113.5:9092
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
 
 management:
   endpoints:
@@ -13,17 +48,10 @@ management:
         include: "*"
 
 logging:
+  pattern:
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} \n\t- %m%n%wEx\n'
   level:
     root : INFO
     org:
       apache:
         kafka: WARN
-
-jwt:
-  secretKey: dsajfnlwejabjldqwnadjkenqkjfbkjf132asdkk1ljl09henl322
-  access:
-    expiration: 36000000
-    header: Authorization
-  refresh:
-    expiration: 12096000000
-    header: Authorization-refresh

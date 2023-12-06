@@ -12,19 +12,14 @@ import java.util.List;
 
 public interface FeedRepository extends JpaRepository<Feed, Long>, FeedQueryRepository {
 
-    @EntityGraph(attributePaths = {"categoryList"})
+    @EntityGraph(attributePaths = {"feedCategories"})
     @Query("SELECT NEW sosohappy.feedservice.domain.dto.HappinessAndCategoryDto(f) FROM Feed f")
     List<HappinessAndCategoryDto> findHappinessAndCategoryDtoAll();
-
-    @Query("SELECT DISTINCT c FROM Feed f JOIN f.categoryList c")
-    List<String> findAllCategories();
 
     @Modifying
     @Query("update Feed f set f.nickname = :after where f.nickname = :before")
     void updateFeedNickname(@Param("before") String before, @Param("after") String after);
 
     void deleteByNickname(String nickname);
-
-    List<Feed> findByLikeNicknameSetContaining(String nickname);
 
 }

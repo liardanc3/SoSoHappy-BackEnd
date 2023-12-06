@@ -18,11 +18,13 @@ public class KafkaConsumer {
 
     private final FeedService feedService;
 
-    @KafkaListener(topics = "accessToken", groupId = "feed-service-accessToken-0003")
+    @KafkaListener(topics = "accessToken", groupId = "feed-service-accessToken-0005")
     public void addAccessToken(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String accessToken = new String(record.value());
 
+        System.out.println("email = " + email);
+        System.out.println("accessToken = " + accessToken);
         emailAndTokenMap.put(email, accessToken);
     }
 

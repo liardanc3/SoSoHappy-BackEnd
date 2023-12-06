@@ -8,9 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -41,32 +40,16 @@ public class Feed {
     @Column
     private Boolean isPublic;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "feed_categories",
-            joinColumns = @JoinColumn(name = "feed_id")
-    )
-    @Column
-    private List<String> categoryList;
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+    private List<FeedCategory> feedCategories = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(
-            name = "feed_images",
-            joinColumns = @JoinColumn(name = "feed_id")
-    )
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private List<byte[]> imageList = new ArrayList<>();
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+    private List<FeedLikeNickname> feedLikeNicknames = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(
-            name = "feed_likes",
-            joinColumns = @JoinColumn(name = "feed_id")
-    )
-    @Column
-    private Set<String> likeNicknameSet = new HashSet<>();
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+    private List<FeedImage> feedImages = new ArrayList<>();
 
-
-    // --------------------------------------- //
+    // ------------------------------------------------------------------------------------------------ //
 
     @SneakyThrows
     public void updateFeed(UpdateFeedDto updateFeedDto){
@@ -75,13 +58,13 @@ public class Feed {
         this.date = updateFeedDto.getDate();
         this.text = updateFeedDto.getText();
         this.happiness = updateFeedDto.getHappiness();
-        this.categoryList = updateFeedDto.getCategoryList();
+        this.feedCategories = updateFeedDto.getCategoryList().stream().map(category -> new FeedCategory(this, category)).collect(Collectors.toList());
         this.isPublic = updateFeedDto.getIsPublic();
 
-        this.imageList.clear();
+        this.feedImages.clear();
         if(updateFeedDto.getImageList() != null && !updateFeedDto.getImageList().isEmpty()){
             for (MultipartFile multipartFile : updateFeedDto.getImageList()) {
-                this.imageList.add(multipartFile.getBytes());
+                this.feedImages.add(new FeedImage(this, multipartFile.getBytes()));
             }
         }
     }
@@ -91,16 +74,6 @@ public class Feed {
         return feed;
     }
 
-    public Boolean updateLike(String nickname){
-        if (this.likeNicknameSet.contains(nickname)) {
-            this.likeNicknameSet.remove(nickname);
-            return false;
-        } else {
-            this.likeNicknameSet.add(nickname);
-            return true;
-        }
-    }
-
     @SneakyThrows
     public Feed(UpdateFeedDto updateFeedDto){
         this.nickname = updateFeedDto.getNickname();
@@ -108,17 +81,18 @@ public class Feed {
         this.date = updateFeedDto.getDate();
         this.text = updateFeedDto.getText();
         this.happiness = updateFeedDto.getHappiness();
-        this.categoryList = updateFeedDto.getCategoryList();
+        this.feedCategories = updateFeedDto.getCategoryList().stream().map(category -> new FeedCategory(this, category)).collect(Collectors.toList());
         this.isPublic = updateFeedDto.getIsPublic();
 
-        this.imageList = new ArrayList<>();
+        this.feedImages = new ArrayList<>();
         if(updateFeedDto.getImageList() != null && !updateFeedDto.getImageList().isEmpty()){
-
-            List<MultipartFile> imageList = updateFeedDto.getImageList();
-
-            for (MultipartFile multipartFile : imageList) {
-                this.imageList.add(multipartFile.getBytes());
+            for (MultipartFile multipartFile : updateFeedDto.getImageList()) {
+                this.feedImages.add(new FeedImage(this, multipartFile.getBytes()));
             }
         }
+    }
+
+    public void like(String nickname){
+        this.feedLikeNicknames.add(new FeedLikeNickname(this, nickname));
     }
 }

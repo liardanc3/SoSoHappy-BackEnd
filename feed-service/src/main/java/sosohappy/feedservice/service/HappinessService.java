@@ -3,9 +3,13 @@ package sosohappy.feedservice.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sosohappy.feedservice.domain.dto.*;
+import sosohappy.feedservice.domain.dto.AnalysisDto;
+import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
+import sosohappy.feedservice.domain.dto.NicknameAndDateDto;
+import sosohappy.feedservice.domain.dto.UpdateFeedDto;
 import sosohappy.feedservice.domain.entity.Feed;
-import sosohappy.feedservice.exception.custom.FindException;
+import sosohappy.feedservice.domain.entity.FeedCategory;
+import sosohappy.feedservice.repository.FeedCategoryRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
 import java.util.*;
@@ -23,6 +27,7 @@ public class HappinessService {
     private static final AtomicReference<List<List<Integer>>> atomicSimilarityMatrix = new AtomicReference<>();
 
     private final FeedRepository feedRepository;
+    private final FeedCategoryRepository feedCategoryRepository;
 
     @PostConstruct
     void initSimilarityMatrix() {
@@ -39,7 +44,7 @@ public class HappinessService {
 
     public void updateSimilarityMatrix(Feed feed, UpdateFeedDto updateFeedDto) {
         Integer srcHappiness = feed.getHappiness();
-        List<String> srcCategoryList = feed.getCategoryList();
+        List<String> srcCategoryList = feed.getFeedCategories().stream().map(FeedCategory::getCategory).collect(Collectors.toList());
         
         updateSimilarity(-srcHappiness, srcCategoryList);
 
@@ -190,7 +195,7 @@ public class HappinessService {
     }
 
     private void allocateMatrix() {
-        feedRepository.findAllCategories()
+        feedCategoryRepository.findDistinctCategory()
                 .forEach(this::updateCategory);
 
         int size = Math.max(categoryToIndexMap.size(), 100);
