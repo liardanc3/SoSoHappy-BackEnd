@@ -4,8 +4,10 @@ import lombok.Data;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.domain.entity.FeedCategory;
 import sosohappy.feedservice.domain.entity.FeedImage;
+import sosohappy.feedservice.domain.entity.FeedLikeNickname;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -29,14 +31,21 @@ public class UserFeedDto {
 
     private List<String> likeNicknameList;
 
-    public UserFeedDto(Feed feed){
+    public UserFeedDto(Feed feed, List<Long> imageIdList, List<FeedCategory> categoryList, List<FeedLikeNickname> likeNicknameList){
         this.nickname = feed.getNickname();
         this.weather = feed.getWeather();
         this.date = feed.getDate();
         this.happiness = feed.getHappiness();
         this.text = feed.getText();
         this.isPublic = feed.getIsPublic();
-        this.categoryList = feed.getFeedCategories().stream().map(FeedCategory::getCategory).collect(Collectors.toList());
-        this.imageIdList = feed.getFeedImages().stream().map(FeedImage::getId).collect(Collectors.toList());
+        this.likeNicknameList = likeNicknameList.stream().map(FeedLikeNickname::getNickname)
+                .filter(Objects::nonNull)
+                .filter(likeNickname -> !likeNickname.equals(""))
+                .collect(Collectors.toList());
+        this.categoryList = categoryList.stream().map(FeedCategory::getCategory)
+                .filter(Objects::nonNull)
+                .filter(category -> !category.equals(""))
+                .collect(Collectors.toList());
+        this.imageIdList = imageIdList.stream().filter(imageId -> imageId != 0).collect(Collectors.toList());
     }
 }

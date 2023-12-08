@@ -10,6 +10,7 @@ import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.kafka.KafkaConsumer;
 import sosohappy.feedservice.kafka.KafkaProducer;
+import sosohappy.feedservice.repository.FeedImageRepository;
 import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
@@ -22,6 +23,7 @@ public class FeedService {
 
     private final FeedRepository feedRepository;
     private final FeedLikeNicknameRepository feedLikeNicknameRepository;
+    private final FeedImageRepository feedImageRepository;
     private final HappinessService happinessService;
     private final ObjectProvider<FeedService> feedServiceObjectProvider;
 
@@ -82,6 +84,10 @@ public class FeedService {
 
     public void updateNickname(String srcNickname, String dstNickname){
         feedRepository.updateFeedNickname(srcNickname, dstNickname);
+    }
+
+    public byte[] findFeedImage(long imageId) {
+        return feedImageRepository.findImageById(imageId).getImage();
     }
 
     public void deleteDataOfResignedUser(String nickname){

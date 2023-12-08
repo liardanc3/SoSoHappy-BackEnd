@@ -32,17 +32,26 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     @Override
     public List<UserFeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
         return queryFactory
-                .select(Projections.constructor(
-                        UserFeedDto.class,
-                        feed
-                ))
-                .from(feed)
+                .selectFrom(feed)
+                .leftJoin(feed.feedImages, feedImage)
+                .leftJoin(feed.feedCategories, feedCategory)
+                .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
-                        nickNameEq(nicknameAndDateDto.getNickname()),
-                        monthEq(nicknameAndDateDto.getDate())
+                        monthEq(nicknameAndDateDto.getDate()),
+                        nickNameEq(nicknameAndDateDto.getNickname())
                 )
-                .orderBy(feed.date.asc())
-                .fetch();
+                .orderBy(feed.date.desc())
+                .transform(
+                        groupBy(feed.id).list(
+                                Projections.constructor(
+                                        UserFeedDto.class,
+                                        feed,
+                                        list(Projections.constructor(Long.class, feedImage.id)),
+                                        list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                        list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname))
+                                )
+                        )
+                );
     }
 
     @Override

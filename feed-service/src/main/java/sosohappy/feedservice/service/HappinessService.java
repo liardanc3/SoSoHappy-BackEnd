@@ -29,6 +29,7 @@ public class HappinessService {
     private final FeedRepository feedRepository;
     private final FeedCategoryRepository feedCategoryRepository;
 
+    @PostConstruct
     void initSimilarityMatrix() {
         allocateMatrix();
         initMatrix();
@@ -158,10 +159,13 @@ public class HappinessService {
     }
 
     private void initMatrix() {
-        feedRepository.findHappinessAndCategoryDtoAll()
-                .forEach(happinessDto -> {
-                    Integer happiness = happinessDto.getHappiness();
-                    List<String> categories = happinessDto.getCategories();
+        feedRepository.findAll()
+                .forEach(feed -> {
+                    Integer happiness = feed.getHappiness();
+                    List<String> categories = feed.getFeedCategories()
+                            .stream()
+                            .map(FeedCategory::getCategory)
+                            .collect(Collectors.toList());
 
                     updateSimilarity(happiness, categories);
                 });
