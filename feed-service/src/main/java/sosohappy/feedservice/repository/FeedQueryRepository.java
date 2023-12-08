@@ -13,7 +13,7 @@ public interface FeedQueryRepository {
 
     List<UserFeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
 
-    Optional<UserFeedDto> findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
+    UserFeedDto findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
 
     Optional<Feed> findByNicknameAndDate(String nickname, Long date);
 

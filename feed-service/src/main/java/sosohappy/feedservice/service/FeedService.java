@@ -31,9 +31,9 @@ public class FeedService {
         return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
                 .orElse(List.of());
     }
+
     public UserFeedDto findDayFeed(NicknameAndDateDto nicknameAndDateDto) {
-        return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto)
-                .orElse(null);
+        return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto);
     }
 
     public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {

@@ -3,6 +3,7 @@ package sosohappy.feedservice.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -55,20 +56,30 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
     }
 
     @Override
-    public Optional<UserFeedDto> findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
-        return Optional.ofNullable(
-                queryFactory
-                        .select(Projections.constructor(
-                                UserFeedDto.class,
-                                feed
-                        ))
-                        .from(feed)
-                        .where(
-                                nickNameEq(nicknameAndDateDto.getNickname()),
-                                dayEq(nicknameAndDateDto.getDate())
+    public UserFeedDto findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+        return queryFactory
+                .selectFrom(feed)
+                .leftJoin(feed.feedImages, feedImage)
+                .leftJoin(feed.feedCategories, feedCategory)
+                .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
+                .where(
+                        dayEq(nicknameAndDateDto.getDate()),
+                        nickNameEq(nicknameAndDateDto.getNickname())
+                )
+                .orderBy(feed.date.desc())
+                .transform(
+                        groupBy(feed.id).list(
+                                Projections.constructor(
+                                        UserFeedDto.class,
+                                        feed,
+                                        list(Projections.constructor(Long.class, feedImage.id)),
+                                        list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                        list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname))
+                                )
                         )
-                        .fetchOne()
-        );
+                )
+                .stream().findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -135,7 +146,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
             throw new ValidException();
         }
 
-        List<OtherFeedDto> feedList = queryFactory
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+
+        List<OtherFeedDto> otherFeedDtos = queryFactory
                 .selectFrom(feed)
                 .leftJoin(feed.feedImages, feedImage)
                 .leftJoin(feed.feedCategories, feedCategory)
@@ -145,20 +159,25 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                         nickNameEq(nickname).not()
                 )
                 .orderBy(feed.date.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
+                .offset(0)
+                .limit(6L * page * (size + 1) + size * 6L + 1)
                 .transform(
                         groupBy(feed.id).list(
-                            Projections.constructor(
-                                    OtherFeedDto.class,
-                                    feed,
-                                    list(Projections.constructor(Long.class, feedImage.id)),
-                                    list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
-                                    list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname)),
-                                    Expressions.asString(nickname)
-                            )
+                                Projections.constructor(
+                                        OtherFeedDto.class,
+                                        feed,
+                                        list(Projections.constructor(Long.class, feedImage.id)),
+                                        list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                        list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname)),
+                                        Expressions.asString(nickname)
+                                )
                         )
                 );
+
+        List<OtherFeedDto> feedList = otherFeedDtos.subList(
+                Math.min(otherFeedDtos.size(), page * size),
+                Math.min(otherFeedDtos.size(), (page * size) + size + 1)
+        );
 
         boolean hasNext = false;
         if (feedList.size() > pageable.getPageSize()){
@@ -175,19 +194,37 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
             throw new ValidException();
         }
 
-        List<OtherFeedDto> feedList = queryFactory
-                .select(Projections.constructor(
-                        OtherFeedDto.class,
-                        feed, Expressions.asString(srcNickname)
-                ))
-                .from(feed)
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+
+        List<OtherFeedDto> otherFeedDtos = queryFactory
+                .selectFrom(feed)
+                .leftJoin(feed.feedImages, feedImage)
+                .leftJoin(feed.feedCategories, feedCategory)
+                .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
                         nickNameEq(dstNickname)
                 )
                 .orderBy(feed.date.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
-                .fetch();
+                .offset(0)
+                .limit(6L * page * (size + 1) + size * 6L + 1)
+                .transform(
+                        groupBy(feed.id).list(
+                                Projections.constructor(
+                                        OtherFeedDto.class,
+                                        feed,
+                                        list(Projections.constructor(Long.class, feedImage.id)),
+                                        list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                        list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname)),
+                                        Expressions.asString(srcNickname)
+                                )
+                        )
+                );
+
+        List<OtherFeedDto> feedList = otherFeedDtos.subList(
+                Math.min(otherFeedDtos.size(), page * size),
+                Math.min(otherFeedDtos.size(), (page * size) + size + 1)
+        );
 
         boolean hasNext = false;
         if (feedList.size() > pageable.getPageSize()){

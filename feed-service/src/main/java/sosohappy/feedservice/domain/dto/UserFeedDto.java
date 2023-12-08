@@ -48,4 +48,5 @@ public class UserFeedDto {
                 .collect(Collectors.toList());
         this.imageIdList = imageIdList.stream().filter(imageId -> imageId != 0).collect(Collectors.toList());
     }
+
 }
