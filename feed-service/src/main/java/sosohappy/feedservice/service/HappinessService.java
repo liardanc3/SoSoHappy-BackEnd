@@ -29,7 +29,6 @@ public class HappinessService {
     private final FeedRepository feedRepository;
     private final FeedCategoryRepository feedCategoryRepository;
 
-    @PostConstruct
     void initSimilarityMatrix() {
         allocateMatrix();
         initMatrix();
