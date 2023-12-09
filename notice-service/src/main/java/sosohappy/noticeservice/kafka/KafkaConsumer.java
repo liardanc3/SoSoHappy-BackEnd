@@ -46,5 +46,12 @@ public class KafkaConsumer {
         });
     }
 
+    @KafkaListener(topics = "resign", groupId = "notice-service-resign-0000")
+    public void handleResignedUser(ConsumerRecord<byte[], byte[]> record){
+        String email = new String(record.key());
+
+        emailAndDeviceTokenMap.remove(email);
+    }
+
 
 }
