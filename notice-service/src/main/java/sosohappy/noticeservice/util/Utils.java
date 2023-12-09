@@ -13,8 +13,7 @@ public class Utils {
     private final ObjectMapper objectMapper;
 
     @SneakyThrows
-    public String objectToString(Object json) {
-        return objectMapper.writeValueAsString(json);
+    public <T> T jsonToObject(String json, Class<T> targetType) {
+        return objectMapper.readValue(json, targetType);
     }
-
 }

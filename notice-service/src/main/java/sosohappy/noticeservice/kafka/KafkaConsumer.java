@@ -36,4 +36,15 @@ public class KafkaConsumer {
         return Mono.fromRunnable(() -> emailAndDeviceTokenMap.put(new String(record.key()), new String(record.value())));
     }
 
+    @KafkaListener(topics = "directMessage", groupId = "notice-service-directMessage-0000")
+    public Mono<Void> handleDirectMessage(ConsumerRecord<byte[], byte[]> record){
+        return Mono.defer(() -> {
+            String deviceToken = new String(record.key());
+            String messageDtoStr = new String(record.value());
+
+            return noticeService.sendDirectMessage(deviceToken, messageDtoStr);
+        });
+    }
+
+
 }

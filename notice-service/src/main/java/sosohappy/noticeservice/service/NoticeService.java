@@ -1,25 +1,20 @@
 package sosohappy.noticeservice.service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.socket.WebSocketMessage;
-import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
-import sosohappy.noticeservice.kafka.KafkaConsumer;
+import sosohappy.noticeservice.dto.MessageDto;
 import sosohappy.noticeservice.util.Utils;
-
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
 
     private final FirebaseMessaging firebaseMessaging;
+    private final Utils utils;
 
     public Mono<Void> sendNotice(String srcNickname, Long date, String deviceToken) {
         return Mono.defer(() -> {
@@ -40,4 +35,27 @@ public class NoticeService {
         });
     }
 
+    public Mono<Void> sendDirectMessage(String deviceToken, String messageDtoStr) {
+        return Mono.defer(() -> {
+            MessageDto messageDto = utils.jsonToObject(messageDtoStr, MessageDto.class);
+
+            String sender = messageDto.getSender();
+            String text = messageDto.getText();
+
+            Message message = Message.builder()
+                    .setNotification(
+                            Notification.builder()
+                                    .setTitle(sender)
+                                    .setBody(text.length() < 30 ? text : text.substring(0, 25) + "...")
+                                    .build()
+                    )
+                    .setToken(deviceToken)
+                    .putData("messageDto", messageDtoStr)
+                    .build();
+
+            firebaseMessaging.sendAsync(message);
+
+            return Mono.empty();
+        });
+    }
 }

@@ -2,16 +2,12 @@ package sosohappy.dmservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import sosohappy.dmservice.domain.collection.Message;
-import sosohappy.dmservice.domain.dto.MessageDto;
 import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
+import sosohappy.dmservice.domain.dto.MessageDto;
+import sosohappy.dmservice.kafka.KafkaProducer;
 import sosohappy.dmservice.repository.MessageRepository;
-import sosohappy.dmservice.util.Utils;
 
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +21,11 @@ public class MessageService {
 
     public List<MessageDto> findMultipleDirectMessage(String sender) {
         return messageRepository.findMultipleDirectMessage(sender);
+    }
+
+    @KafkaProducer(topic = "directMessage")
+    public List<String> produceDirectMessage(String deviceToken, String messageDto){
+        return List.of(deviceToken, messageDto);
     }
 
 }

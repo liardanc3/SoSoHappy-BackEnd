@@ -12,6 +12,7 @@ import sosohappy.dmservice.domain.collection.Message;
 import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
 import sosohappy.dmservice.domain.dto.MessageDto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,17 +27,24 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository{
         Long timeBoundary = findDirectMessageFilter.getTimeBoundary();
         Integer messageCnt = findDirectMessageFilter.getMessageCnt();
 
-        return mongoTemplate.find(
-                new Query()
-                        .addCriteria(Criteria.where("messageRoomId").is(messageRoomId))
-                        .addCriteria(Criteria.where("date").lt(timeBoundary))
-                        .limit(messageCnt),
+        List<MessageDto> directMessageList = mongoTemplate.aggregate(
+                Aggregation.newAggregation(
+                        Aggregation.match(
+                                new Criteria().andOperator(
+                                        Criteria.where("messageRoomId").is(messageRoomId),
+                                        Criteria.where("date").lt(timeBoundary)
+                                )
+                        ),
+                        Aggregation.sort(Sort.Direction.DESC, "date"),
+                        Aggregation.limit(messageCnt)
+                ),
+                "message",
+                Message.class
+        ).getMappedResults().stream().map(MessageDto::new).collect(Collectors.toList());
 
-                        Message.class
-                )
-                .stream()
-                .map(MessageDto::new)
-                .collect(Collectors.toList());
+        Collections.reverse(directMessageList);
+
+        return directMessageList;
     }
 
     public List<MessageDto> findMultipleDirectMessage(String sender){

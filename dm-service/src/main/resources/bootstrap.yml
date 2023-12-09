@@ -1,18 +1,35 @@
+server:
+  port: 8889
+  servlet:
+    context-path: /dm-service
+
 spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    bootstrap-servers: http://34.64.113.5:9092
+  application:
+    name: dm-service
   cloud:
     config:
+      enabled: true
       uri: https://sosohappy.dev/config-service
       name: dm-config
+    bus:
+      enabled: true
+      destination: springCloudBus
   config:
     import: optional:configserver:https://sosohappy.dev/config-service
   webflux:
     base-path: /dm-service
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+  data:
+    mongodb:
+      database: dm
 
 logging:
   level:
@@ -23,3 +40,9 @@ logging:
       springframework:
         data:
           mongodb: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

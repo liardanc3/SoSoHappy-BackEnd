@@ -1,5 +1,7 @@
 package sosohappy.dmservice.domain.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.stream.Collectors;
@@ -8,10 +10,15 @@ import java.util.stream.Stream;
 @Data
 public class FindDirectMessageFilter {
 
+    @NotEmpty
     private String sender;
+
+    @NotEmpty
     private String receiver;
+
     private String messageRoomId;
 
+    @NotNull
     private Long timeBoundary;
 
     private Integer messageCnt;

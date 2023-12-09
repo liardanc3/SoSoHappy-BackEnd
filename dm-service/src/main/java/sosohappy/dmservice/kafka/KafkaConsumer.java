@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class KafkaConsumer {
 
     public static final ConcurrentHashMap<String, String> emailAndTokenMap = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> emailAndNicknameMap = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> nicknameAndDeviceTokenMap = new ConcurrentHashMap<>();
 
     @KafkaListener(topics = "accessToken", groupId = "dm-service-accessToken-0000")
     public void addAccessToken(ConsumerRecord<byte[], byte[]> record){
@@ -34,6 +36,24 @@ public class KafkaConsumer {
 
         emailAndTokenMap.remove(email);
     }
+
+    @KafkaListener(topics = "deviceToken", groupId = "dm-service-deviceToken-0000")
+    public void handleDeviceToken(ConsumerRecord<byte[], byte[]> record){
+        String email = new String(record.key());
+        String deviceToken = new String(record.value());
+
+        nicknameAndDeviceTokenMap.put(emailAndNicknameMap.get(email), deviceToken);
+    }
+
+    @KafkaListener(topics = "emailAndNickname", groupId = "dm-service-emailAndNickname-0000")
+    public void handleEmailAndNickname(ConsumerRecord<byte[], byte[]> record){
+        String email = new String(record.key());
+        String nickname = new String(record.value());
+
+        emailAndNicknameMap.put(email, nickname);
+    }
+
+
 
 }
 
