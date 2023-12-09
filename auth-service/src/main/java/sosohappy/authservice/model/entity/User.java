@@ -51,7 +51,7 @@ public class User {
 
     @KafkaProducer(topic = "emailAndNickname")
     @SneakyThrows
-    public List<String> updateProfile(UserRequestDto userRequestDto)  {
+    public String updateProfile(UserRequestDto userRequestDto)  {
         boolean nicknameEdited = false;
         String originNickname = this.nickname;
 
@@ -68,7 +68,7 @@ public class User {
             this.introduction = userRequestDto.getIntroduction();
         }
 
-        return List.of(nicknameEdited ? email : "", nickname);
+        return nicknameEdited ? nickname : "";
     }
 
     public void updateAppleRefreshToken(String appleRefreshToken){

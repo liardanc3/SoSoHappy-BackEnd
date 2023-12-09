@@ -46,26 +46,28 @@ public class UserService {
         String deviceToken = String.valueOf(userAttributes.get("deviceToken"));
         String appleRefreshToken = String.valueOf(userAttributes.get("appleRefreshToken"));
 
+        userServiceProvider.getObject().produceDeviceToken(email, deviceToken);
+
         userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
                                 user -> {
                                     user.updateRefreshToken(refreshToken);
                                     user.updateDeviceToken(deviceToken);
                                     user.updateAppleRefreshToken(appleRefreshToken);
+
+                                    userServiceProvider.getObject().produceEmailAndNickname(user.getEmail(), user.getNickname());
                                 },
-                                () -> {
-                                    User user = userRepository.save(
-                                            User.builder()
-                                                    .email(email)
-                                                    .nickname(UUID.randomUUID().toString())
-                                                    .provider(provider)
-                                                    .providerId(providerId)
-                                                    .refreshToken(refreshToken)
-                                                    .appleRefreshToken(appleRefreshToken)
-                                                    .build()
-                                    );
-                                    user.updateDeviceToken(deviceToken);
-                                }
+                                () -> userRepository.save(
+                                        User.builder()
+                                                .email(email)
+                                                .nickname(UUID.randomUUID().toString())
+                                                .provider(provider)
+                                                .providerId(providerId)
+                                                .refreshToken(refreshToken)
+                                                .appleRefreshToken(appleRefreshToken)
+                                                .deviceToken(deviceToken)
+                                                .build()
+                                )
                         );
     }
 
@@ -113,6 +115,7 @@ public class UserService {
         return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
                     user.updateProfile(userRequestDto);
+                    userServiceProvider.getObject().produceEmailAndNickname(user.getEmail(), user.getNickname());
 
                     return SetProfileDto.builder()
                             .email(user.getEmail())
@@ -206,8 +209,18 @@ public class UserService {
     // ------------------------------------------------------------------------------------------------------------ //
 
     @KafkaProducer(topic = "resign")
-    private List<String> produceResign(String email, String nickname){
+    public List<String> produceResign(String email, String nickname){
         return List.of(email, nickname);
+    }
+
+    @KafkaProducer(topic = "emailAndNickname")
+    public List<String> produceEmailAndNickname(String email, String nickname){
+        return List.of(email, nickname);
+    }
+
+    @KafkaProducer(topic = "deviceToken")
+    public List<String> produceDeviceToken(String email, String deviceToken){
+        return List.of(email, deviceToken);
     }
 
     private String encode(String codeVerifier) throws NoSuchAlgorithmException {
