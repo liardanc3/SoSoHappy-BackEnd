@@ -1,7 +1,6 @@
 package sosohappy.feedservice.jwt.filter;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         if(!request.getRequestURI().contains("actuator") && !jwtService.verifyAccessToken(request)
-                && !request.getRequestURI().contains("find") && !request.getRequestURI().contains("up") ){
+                && !request.getRequestURI().contains("") ){
             response.sendError(403);
             return;
         }

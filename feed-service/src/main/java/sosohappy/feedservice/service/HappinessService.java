@@ -2,6 +2,8 @@ package sosohappy.feedservice.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import sosohappy.feedservice.domain.dto.AnalysisDto;
 import sosohappy.feedservice.domain.dto.HappinessAndDateDto;
@@ -12,6 +14,9 @@ import sosohappy.feedservice.domain.entity.FeedCategory;
 import sosohappy.feedservice.repository.FeedCategoryRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,13 +39,14 @@ public class HappinessService {
     void initSimilarityMatrix() {
         allocateMatrix();
         initMatrix();
+        initCategoryAndSentenceMap();
     }
 
     public AnalysisDto analysisHappiness(NicknameAndDateDto nicknameAndDateDto) {
         List<String> bestCategoryList = getBestCategoryList(nicknameAndDateDto);
         List<String> recommendCategoryList = getRecommendCategoryList(bestCategoryList);
 
-        return new AnalysisDto(bestCategoryList, recommendCategoryList);
+        return new AnalysisDto(bestCategoryList, convertCategoryToSentence(recommendCategoryList));
     }
 
     public void updateSimilarityMatrix(Feed feed, UpdateFeedDto updateFeedDto) {
@@ -217,5 +223,35 @@ public class HappinessService {
     private void updateCategory(String category) {
         categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size());
         indexToCategoryMap.putIfAbsent(categoryToIndexMap.size()-1, category);
+    }
+
+    @SneakyThrows
+    private void initCategoryAndSentenceMap() {
+        InputStream inputStream = new ClassPathResource("category.txt").getInputStream();
+        BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
+
+        String line = "";
+        while ((line = buffer.readLine()) != null) {
+            String[] categoryAndSentence = line.split("=");
+            categoryAndSentenceMap.put(categoryAndSentence[0], Arrays.stream(categoryAndSentence[1].split(",")).toList());
+        }
+    }
+
+    private List<String> convertCategoryToSentence(List<String> recommendCategoryList) {
+        List<String> result = new ArrayList<>();
+        
+        for (int i = recommendCategoryList.size(), j = 0; i >= 1; i--, j++) {
+            String category = recommendCategoryList.get(j);
+
+            if(categoryAndSentenceMap.get(category) != null){
+                List<String> sentenceList = new ArrayList<>(categoryAndSentenceMap.get(category));
+                Collections.shuffle(sentenceList);
+                result.addAll(sentenceList.subList(0, Math.min(sentenceList.size(), i * 3)));
+            }
+        }
+
+        Collections.shuffle(result);
+
+        return result.isEmpty() ? List.of("피드 작성하기") : result.subList(0, Math.min(result.size(), 10));
     }
 }

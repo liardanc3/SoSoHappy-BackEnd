@@ -1,5 +1,6 @@
 package sosohappy.feedservice.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,6 +11,8 @@ import java.util.List;
 public class AnalysisDto {
 
     List<String> bestCategoryList;
-    List<String> recommendCategoryList;
+
+    @JsonProperty(value = "recommendCategoryList")
+    List<String> recommendCategorySentenceList;
 
 }
