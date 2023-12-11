@@ -237,19 +237,29 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     @Override
     public Optional<OtherFeedDto> findBySrcNicknameAndDstNicknameAndDate(String srcNickname, String dstNickname, Long date) {
-        return Optional.ofNullable(
-                queryFactory
-                        .select(Projections.constructor(
-                                OtherFeedDto.class,
-                                feed, Expressions.asString(srcNickname)
-                        ))
-                        .from(feed)
-                        .where(
-                                nickNameEq(dstNickname),
-                                dayEq(date)
+        return queryFactory
+                .selectFrom(feed)
+                .leftJoin(feed.feedImages, feedImage)
+                .leftJoin(feed.feedCategories, feedCategory)
+                .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
+                .where(
+                        dayEq(date),
+                        nickNameEq(dstNickname)
+                )
+                .orderBy(feed.date.desc())
+                .transform(
+                        groupBy(feed.id).list(
+                                Projections.constructor(
+                                        OtherFeedDto.class,
+                                        feed,
+                                        list(Projections.constructor(Long.class, feedImage.id)),
+                                        list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                        list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname)),
+                                        Expressions.asString(srcNickname)
+                                )
                         )
-                        .fetchOne()
-        );
+                )
+                .stream().findAny();
     }
 
     // ----------------------------------------------------------------- //

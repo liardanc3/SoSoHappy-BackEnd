@@ -25,6 +25,7 @@ public class HappinessService {
     private static final ConcurrentHashMap<String, Integer> categoryToIndexMap = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<Integer, String> indexToCategoryMap = new ConcurrentHashMap<>();
     private static final AtomicReference<List<List<Integer>>> atomicSimilarityMatrix = new AtomicReference<>();
+    private static final Map<String, List<String>> categoryAndSentenceMap = new HashMap<>();
 
     private final FeedRepository feedRepository;
     private final FeedCategoryRepository feedCategoryRepository;

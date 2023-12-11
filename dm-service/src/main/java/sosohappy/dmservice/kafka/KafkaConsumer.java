@@ -37,7 +37,7 @@ public class KafkaConsumer {
         emailAndTokenMap.remove(email);
     }
 
-    @KafkaListener(topics = "deviceToken", groupId = "dm-service-deviceToken-0000")
+    @KafkaListener(topics = "deviceToken", groupId = "dm-service-deviceToken-0002")
     public void handleDeviceToken(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String deviceToken = new String(record.value());
@@ -45,7 +45,7 @@ public class KafkaConsumer {
         nicknameAndDeviceTokenMap.put(emailAndNicknameMap.get(email), deviceToken);
     }
 
-    @KafkaListener(topics = "emailAndNickname", groupId = "dm-service-emailAndNickname-0000")
+    @KafkaListener(topics = "emailAndNickname", groupId = "dm-service-emailAndNickname-0002")
     public void handleEmailAndNickname(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String nickname = new String(record.value());

@@ -35,8 +35,8 @@ public class OtherFeedDto {
         this.date = feed.getDate();
         this.happiness = feed.getHappiness();
         this.text = feed.getText();
-        this.categoryList = categoryList.stream().map(FeedCategory::getCategory).filter(category -> !category.equals("")).collect(Collectors.toList());
-        this.imageIdList = imageIdList.stream().filter(imageId -> imageId != 0).collect(Collectors.toList());
+        this.categoryList = categoryList.stream().map(FeedCategory::getCategory).filter(category -> !category.equals("")).distinct().toList();
+        this.imageIdList = imageIdList.stream().filter(imageId -> imageId != 0).distinct().toList();
         this.isLiked = likeNicknameList.stream().map(FeedLikeNickname::getNickname).toList().contains(nickname);
     }
 
