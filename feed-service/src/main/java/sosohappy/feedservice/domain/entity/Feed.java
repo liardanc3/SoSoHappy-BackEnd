@@ -65,13 +65,15 @@ public class Feed {
         this.isPublic = updateFeedDto.getIsPublic();
 
         updateFeedDto.getCategoryList().forEach(category -> this.feedCategories.add(new FeedCategory(this, category)));
-        updateFeedDto.getImageList().forEach(image -> {
-            try {
-                this.feedImages.add(new FeedImage(this, image.getBytes()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        if(updateFeedDto.getImageList() != null){
+            updateFeedDto.getImageList().forEach(image -> {
+                try {
+                    this.feedImages.add(new FeedImage(this, image.getBytes()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
     }
 
     public static Feed updateIsPublic(Feed feed){
