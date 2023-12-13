@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
-import sosohappy.feedservice.domain.entity.FeedCategory;
-import sosohappy.feedservice.domain.entity.FeedImage;
+import sosohappy.feedservice.exception.custom.NotFoundException;
 import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.kafka.KafkaConsumer;
 import sosohappy.feedservice.kafka.KafkaProducer;
@@ -18,10 +17,6 @@ import sosohappy.feedservice.repository.FeedImageRepository;
 import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.*;
 
 @Service
@@ -104,7 +99,23 @@ public class FeedService {
     public byte[] findImage(long imageId) {
         ImageDto image = feedImageRepository.findImageById(imageId);
 
+        if(image == null){
+            throw new NotFoundException();
+        }
+
         return image.getImage();
+    }
+
+    public Map<String, String> deleteFeed(NicknameAndDateDto nicknameAndDateDto) {
+        return Map.of(
+                "result",
+                feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
+                    .map(feed -> {
+                        feedRepository.delete(feed);
+                        return "true";
+                    })
+                    .orElse("false")
+        );
     }
 
     // --------------------------------------------------------------------------------------------------- //
@@ -125,4 +136,5 @@ public class FeedService {
                     return true;
                 });
     }
+
 }

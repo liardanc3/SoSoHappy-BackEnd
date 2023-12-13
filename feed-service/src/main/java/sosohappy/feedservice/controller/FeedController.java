@@ -72,6 +72,11 @@ public class FeedController {
         return feedImageRepository.findImageById(imageIdDto.getImageId());
     }
 
+    @PostMapping("/deleteFeed")
+    public Map<String, String> deleteFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
+        return feedService.deleteFeed(nicknameAndDateDto);
+    }
+
     @GetMapping(value = "/image/{imageId}", produces = MediaType.IMAGE_PNG_VALUE)
     public byte[] findImage(@PathVariable String imageId){
         return feedService.findImage(Long.parseLong(imageId));

@@ -1,6 +1,5 @@
 package sosohappy.feedservice.repository;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,6 +18,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long>, FeedQueryRepo
     @Query("update Feed f set f.nickname = :after where f.nickname = :before")
     void updateFeedNickname(@Param("before") String before, @Param("after") String after);
 
+    @Modifying
     void deleteByNickname(String nickname);
 
 }
