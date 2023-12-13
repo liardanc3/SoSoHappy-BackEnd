@@ -26,4 +26,8 @@ public class FeedImage {
         this.feed = feed;
         this.image = image;
     }
+
+    public void deleteRelationship(){
+        this.feed = null;
+    }
 }

@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
+import sosohappy.feedservice.domain.entity.FeedCategory;
+import sosohappy.feedservice.domain.entity.FeedImage;
 import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.kafka.KafkaConsumer;
 import sosohappy.feedservice.kafka.KafkaProducer;
+import sosohappy.feedservice.repository.FeedCategoryRepository;
 import sosohappy.feedservice.repository.FeedImageRepository;
 import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
@@ -24,6 +27,7 @@ public class FeedService {
     private final FeedRepository feedRepository;
     private final FeedLikeNicknameRepository feedLikeNicknameRepository;
     private final FeedImageRepository feedImageRepository;
+    private final FeedCategoryRepository feedCategoryRepository;
     private final HappinessService happinessService;
     private final ObjectProvider<FeedService> feedServiceObjectProvider;
 
@@ -36,6 +40,7 @@ public class FeedService {
         return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto);
     }
 
+    @Transactional
     public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
         return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())
                 .map(feed -> {
@@ -84,10 +89,6 @@ public class FeedService {
 
     public void updateNickname(String srcNickname, String dstNickname){
         feedRepository.updateFeedNickname(srcNickname, dstNickname);
-    }
-
-    public byte[] findFeedImage(long imageId) {
-        return feedImageRepository.findImageById(imageId).getImage();
     }
 
     public void deleteDataOfResignedUser(String nickname){
