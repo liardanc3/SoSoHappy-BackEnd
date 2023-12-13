@@ -156,7 +156,8 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
                         isDayFind(date),
-                        nickNameEq(nickname).not()
+                        nickNameEq(nickname).not(),
+                        isPublic()
                 )
                 .orderBy(feed.date.desc())
                 .offset(0)
@@ -203,7 +204,8 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .leftJoin(feed.feedCategories, feedCategory)
                 .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
-                        nickNameEq(dstNickname)
+                        nickNameEq(dstNickname),
+                        isPublic()
                 )
                 .orderBy(feed.date.desc())
                 .offset(0)
@@ -244,7 +246,8 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
                         dayEq(date),
-                        nickNameEq(dstNickname)
+                        nickNameEq(dstNickname),
+                        isPublic()
                 )
                 .orderBy(feed.date.desc())
                 .transform(
@@ -281,5 +284,9 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
             return dayEq(date);
         }
         return null;
+    }
+
+    private BooleanExpression isPublic(){
+        return feed.isPublic.eq(true);
     }
 }

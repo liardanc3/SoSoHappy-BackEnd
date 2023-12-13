@@ -1,6 +1,7 @@
 package sosohappy.feedservice.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ import sosohappy.feedservice.repository.FeedImageRepository;
 import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.*;
 
 @Service
@@ -95,6 +100,13 @@ public class FeedService {
         feedRepository.deleteByNickname(nickname);
     }
 
+    @SneakyThrows
+    public byte[] findImage(long imageId) {
+        ImageDto image = feedImageRepository.findImageById(imageId);
+
+        return image.getImage();
+    }
+
     // --------------------------------------------------------------------------------------------------- //
 
     @KafkaProducer(topic = "noticeLike")
@@ -113,5 +125,4 @@ public class FeedService {
                     return true;
                 });
     }
-
 }

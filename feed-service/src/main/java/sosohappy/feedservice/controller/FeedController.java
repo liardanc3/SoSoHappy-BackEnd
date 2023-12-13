@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import sosohappy.feedservice.domain.dto.*;
@@ -69,6 +70,11 @@ public class FeedController {
     @PostMapping("/findFeedImage")
     public ImageDto findFeedImage(@ModelAttribute @Valid ImageIdDto imageIdDto){
         return feedImageRepository.findImageById(imageIdDto.getImageId());
+    }
+
+    @GetMapping(value = "/image/{imageId}", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] findImage(@PathVariable String imageId){
+        return feedService.findImage(Long.parseLong(imageId));
     }
 
 }
