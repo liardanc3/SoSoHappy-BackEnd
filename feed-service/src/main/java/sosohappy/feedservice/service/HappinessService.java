@@ -69,9 +69,9 @@ public class HappinessService {
     }
 
     public List<HappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
-        return Optional.ofNullable(feedRepository.findHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto))
-                .map(this::fillMonthHappinessAndDateDtoList)
-                .orElseThrow(RuntimeException::new);
+        return fillMonthHappinessAndDateDtoList(
+                feedRepository.findHappinessAndDateDtoByNicknameAndDateDto(nicknameAndDateDto)
+        );
     }
 
     private List<HappinessAndDateDto> fillMonthHappinessAndDateDtoList(List<HappinessAndDateDto> monthHappinessAndDateDtoList) {

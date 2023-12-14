@@ -76,9 +76,8 @@ public class Feed {
         }
     }
 
-    public static Feed updateIsPublic(Feed feed){
-        feed.isPublic = !feed.isPublic;
-        return feed;
+    public void updateIsPublic(){
+        this.isPublic = !this.isPublic;
     }
 
     @SneakyThrows

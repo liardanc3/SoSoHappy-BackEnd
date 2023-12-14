@@ -16,11 +16,4 @@ public class UpdateResultDto {
                 .message(message)
                 .build();
     }
-
-    public static UpdateResultDto updateFailure(){
-        return UpdateResultDto.builder()
-                .success(false)
-                .build();
-    }
-
 }

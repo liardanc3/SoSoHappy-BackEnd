@@ -9,10 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.NotFoundException;
-import sosohappy.feedservice.exception.custom.UpdateException;
+import sosohappy.feedservice.exception.custom.ValidException;
 import sosohappy.feedservice.kafka.KafkaConsumer;
 import sosohappy.feedservice.kafka.KafkaProducer;
-import sosohappy.feedservice.repository.FeedCategoryRepository;
 import sosohappy.feedservice.repository.FeedImageRepository;
 import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
@@ -27,7 +26,6 @@ public class FeedService {
     private final FeedRepository feedRepository;
     private final FeedLikeNicknameRepository feedLikeNicknameRepository;
     private final FeedImageRepository feedImageRepository;
-    private final FeedCategoryRepository feedCategoryRepository;
     private final HappinessService happinessService;
     private final ObjectProvider<FeedService> feedServiceObjectProvider;
 
@@ -57,9 +55,11 @@ public class FeedService {
 
     public UpdateResultDto updatePublicStatus(NicknameAndDateDto nicknameAndDateDto) {
         return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
-                .map(Feed::updateIsPublic)
-                .map(feed -> UpdateResultDto.updateSuccess("업데이트 성공"))
-                .orElseThrow(UpdateException::new);
+                .map(feed -> {
+                    feed.updateIsPublic();
+                    return UpdateResultDto.updateSuccess("업데이트 성공");
+                })
+                .orElseThrow(NotFoundException::new);
     }
 
     public SliceResponse<OtherFeedDto> findOtherFeed(String nickname, Long date, Pageable pageable) {
@@ -72,7 +72,7 @@ public class FeedService {
 
     public OtherFeedDto findDetailFeed(String srcNickname, String dstNickname, Long date) {
         return feedRepository.findBySrcNicknameAndDstNicknameAndDate(srcNickname, dstNickname, date)
-                .orElse(null);
+                .orElseThrow(NotFoundException::new);
     }
 
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
@@ -84,7 +84,7 @@ public class FeedService {
                     }
                     return responseDto;
                 })
-                .orElseGet(() -> Map.of("like", false));
+                .orElseThrow(NotFoundException::new);
     }
 
     public void updateNickname(String srcNickname, String dstNickname){
@@ -95,27 +95,29 @@ public class FeedService {
         feedRepository.deleteByNickname(nickname);
     }
 
-    @SneakyThrows
-    public byte[] findImage(long imageId) {
-        ImageDto image = feedImageRepository.findImageById(imageId);
+    public byte[] findImage(String imageId) {
+        try{
 
-        if(image == null){
-            throw new NotFoundException();
+            ImageDto image = feedImageRepository.findImageById(Long.parseLong(imageId));
+
+            if(image == null){
+                throw new NotFoundException();
+            }
+
+            return image.getImage();
+
+        } catch (NumberFormatException e) {
+            throw new ValidException();
         }
-
-        return image.getImage();
     }
 
-    public Map<String, String> deleteFeed(NicknameAndDateDto nicknameAndDateDto) {
-        return Map.of(
-                "result",
-                feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
+    public Map<String, Boolean> deleteFeed(NicknameAndDateDto nicknameAndDateDto) {
+        return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
                     .map(feed -> {
                         feedRepository.delete(feed);
-                        return "true";
+                        return Map.of("result", true);
                     })
-                    .orElse("false")
-        );
+                    .orElseThrow(NotFoundException::new);
     }
 
     // --------------------------------------------------------------------------------------------------- //

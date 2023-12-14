@@ -49,7 +49,7 @@ public class FeedController {
     }
 
     @PostMapping("/updateLike")
-    public Map<String, Boolean> updateLike(String srcNickname, @ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
+    public Map<String, Boolean> updateLike(@RequestParam String srcNickname, @ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
         return feedService.updateLike(srcNickname, nicknameAndDateDto);
     }
 
@@ -67,19 +67,19 @@ public class FeedController {
         return feedService.findDetailFeed(srcNickname, dstNickname, date);
     }
 
+    @PostMapping("/deleteFeed")
+    public Map<String, Boolean> deleteFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
+        return feedService.deleteFeed(nicknameAndDateDto);
+    }
+
     @PostMapping("/findFeedImage")
     public ImageDto findFeedImage(@ModelAttribute @Valid ImageIdDto imageIdDto){
         return feedImageRepository.findImageById(imageIdDto.getImageId());
     }
 
-    @PostMapping("/deleteFeed")
-    public Map<String, String> deleteFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
-        return feedService.deleteFeed(nicknameAndDateDto);
-    }
-
     @GetMapping(value = "/image/{imageId}", produces = "image/heic")
     public byte[] findImage(@PathVariable String imageId){
-        return feedService.findImage(Long.parseLong(imageId));
+        return feedService.findImage(imageId);
     }
 
 }

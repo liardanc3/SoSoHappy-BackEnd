@@ -7,17 +7,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import sosohappy.feedservice.domain.dto.UpdateResultDto;
 import sosohappy.feedservice.exception.custom.NotFoundException;
-import sosohappy.feedservice.exception.custom.UpdateException;
 import sosohappy.feedservice.exception.custom.ValidException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
-
-    @ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(UpdateException.class)
-    public UpdateResultDto handleUpdateException(){
-        return UpdateResultDto.updateFailure();
-    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidException.class)
