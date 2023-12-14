@@ -20,14 +20,14 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "noticeLike", groupId = "notice-service-noticeLike-0000")
     public Mono<Void> noticeLike(ConsumerRecord<byte[], byte[]> record){
-        return Mono.defer(() -> {
+        return Mono.fromRunnable(() -> {
             String[] nicknameAndDateStr = new String(record.value()).split(",");
             System.out.println("devicetoken = " + new String(record.value()));
             String srcNickname = new String(record.key());
             String email = nicknameAndDateStr[0];
             Long date = Long.parseLong(nicknameAndDateStr[1]);
-
-            return noticeService.sendNotice(srcNickname, date, emailAndDeviceTokenMap.get(email));
+            noticeService.sendNotice(srcNickname, date, emailAndDeviceTokenMap.get(email));
+            return Mono.empty();
         });
     }
 
