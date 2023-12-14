@@ -27,7 +27,6 @@ public class KafkaConsumer {
             String email = nicknameAndDateStr[0];
             Long date = Long.parseLong(nicknameAndDateStr[1]);
             noticeService.sendNotice(srcNickname, date, emailAndDeviceTokenMap.get(email));
-            return Mono.empty();
         });
     }
 
