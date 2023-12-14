@@ -2,9 +2,9 @@ package sosohappy.dmservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 import sosohappy.dmservice.domain.dto.FindDirectMessageFilter;
+import sosohappy.dmservice.domain.dto.FindMultipleDirectMessageFilter;
 import sosohappy.dmservice.domain.dto.MessageDto;
 import sosohappy.dmservice.service.MessageService;
 
@@ -22,10 +22,8 @@ public class MessageController {
     }
 
     @PostMapping("/findMultipleDirectMessage")
-    public List<MessageDto> findMultipleDirectMessage(@RequestPart String sender){
-        return messageService.findMultipleDirectMessage(sender);
+    public List<MessageDto> findMultipleDirectMessage(@ModelAttribute @Valid FindMultipleDirectMessageFilter filter){
+        return messageService.findMultipleDirectMessage(filter.getSender());
     }
-
-
 
 }

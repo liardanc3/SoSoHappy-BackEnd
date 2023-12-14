@@ -1,5 +1,7 @@
 package sosohappy.dmservice.domain.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import sosohappy.dmservice.domain.collection.Message;
@@ -9,6 +11,7 @@ import sosohappy.dmservice.domain.collection.Message;
 public class MessageDto {
 
     private String sender;
+
     private String receiver;
 
     private Long date;

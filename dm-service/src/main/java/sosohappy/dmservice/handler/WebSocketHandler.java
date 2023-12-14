@@ -14,6 +14,7 @@ import sosohappy.dmservice.repository.MessageRepository;
 import sosohappy.dmservice.service.MessageService;
 import sosohappy.dmservice.util.Utils;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,14 +30,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private static final ConcurrentHashMap<String, String> nicknameAndSessionIdMap = new ConcurrentHashMap<>();
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         try{
             String nickname = Objects.requireNonNull(session.getUri()).toString().split("nickname=")[1];
 
             nicknameAndSessionIdMap.put(nickname, session.getId());
             sessionIdAndSessionMap.put(session.getId(), session);
         } catch (Exception e){
-            throw new BadRequestException();
+            session.close(CloseStatus.BAD_DATA);
         }
     }
 
