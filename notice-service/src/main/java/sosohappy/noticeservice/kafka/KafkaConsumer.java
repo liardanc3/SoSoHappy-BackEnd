@@ -22,7 +22,7 @@ public class KafkaConsumer {
     public Mono<Void> noticeLike(ConsumerRecord<byte[], byte[]> record){
         return Mono.defer(() -> {
             String[] nicknameAndDateStr = new String(record.value()).split(",");
-
+            System.out.println("devicetoken = " + new String(record.value()));
             String srcNickname = new String(record.key());
             String email = nicknameAndDateStr[0];
             Long date = Long.parseLong(nicknameAndDateStr[1]);
@@ -33,6 +33,7 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "deviceToken", groupId = "notice-service-deviceToken-0000")
     public Mono<Void> handleDeviceToken(ConsumerRecord<byte[], byte[]> record){
+        System.out.println("devicetoken = " + new String(record.value()));
         return Mono.fromRunnable(() -> emailAndDeviceTokenMap.put(new String(record.key()), new String(record.value())));
     }
 
