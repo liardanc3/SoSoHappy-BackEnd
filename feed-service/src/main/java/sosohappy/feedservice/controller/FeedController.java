@@ -77,7 +77,7 @@ public class FeedController {
         return feedService.deleteFeed(nicknameAndDateDto);
     }
 
-    @GetMapping(value = "/image/{imageId}", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/image/{imageId}", produces = "image/heic")
     public byte[] findImage(@PathVariable String imageId){
         return feedService.findImage(Long.parseLong(imageId));
     }
