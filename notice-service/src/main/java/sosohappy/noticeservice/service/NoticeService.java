@@ -17,7 +17,7 @@ public class NoticeService {
     private final Utils utils;
 
     public Mono<Void> sendNotice(String srcNickname, Long date, String deviceToken) {
-        return Mono.defer(() -> {
+        return Mono.fromRunnable(() -> {
             Message message = Message.builder()
                     .setNotification(
                             Notification.builder()
@@ -30,8 +30,6 @@ public class NoticeService {
                     .build();
 
             firebaseMessaging.sendAsync(message);
-
-            return Mono.empty();
         });
     }
 
