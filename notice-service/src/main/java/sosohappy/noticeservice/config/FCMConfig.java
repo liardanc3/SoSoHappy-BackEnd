@@ -74,8 +74,6 @@ public class FCMConfig {
         String json = objectMapper.writeValueAsString(firebaseCredentialResource);
 
         this.firebaseInputStream = new ByteArrayInputStream(json.getBytes());
-
-        System.out.println(firebaseCredentialResource.toString());
     }
 
     @Bean

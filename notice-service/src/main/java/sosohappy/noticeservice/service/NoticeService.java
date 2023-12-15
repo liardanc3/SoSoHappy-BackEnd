@@ -5,7 +5,6 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
 import sosohappy.noticeservice.dto.MessageDto;
 import sosohappy.noticeservice.util.Utils;

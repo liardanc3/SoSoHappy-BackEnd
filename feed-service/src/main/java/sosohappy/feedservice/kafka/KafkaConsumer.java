@@ -23,8 +23,6 @@ public class KafkaConsumer {
         String email = new String(record.key());
         String accessToken = new String(record.value());
 
-        System.out.println("email = " + email);
-        System.out.println("accessToken = " + accessToken);
         emailAndTokenMap.put(email, accessToken);
     }
 
@@ -45,17 +43,22 @@ public class KafkaConsumer {
         feedService.deleteDataOfResignedUser(nickname);
     }
 
-    @KafkaListener(topics = "emailAndNickname", groupId = "feed-service-emailAndNickname-0000")
+    @KafkaListener(topics = "emailAndNickname", groupId = "feed-service-emailAndNickname-0001")
     public void handleUpdateEmailAndNickname(ConsumerRecord<byte[], byte[]> record){
         String email = new String(record.key());
         String nickname = new String(record.value());
 
         String originNickname = emailAndNicknameMap.get(email);
 
-        nicknameAndEmailMap.remove(originNickname);
+        if(originNickname != null && nicknameAndEmailMap.contains(originNickname)){
+            nicknameAndEmailMap.remove(originNickname);
+        }
+
         emailAndNicknameMap.put(email, nickname);
         nicknameAndEmailMap.put(nickname, email);
 
-        feedService.updateNickname(originNickname, nickname);
+        if(originNickname != null){
+            feedService.updateNickname(originNickname, nickname);
+        }
     }
 }

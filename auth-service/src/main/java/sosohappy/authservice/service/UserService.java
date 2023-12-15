@@ -13,6 +13,7 @@ import sosohappy.authservice.exception.custom.BadRequestException;
 import sosohappy.authservice.exception.custom.ForbiddenException;
 import sosohappy.authservice.exception.custom.UnAuthorizedException;
 import sosohappy.authservice.jwt.service.JwtService;
+import sosohappy.authservice.kafka.KafkaDelegator;
 import sosohappy.authservice.kafka.KafkaProducer;
 import sosohappy.authservice.model.dto.*;
 import sosohappy.authservice.model.entity.User;
@@ -32,11 +33,12 @@ import java.util.*;
 @Slf4j
 public class UserService {
 
-    private static Map<String, String> authorizeCodeAndChallengeMap = new HashMap<>();
+    private static final Map<String, String> authorizeCodeAndChallengeMap = new HashMap<>();
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ObjectProvider<UserService> userServiceProvider;
+    private final KafkaDelegator kafkaDelegator;
     private final AppleOAuth2Delegator appleOAuth2Delegator;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
@@ -46,7 +48,7 @@ public class UserService {
         String deviceToken = String.valueOf(userAttributes.get("deviceToken"));
         String appleRefreshToken = String.valueOf(userAttributes.get("appleRefreshToken"));
 
-        userServiceProvider.getObject().produceDeviceToken(email, deviceToken);
+        kafkaDelegator.produceDeviceToken(email, deviceToken);
 
         userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
@@ -55,7 +57,7 @@ public class UserService {
                                     user.updateDeviceToken(deviceToken);
                                     user.updateAppleRefreshToken(appleRefreshToken);
 
-                                    userServiceProvider.getObject().produceEmailAndNickname(user.getEmail(), user.getNickname());
+                                    kafkaDelegator.produceEmailAndNickname(user.getEmail(), user.getNickname());
                                 },
                                 () -> userRepository.save(
                                         User.builder()
@@ -82,7 +84,7 @@ public class UserService {
                     }
 
                     if(revokeResult){
-                        userServiceProvider.getObject().produceResign(user.getEmail(), user.getNickname());
+                        kafkaDelegator.produceResign(user.getEmail(), user.getNickname());
                         userRepository.delete(user);
                     }
 
@@ -115,7 +117,7 @@ public class UserService {
         return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
                     user.updateProfile(userRequestDto);
-                    userServiceProvider.getObject().produceEmailAndNickname(user.getEmail(), user.getNickname());
+                    kafkaDelegator.produceEmailAndNickname(user.getEmail(), user.getNickname());
 
                     return SetProfileDto.builder()
                             .email(user.getEmail())
@@ -208,20 +210,7 @@ public class UserService {
 
     // ------------------------------------------------------------------------------------------------------------ //
 
-    @KafkaProducer(topic = "resign")
-    public List<String> produceResign(String email, String nickname){
-        return List.of(email, nickname);
-    }
 
-    @KafkaProducer(topic = "emailAndNickname")
-    public List<String> produceEmailAndNickname(String email, String nickname){
-        return List.of(email, nickname);
-    }
-
-    @KafkaProducer(topic = "deviceToken")
-    public List<String> produceDeviceToken(String email, String deviceToken){
-        return List.of(email, deviceToken);
-    }
 
     private String encode(String codeVerifier) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");

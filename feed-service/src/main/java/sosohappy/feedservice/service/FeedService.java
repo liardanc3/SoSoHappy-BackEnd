@@ -1,8 +1,6 @@
 package sosohappy.feedservice.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,13 +8,14 @@ import sosohappy.feedservice.domain.dto.*;
 import sosohappy.feedservice.domain.entity.Feed;
 import sosohappy.feedservice.exception.custom.NotFoundException;
 import sosohappy.feedservice.exception.custom.ValidException;
-import sosohappy.feedservice.kafka.KafkaConsumer;
-import sosohappy.feedservice.kafka.KafkaProducer;
+import sosohappy.feedservice.kafka.KafkaDelegator;
 import sosohappy.feedservice.repository.FeedImageRepository;
 import sosohappy.feedservice.repository.FeedLikeNicknameRepository;
 import sosohappy.feedservice.repository.FeedRepository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class FeedService {
     private final FeedLikeNicknameRepository feedLikeNicknameRepository;
     private final FeedImageRepository feedImageRepository;
     private final HappinessService happinessService;
-    private final ObjectProvider<FeedService> feedServiceObjectProvider;
+    private final KafkaDelegator kafkaDelegator;
 
     public List<UserFeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
         return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
@@ -80,7 +79,7 @@ public class FeedService {
                 .map(feed ->  {
                     Map<String, Boolean> responseDto = Map.of("like", updateLike(feed, srcNickname));
                     if(responseDto.get("like")){
-                        feedServiceObjectProvider.getObject().produceUpdateLike(srcNickname, nicknameAndDateDto);
+                        kafkaDelegator.produceUpdateLike(srcNickname, nicknameAndDateDto);
                     }
                     return responseDto;
                 })
@@ -122,10 +121,7 @@ public class FeedService {
 
     // --------------------------------------------------------------------------------------------------- //
 
-    @KafkaProducer(topic = "noticeLike")
-    public List<String> produceUpdateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
-        return List.of(srcNickname, KafkaConsumer.nicknameAndEmailMap.get(nicknameAndDateDto.getNickname()) + "," + nicknameAndDateDto.getDate());
-    }
+
 
     private boolean updateLike(Feed feed, String srcNickname){
         return feedLikeNicknameRepository.findByFeedAndNickname(feed, srcNickname)
