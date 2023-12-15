@@ -16,13 +16,13 @@ public class NoticeService {
     private final FirebaseMessaging firebaseMessaging;
     private final Utils utils;
 
-    public Mono<Void> sendNotice(String srcNickname, Long date, String deviceToken) {
+    public Mono<Void> sendNotice(String srcNickname, String dstNickname, Long date, String deviceToken) {
         return Mono.fromRunnable(() -> {
             Message message = Message.builder()
                     .setNotification(
                             Notification.builder()
-                                    .setTitle("좋아요 알림")
-                                    .setBody(srcNickname + " 님이 내 피드에 좋아요를 눌렀습니다.")
+                                    .setTitle("소소해피")
+                                    .setBody(srcNickname + "님이 " + dstNickname + "님의 행복을 응원합니다.")
                                     .build()
                     )
                     .setToken(deviceToken)

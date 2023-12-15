@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class KafkaConsumer {
 
     public static ConcurrentHashMap<String, String> emailAndDeviceTokenMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, String> emailAndNicknameMap = new ConcurrentHashMap<>();
 
     private final NoticeService noticeService;
 
@@ -22,11 +23,24 @@ public class KafkaConsumer {
     public Disposable noticeLike(ConsumerRecord<byte[], byte[]> record){
         return Mono.defer(() -> {
             String[] nicknameAndDateStr = new String(record.value()).split(",");
+
             String srcNickname = new String(record.key());
             String email = nicknameAndDateStr[0];
+            String dstNickname = emailAndNicknameMap.get(email);
+
             Long date = Long.parseLong(nicknameAndDateStr[1]);
 
-            return noticeService.sendNotice(srcNickname, date, emailAndDeviceTokenMap.get(email));
+            return noticeService.sendNotice(srcNickname, dstNickname, date, emailAndDeviceTokenMap.get(email));
+        }).subscribe();
+    }
+
+    @KafkaListener(topics = "emailAndNickname", groupId = "notice-service-emailAndNickname-0000")
+    public Disposable handleEmailAndNickname(ConsumerRecord<byte[], byte[]> record){
+        return Mono.fromRunnable(() -> {
+            String email = new String(record.key());
+            String nickname = new String(record.key());
+
+            emailAndNicknameMap.put(email, nickname);
         }).subscribe();
     }
 
