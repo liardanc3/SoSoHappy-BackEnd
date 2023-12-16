@@ -142,7 +142,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     @Override
     public Slice<OtherFeedDto> findByNicknameAndDateWithSlicing(String nickname, Long date, Pageable pageable) {
-        if(pageable.getPageSize() > 99){
+        if(pageable.getPageSize() > 25){
             throw new ValidException();
         }
 

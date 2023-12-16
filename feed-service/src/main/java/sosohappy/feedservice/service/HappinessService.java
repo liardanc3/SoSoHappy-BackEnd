@@ -250,7 +250,9 @@ public class HappinessService {
             }
         }
 
-        Collections.shuffle(result);
+        if(!result.isEmpty()){
+            Collections.shuffle(result);
+        }
 
         return result.isEmpty() ? List.of("피드 작성하기") : result.subList(0, Math.min(result.size(), 10));
     }
