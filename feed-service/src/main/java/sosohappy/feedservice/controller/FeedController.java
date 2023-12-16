@@ -32,7 +32,7 @@ public class FeedController {
     }
 
     @PostMapping("/saveFeed")
-    public UpdateResultDto saveFeed(@ModelAttribute @Valid UpdateFeedDto updateFeedDto){
+    public synchronized UpdateResultDto saveFeed(@ModelAttribute @Valid UpdateFeedDto updateFeedDto){
         return feedService.updateFeed(updateFeedDto);
     }
 

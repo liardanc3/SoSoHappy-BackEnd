@@ -37,19 +37,25 @@ public class FeedService {
         return feedRepository.findDayFeedDtoByNicknameAndDateDto(nicknameAndDateDto);
     }
 
-    @Transactional
     public UpdateResultDto updateFeed(UpdateFeedDto updateFeedDto) {
-        return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())
-                .map(feed -> {
-                    happinessService.updateSimilarityMatrix(feed, updateFeedDto);
-                    feed.updateFeed(updateFeedDto);
-                    return UpdateResultDto.updateSuccess("등록 성공");
-                })
-                .orElseGet(() -> {
-                    happinessService.updateSimilarityMatrix(updateFeedDto);
-                    feedRepository.save(new Feed(updateFeedDto));
-                    return UpdateResultDto.updateSuccess("등록 성공");
-                });
+        synchronized (this){
+            return feedRepository.findByNicknameAndDate(updateFeedDto.getNickname(), updateFeedDto.getDate())
+                    .map(feed -> {
+                        happinessService.updateSimilarityMatrix(feed, updateFeedDto);
+                        feed.updateFeed(updateFeedDto);
+                        return UpdateResultDto.updateSuccess("등록 성공");
+                    })
+                    .orElseGet(() -> {
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        happinessService.updateSimilarityMatrix(updateFeedDto);
+                        feedRepository.save(new Feed(updateFeedDto));
+                        return UpdateResultDto.updateSuccess("등록 성공");
+                    });
+        }
     }
 
     public UpdateResultDto updatePublicStatus(NicknameAndDateDto nicknameAndDateDto) {
