@@ -2,14 +2,13 @@ package dev.sosohappy.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import dev.sosohappy.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import sosohappy.authservice.kafka.KafkaProducer;
-import sosohappy.authservice.repository.UserRepository;
 
 import java.util.Date;
 import java.util.Optional;
@@ -36,7 +35,6 @@ public class JwtService {
 
     private final UserRepository userRepository;
 
-    @KafkaProducer(topic = "accessToken")
     public String createAccessToken(String email) {
         return JWT.create()
                 .withSubject("AccessToken") 
