@@ -22,7 +22,7 @@ public class NoticeService {
                     .setNotification(
                             Notification.builder()
                                     .setTitle("소소해피")
-                                    .setBody(srcNickname + "님이 " + dstNickname + "님의 행복을 응원합니다.")
+                                    .setBody(srcNickname + "님이 " + dstNickname + "님의 행복을 응원합니다\uD83D\uDE04")
                                     .build()
                     )
                     .setToken(deviceToken)
