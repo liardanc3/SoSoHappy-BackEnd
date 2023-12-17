@@ -1,11 +1,9 @@
-package sosohappy.authservice.model.entity;
+package dev.sosohappy.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import sosohappy.authservice.kafka.KafkaProducer;
-import sosohappy.authservice.model.dto.UserRequestDto;
 
-import java.util.List;
+import dev.sosohappy.model.dto.*;
 
 @Entity
 @Getter
@@ -50,33 +48,27 @@ public class User {
     }
 
     @SneakyThrows
-    public String updateProfile(UserRequestDto userRequestDto)  {
-        boolean nicknameEdited = false;
-        String originNickname = this.nickname;
-
+    public void updateProfile(UserRequestDto userRequestDto)  {
         if(userRequestDto.getProfileImg() != null){
             this.profileImg = userRequestDto.getProfileImg().getBytes();
         }
         if(userRequestDto.getNickname() != null){
             this.nickname = userRequestDto.getNickname();
-            if(!this.nickname.equals(originNickname)){
-                nicknameEdited = true;
-            }
         }
         if(userRequestDto.getIntroduction() != null){
             this.introduction = userRequestDto.getIntroduction();
         }
-
-        return nicknameEdited ? nickname : "";
     }
 
     public void updateAppleRefreshToken(String appleRefreshToken){
         this.appleRefreshToken = appleRefreshToken;
     }
 
-    public List<String> updateDeviceToken(String deviceToken){
+    public void updateDeviceToken(String deviceToken){
         this.deviceToken = deviceToken;
+    }
 
-        return List.of(email, deviceToken);
+    public void updateProviderId(String providerId) {
+        this.providerId = providerId;
     }
 }
