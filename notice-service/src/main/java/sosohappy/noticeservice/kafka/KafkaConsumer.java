@@ -38,7 +38,7 @@ public class KafkaConsumer {
     public Disposable handleEmailAndNickname(ConsumerRecord<byte[], byte[]> record){
         return Mono.fromRunnable(() -> {
             String email = new String(record.key());
-            String nickname = new String(record.key());
+            String nickname = new String(record.value());
 
             emailAndNicknameMap.put(email, nickname);
         }).subscribe();
