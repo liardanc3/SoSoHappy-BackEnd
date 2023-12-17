@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sosohappy.authservice.model.entity.User;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -51,6 +53,10 @@ public class JwtFilter extends OncePerRequestFilter {
             String refreshToken = jwtService.extractRefreshToken(request)
                     .filter(token -> jwtService.isTokenValid(token, headerEmail))
                     .orElse(null);
+
+            log.info("headerEmail : " + headerEmail);
+            log.info("tokenEmail : " + tokenEmail);
+            log.info("refreshToken : " + refreshToken);
 
             if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
