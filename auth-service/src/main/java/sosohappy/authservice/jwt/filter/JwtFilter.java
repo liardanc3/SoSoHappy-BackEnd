@@ -45,6 +45,13 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (isReIssueToken){
+            System.out.println(
+                    "email : " + request.getHeader("email") + "\n" +
+                            "Authorization : " + request.getHeader("Authorization") + "\n" +
+                            "Authorization-refresh : " + request.getHeader("Authorization-refresh")
+
+            );
+
             String headerEmail = jwtService.extractHeaderEmail(request);
 
             String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))
@@ -53,10 +60,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String refreshToken = jwtService.extractRefreshToken(request)
                     .filter(token -> jwtService.isTokenValid(token, headerEmail))
                     .orElse(null);
-
-            log.info("headerEmail : " + headerEmail);
-            log.info("tokenEmail : " + tokenEmail);
-            log.info("refreshToken : " + refreshToken);
 
             if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
