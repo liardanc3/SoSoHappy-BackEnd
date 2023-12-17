@@ -41,11 +41,13 @@ public class UserFeedDto {
         this.likeNicknameList = likeNicknameList.stream().map(FeedLikeNickname::getNickname)
                 .filter(Objects::nonNull)
                 .filter(likeNickname -> !likeNickname.equals(""))
-                .collect(Collectors.toList());
+                .distinct()
+                .toList();
         this.categoryList = categoryList.stream().map(FeedCategory::getCategory)
                 .filter(Objects::nonNull)
                 .filter(category -> !category.equals(""))
-                .collect(Collectors.toList());
+                .distinct()
+                .toList();
         this.imageIdList = imageIdList.stream().filter(imageId -> imageId != 0).collect(Collectors.toList());
     }
 
