@@ -54,7 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             String headerEmail = jwtService.extractHeaderEmail(request);
 
-            String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))
+            String tokenEmail = jwtService.extractTokenEmail(jwtService.extractRefreshToken(request).orElse(null))
                     .orElse(null);
 
             String refreshToken = jwtService.extractRefreshToken(request)

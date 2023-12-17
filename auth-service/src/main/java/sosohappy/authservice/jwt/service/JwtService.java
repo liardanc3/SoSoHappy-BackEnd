@@ -77,12 +77,12 @@ public class JwtService {
         return request.getHeader("Email");
     }
 
-    public Optional<String> extractTokenEmail(String accessToken) {
+    public Optional<String> extractTokenEmail(String token) {
         try {
             return Optional.ofNullable(
                     JWT.require(Algorithm.HMAC512(secretKey))
                             .build()
-                            .verify(accessToken)
+                            .verify(token)
                             .getClaim("email")
                             .asString()
             );
