@@ -1,0 +1,30 @@
+package dev.sosohappy.monolithic.repository.rdbms;
+
+import dev.sosohappy.monolithic.model.dto.*;
+import dev.sosohappy.monolithic.model.entity.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface FeedQueryRepository {
+
+    List<UserFeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
+
+    UserFeedDto findDayFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
+
+    Optional<Feed> findByNicknameAndDate(String nickname, Long date);
+
+    List<HappinessAndCategoryDto> findMonthHappinessAndCategoryDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
+
+    List<HappinessAndDateDto> findHappinessAndDateDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto);
+
+    Optional<Double> findMonthHappinessAvgByNicknameAndDate(String nickname, Long date);
+
+    Slice<OtherFeedDto> findByNicknameAndDateWithSlicing(String nickname, Long date, Pageable pageable);
+
+    Slice<OtherFeedDto> findUserFeed(String srcNickname, String dstNickname, Pageable pageable);
+
+    Optional<OtherFeedDto> findBySrcNicknameAndDstNicknameAndDate(String srcNickname, String dstNickname, Long date);
+}

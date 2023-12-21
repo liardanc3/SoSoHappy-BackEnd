@@ -1,7 +1,7 @@
-package dev.sosohappy.monolithic.controller.auth;
+package dev.sosohappy.monolithic.controller;
 
 import dev.sosohappy.monolithic.model.dto.*;
-import dev.sosohappy.monolithic.service.auth.UserService;
+import dev.sosohappy.monolithic.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -4,6 +4,9 @@ import dev.sosohappy.monolithic.model.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor

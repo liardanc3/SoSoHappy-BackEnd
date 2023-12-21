@@ -2,7 +2,7 @@ package dev.sosohappy.monolithic.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import dev.sosohappy.monolithic.repository.UserRepository;
+import dev.sosohappy.monolithic.repository.rdbms.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -75,12 +75,12 @@ public class JwtService {
         return request.getHeader("Email");
     }
 
-    public Optional<String> extractTokenEmail(String accessToken) {
+    public Optional<String> extractTokenEmail(String token) {
         try {
             return Optional.ofNullable(
                     JWT.require(Algorithm.HMAC512(secretKey))
                             .build()
-                            .verify(accessToken)
+                            .verify(token)
                             .getClaim("email")
                             .asString()
             );

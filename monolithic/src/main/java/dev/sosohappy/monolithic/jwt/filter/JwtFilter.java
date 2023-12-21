@@ -2,7 +2,7 @@ package dev.sosohappy.monolithic.jwt.filter;
 
 import dev.sosohappy.monolithic.jwt.service.JwtService;
 import dev.sosohappy.monolithic.model.entity.User;
-import dev.sosohappy.monolithic.repository.UserRepository;
+import dev.sosohappy.monolithic.repository.rdbms.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (isReIssueToken){
             String headerEmail = jwtService.extractHeaderEmail(request);
 
-            String tokenEmail = jwtService.extractTokenEmail(jwtService.extractAccessToken(request).orElse(null))
+            String tokenEmail = jwtService.extractTokenEmail(jwtService.extractRefreshToken(request).orElse(null))
                     .orElse(null);
 
             String refreshToken = jwtService.extractRefreshToken(request)

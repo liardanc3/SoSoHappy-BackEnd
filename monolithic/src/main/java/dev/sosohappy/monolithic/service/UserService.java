@@ -1,4 +1,4 @@
-package dev.sosohappy.monolithic.service.auth;
+package dev.sosohappy.monolithic.service;
 
 import dev.sosohappy.monolithic.exception.custom.BadRequestException;
 import dev.sosohappy.monolithic.exception.custom.ForbiddenException;
@@ -7,8 +7,9 @@ import dev.sosohappy.monolithic.jwt.service.JwtService;
 import dev.sosohappy.monolithic.model.dto.*;
 import dev.sosohappy.monolithic.model.entity.User;
 import dev.sosohappy.monolithic.oauth2.apple.AppleOAuth2Delegator;
-import dev.sosohappy.monolithic.repository.UserRepository;
-import dev.sosohappy.monolithic.util.MiddlewareSubstitutor;
+import dev.sosohappy.monolithic.repository.rdbms.FeedRepository;
+import dev.sosohappy.monolithic.repository.rdbms.UserRepository;
+import dev.sosohappy.monolithic.util.Utils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,8 +38,8 @@ public class UserService {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final FeedRepository feedRepository;
     private final AppleOAuth2Delegator appleOAuth2Delegator;
-    private final MiddlewareSubstitutor middlewareSubstitutor;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
         String email = String.valueOf(userAttributes.get("email"));
@@ -47,8 +48,6 @@ public class UserService {
         String deviceToken = String.valueOf(userAttributes.get("deviceToken"));
         String appleRefreshToken = String.valueOf(userAttributes.get("appleRefreshToken"));
 
-        middlewareSubstitutor.produceDeviceToken(email, deviceToken);
-
         userRepository.findByEmailAndProvider(email, provider)
                         .ifPresentOrElse(
                                 user -> {
@@ -56,8 +55,6 @@ public class UserService {
                                     user.updateDeviceToken(deviceToken);
                                     user.updateProviderId(providerId);
                                     user.updateAppleRefreshToken(appleRefreshToken);
-
-                                    middlewareSubstitutor.produceEmailAndNickname(user.getEmail(), user.getNickname());
                                 },
                                 () -> userRepository.save(
                                         User.builder()
@@ -84,8 +81,7 @@ public class UserService {
                     }
 
                     if(revokeResult){
-                        middlewareSubstitutor.produceResign(user.getEmail(), user.getNickname());
-                        userRepository.delete(user);
+                        feedRepository.deleteByNickname(user.getNickname());
                     }
 
                     return ResignDto.builder()
@@ -116,7 +112,6 @@ public class UserService {
         return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
                     user.updateProfile(userRequestDto);
-                    middlewareSubstitutor.produceEmailAndNickname(user.getEmail(), user.getNickname());
 
                     return SetProfileDto.builder()
                             .email(user.getEmail())

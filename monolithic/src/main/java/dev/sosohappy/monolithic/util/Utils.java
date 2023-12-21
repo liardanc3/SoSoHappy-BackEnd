@@ -5,9 +5,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 @RequiredArgsConstructor
 public class Utils {
+
+    public static final ConcurrentHashMap<String, String> emailAndDeviceTokenMap = null;
+
+    static {
+        final ConcurrentHashMap<String, String> emailAndDeviceTokenMap = new ConcurrentHashMap<>();
+    }
 
     private final ObjectMapper objectMapper;
 
