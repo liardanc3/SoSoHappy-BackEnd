@@ -48,7 +48,10 @@ public class UserFeedDto {
                 .filter(category -> !category.equals(""))
                 .distinct()
                 .toList();
-        this.imageIdList = imageIdList.stream().filter(imageId -> imageId != 0).collect(Collectors.toList());
+        this.imageIdList = imageIdList.stream()
+                .filter(imageId -> imageId != 0)
+                .distinct()
+                .toList();
     }
 
 }
