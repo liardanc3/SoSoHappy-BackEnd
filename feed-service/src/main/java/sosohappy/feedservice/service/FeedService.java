@@ -46,11 +46,6 @@ public class FeedService {
                         return UpdateResultDto.updateSuccess("등록 성공");
                     })
                     .orElseGet(() -> {
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
                         happinessService.updateSimilarityMatrix(updateFeedDto);
                         feedRepository.save(new Feed(updateFeedDto));
                         return UpdateResultDto.updateSuccess("등록 성공");
