@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,28 +18,29 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    private static String signIn = "/signIn";
-    private static String getAuthorizeCode = "/getAuthorizeCode";
-    private static String actuator = "/actuator";
-    private static String oauth2 = "/oauth2";
-    private static String reIssueToken = "/reIssueToken";
+    private static String signIn = "/auth-service/signIn";
+    private static String getAuthorizeCode = "/auth-service/getAuthorizeCode";
+    private static String reIssueToken = "/auth-service/reIssueToken";
+    private static String image = "/feed-service/image";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        boolean isSignIn = request.getRequestURI().contains(signIn);
-        boolean isActuator = request.getRequestURI().contains(actuator);
-        boolean isOAuth2 = request.getRequestURI().contains(oauth2);
-        boolean isReIssueToken = request.getRequestURI().contains(reIssueToken);
-        boolean isGetAuthorizeCode = request.getRequestURI().contains(getAuthorizeCode);
+        boolean isSignIn = request.getRequestURI().startsWith(signIn);
+        boolean isReIssueToken = request.getRequestURI().startsWith(reIssueToken);
+        boolean isGetAuthorizeCode = request.getRequestURI().startsWith(getAuthorizeCode);
+        boolean isImage = request.getRequestURI().startsWith(image);
 
-        if (isSignIn || isActuator || isOAuth2 || isGetAuthorizeCode) {
+        if (isSignIn || isGetAuthorizeCode || isImage) {
             filterChain.doFilter(request, response);
+
+            generateLog(request, response);
             return;
         }
 
@@ -54,10 +56,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
+                generateLog(request, response);
                 return;
             }
 
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            generateLog(request, response);
             return;
         }
 
@@ -89,7 +93,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @SneakyThrows
     public void verifyAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-
         Optional<User> user = jwtService.extractAccessToken(request)
                 .filter(token -> jwtService.isTokenValid(token, jwtService.extractHeaderEmail(request)))
                 .flatMap(jwtService::extractTokenEmail)
@@ -97,10 +100,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(user.isEmpty()){
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            generateLog(request, response);
             return;
         }
 
         filterChain.doFilter(request, response);
+        generateLog(request, response);
     }
 
+    private void generateLog(HttpServletRequest request, HttpServletResponse response){
+        String email = request.getHeader("email");
+        log.info("[RESPONSE " + response.getStatus() + " " + request.getRequestURI()  + "] : " + (email != null ? email : request.getSession().getId()));
+    }
 }

@@ -111,6 +111,8 @@ public class UserService {
     public SetProfileDto setProfile(UserRequestDto userRequestDto) {
         return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
+                    feedRepository.updateFeedNickname(user.getNickname(), userRequestDto.getNickname());
+
                     user.updateProfile(userRequestDto);
 
                     return SetProfileDto.builder()

@@ -44,9 +44,8 @@ public class HappinessService {
 
     public AnalysisDto analysisHappiness(NicknameAndDateDto nicknameAndDateDto) {
         List<String> bestCategoryList = getBestCategoryList(nicknameAndDateDto);
-        List<String> recommendCategoryList = getRecommendCategoryList(bestCategoryList);
 
-        return new AnalysisDto(bestCategoryList, convertCategoryToSentence(recommendCategoryList));
+        return new AnalysisDto(bestCategoryList, convertCategoryToSentence(bestCategoryList));
     }
 
     public void updateSimilarityMatrix(Feed feed, UpdateFeedDto updateFeedDto) {
@@ -113,34 +112,6 @@ public class HappinessService {
     }
 
     // ------------------------------------------------------------------------------- //
-
-    private List<String> getRecommendCategoryList(List<String> bestCategoryList) {
-        Map<Integer, Integer> indexAndPointMap = new HashMap<>();
-        bestCategoryList
-                .forEach(category -> {
-                    int idx = categoryToIndexMap.get(category);
-
-                    List<List<Integer>> similarityMatrix = atomicSimilarityMatrix.get();
-
-                    for (int i = 0; i < similarityMatrix.get(idx).size(); i++){
-                        int point = similarityMatrix.get(idx).get(i);
-
-                        indexAndPointMap.compute(i, (k, v) -> (v == null) ? point : v + point);
-
-                    }
-                });
-        List<Map.Entry<Integer, Integer>> indexAndPointList = new ArrayList<>(indexAndPointMap.entrySet());
-        indexAndPointList.sort(Map.Entry.<Integer, Integer>comparingByValue().reversed());
-
-        return indexAndPointList
-                .subList(0, Math.min(10, indexAndPointList.size()))
-                .stream()
-                .map(Map.Entry::getKey)
-                .map(indexToCategoryMap::get)
-                .filter(category -> !bestCategoryList.contains(category))
-                .filter(Objects::nonNull)
-                .toList();
-    }
 
     private List<String> getBestCategoryList(NicknameAndDateDto nicknameAndDateDto) {
         Map<String, Integer> categoryAndPointMap = new HashMap<>();

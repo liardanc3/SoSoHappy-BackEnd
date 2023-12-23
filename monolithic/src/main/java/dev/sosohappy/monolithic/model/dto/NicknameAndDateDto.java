@@ -2,6 +2,7 @@ package dev.sosohappy.monolithic.model.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class NicknameAndDateDto {
 
     @Min(value = 2000000000000000L)
     @Max(value = 9999999999999999L)
+    @NotNull
     private Long date;
 }
