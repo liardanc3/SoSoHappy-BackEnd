@@ -6,18 +6,18 @@ spring:
     banner-mode: off
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 20MB
+      max-file-size: 40MB
+      max-request-size: 40MB
   application:
     name: monolithic
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sosohappy?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
+    url: jdbc:mysql://34.64.157.36:3306/sosohappy?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
     username: root
-    password: root
+    password: sosohappy
   data:
     mongodb:
-      uri: mongodb://sosohappy:root@34.64.113.5:27017/
+      uri: mongodb://root:sosohappy@34.64.113.5:27017/
       database: dm
   jpa:
     show-sql: false
