@@ -1,0 +1,36 @@
+pipeline {
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-credential')
+    }
+    
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    dir("monolithic") {
+                        sh "java --version"
+                        sh "chmod +x gradlew"
+                        sh "./gradlew clean"
+                        sh "./gradlew build"
+                        archiveArtifacts artifacts: "**/build/libs/*.jar", allowEmptyArchive: true
+
+                        docker.withRegistry('https://registry.hub.docker.com', 'docker-credential') {
+                            dockerImage = docker.build("liardance/monolithic:latest")
+                            dockerImage.push()
+                        }
+
+                       
+                    }
+                }
+            }
+        }
+    }
+}
