@@ -17,7 +17,7 @@ spring:
     password: sosohappy
   data:
     mongodb:
-      uri: mongodb://root:sosohappy@34.64.113.5:27017/
+      uri: mongodb://root:sosohappy@34.64.157.36:27017/
       database: dm
   jpa:
     show-sql: false
