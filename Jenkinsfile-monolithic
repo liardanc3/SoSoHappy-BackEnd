@@ -27,7 +27,9 @@ pipeline {
                             dockerImage.push()
                         }
 
-                       
+                       sh "docker stop monolithic"
+                       sh "docker remove monolithic"
+                       sh "docker run --name monolithic -d -p 8888:8888 liardance/monolithic"
                     }
                 }
             }
