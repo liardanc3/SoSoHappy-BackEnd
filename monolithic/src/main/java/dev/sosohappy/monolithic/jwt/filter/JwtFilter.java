@@ -61,7 +61,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
             
-            response.setStatus(HttpStatus.FORBIDDEN.value());
             generateLog(request, response);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -101,13 +100,14 @@ public class JwtFilter extends OncePerRequestFilter {
                 .flatMap(userRepository::findByEmail);
 
         if(user.isEmpty()){
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             generateLog(request, response);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
         filterChain.doFilter(request, response);
         generateLog(request, response);
+        return;
     }
 
     private void generateLog(HttpServletRequest request, HttpServletResponse response){
