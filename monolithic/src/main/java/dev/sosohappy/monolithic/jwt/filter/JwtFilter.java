@@ -31,7 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+        log.info(request.getRequestURI());
+        
         boolean isSignIn = request.getRequestURI().startsWith(signIn);
         boolean isReIssueToken = request.getRequestURI().startsWith(reIssueToken);
         boolean isGetAuthorizeCode = request.getRequestURI().startsWith(getAuthorizeCode);
@@ -59,9 +60,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 generateLog(request, response);
                 return;
             }
-
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             generateLog(request, response);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
