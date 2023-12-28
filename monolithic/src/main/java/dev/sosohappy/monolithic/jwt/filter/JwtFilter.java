@@ -31,8 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info(request.getRequestURI());
-        
+
         boolean isSignIn = request.getRequestURI().startsWith(signIn);
         boolean isReIssueToken = request.getRequestURI().startsWith(reIssueToken);
         boolean isGetAuthorizeCode = request.getRequestURI().startsWith(getAuthorizeCode);
@@ -107,7 +106,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
         generateLog(request, response);
-        return;
     }
 
     private void generateLog(HttpServletRequest request, HttpServletResponse response){
