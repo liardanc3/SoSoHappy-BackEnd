@@ -222,7 +222,6 @@ public class UserService {
     @Scheduled(fixedRate = 600000)
     public void deleteAuthorizeCodeAndChallengeMap(){
         authorizeCodeAndChallengeMap.clear();
-        log.info("clear AuthorizeCodeAndChallengeMap");
     }
 
 }
