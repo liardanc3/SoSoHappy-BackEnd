@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private static String getAuthorizeCode = "/auth-service/getAuthorizeCode";
     private static String reIssueToken = "/auth-service/reIssueToken";
     private static String image = "/feed-service/image";
+    private static String favico = "/favicon.ico";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -36,8 +37,15 @@ public class JwtFilter extends OncePerRequestFilter {
         boolean isReIssueToken = request.getRequestURI().startsWith(reIssueToken);
         boolean isGetAuthorizeCode = request.getRequestURI().startsWith(getAuthorizeCode);
         boolean isImage = request.getRequestURI().startsWith(image);
+        boolean isFavicon = request.getRequestURI().startsWith(favico);
+        boolean isIndex = request.getRequestURI().equals("/");
 
-        if (isSignIn || isGetAuthorizeCode || isImage) {
+        if(isIndex){
+            response.getWriter().println("sosohappy don't operate a website.");
+            return;
+        }
+
+        if (isSignIn || isGetAuthorizeCode || isImage || isFavicon) {
             filterChain.doFilter(request, response);
 
             generateLog(request, response);
@@ -111,7 +119,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void generateLog(HttpServletRequest request, HttpServletResponse response){
-        if(!request.getRequestURI().equals("/favicon.ico")){
+        if(!request.getRequestURI().equals("/favicon.ico") && !request.getRequestURI().equals("/")){
             String email = request.getHeader("email");
 
             log.info(
