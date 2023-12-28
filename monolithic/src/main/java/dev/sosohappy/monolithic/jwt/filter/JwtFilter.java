@@ -59,7 +59,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 generateLog(request, response);
                 return;
             }
-            
+
+            response.setStatus(403);
             generateLog(request, response);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -99,6 +100,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .flatMap(userRepository::findByEmail);
 
         if(user.isEmpty()){
+            response.setStatus(403);
             generateLog(request, response);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -109,7 +111,15 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void generateLog(HttpServletRequest request, HttpServletResponse response){
-        String email = request.getHeader("email");
-        log.info("[RESPONSE " + response.getStatus() + " " + request.getRequestURI()  + "] : " + (email != null ? email : request.getSession().getId()));
+        if(!request.getRequestURI().equals("/favicon.ico")){
+            String email = request.getHeader("email");
+
+            log.info(
+                    String.format(
+                            "RESPONSE %d [%32.32s] from %s",
+                            response.getStatus(), request.getRequestURI(), (email != null ? email : request.getSession().getId())
+                    )
+            );
+        }
     }
 }

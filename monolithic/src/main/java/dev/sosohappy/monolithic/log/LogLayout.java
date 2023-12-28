@@ -17,12 +17,12 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
         event.getFormattedMessage();
 
         String loggerName = event.getLoggerName();
-        String loggerNameLog = loggerName.substring(Math.max(loggerName.length() - 40, 0));
+        String loggerNameLog = loggerName.substring(Math.max(loggerName.length() - 25, 0));
 
         sb.append(cachingDateFormatter.format(event.getTimeStamp())).append(" ")
                 .append(String.format("%-5s", event.getLevel())).append(" ")
                 .append("---").append(" ")
-                .append(String.format("%-40.40s", loggerNameLog)).append(" : ")
+                .append(String.format("%-25.25s", loggerNameLog)).append(" : ")
                 .append(event.getMessage());
 
         sb.append(CoreConstants.LINE_SEPARATOR);
