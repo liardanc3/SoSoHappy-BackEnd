@@ -85,7 +85,6 @@ public class JwtService {
                             .asString()
             );
         } catch (Exception e) {
-            System.out.println("e = " + e);
             return Optional.empty();
         }
     }
