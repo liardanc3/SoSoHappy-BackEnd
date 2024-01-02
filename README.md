@@ -110,11 +110,16 @@
 
 <br>
 
-![dm](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/89f198df-885b-4022-a3f5-2c71275a8b8c)
+![dm](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/c3a8bfd6-b0b9-4b9c-85f7-eeb2e1b84c58)
 
-> 채팅 데이터가 어떻게 전달되는지 나타낸 그림입니다.<br>
+> 채팅 데이터가 어떻게 전달되는지 나타낸 그림입니다.
 
+<br>
 
+Client에서 앱을 킨 후 채팅방 목록 탭을 누르면 서버와 WebSocket 연결이 이뤄지고, 채팅방 목록 탭에서 나가면 WebSocket 연결이 끊깁니다.<br><br>
+따라서 채팅을 보내는 유저는 반드시 WebSocket 연결이 이루어 진 상태입니다.<br><br>
+채팅을 받는 유저가 채팅방 목록 탭을 누른 상태이거나 채팅방에 입장한 상태이면 WebSocket 연결상태 이므로 푸시알림을 받지 않고 데이터를 전송받습니다.<br><br>
+채팅을 받는 유저가 채팅방 미입장, 앱 백그라운드 실행 등 WebSocket 미연결 상태일 경우 Kafka로 채팅 데이터를 전송 후 알림서버에서 FCM을 통해 푸시알림을 전송합니다.
 
 </details>
 <br>
@@ -123,92 +128,25 @@
 푸시 알림 전송을 위한 서버입니다.
 <details><summary>detail</summary>
 <br>
-  
-알림 서버의 주요한 의존성 구성입니다.
 
-``` java
-implementation 'org.springframework.cloud:spring-cloud-starter-config'
-implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
-testImplementation 'org.springframework.kafka:spring-kafka-test'
+![apns](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/a207c550-2123-4d5e-b637-7ef5bcaa6603)
 
-implementation "org.springframework.boot:spring-boot-starter-actuator"
-runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-implementation 'io.micrometer:micrometer-core'
-```
+> 알림 서버의 주요 기능을 나타낸 그림입니다.
 
-- 첫 3줄은 [구성 정보](#topic--springcloudbus)를 전파받거나 메시지 큐를 이용해 [회원 탈퇴](#topic--resign)한 회원과의 세션을 끊기 위해 추가되었습니다.
-- 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
 <br>
 
-**알림 서버  구현 API 및 주요 로직 목록.**
-
-<details>
-  <summary>
-  <code><b>WebSocket 연결</b></code>
-  </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/config/WebSocketConfig.java#L19-L22
-다음과 같이 `/notice-service/connect-notice`를 websocket 연결 url로 설정합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/jwt/filter/JwtFilter.java#L19-L31
-JWT 토큰 검증을 위한 filter가 존재하기 때문에 HTTP 요청의 헤더를 참조하여 토큰을 검증합니다.
-모니터링을 위해 `/actuator`가 경로에 포함될 경우 인증과정이 생략됩니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/jwt/service/JwtService.java#L11-L39
-토큰을 검증하는 로직이 구현된 JwtService 입니다. JWT 의존성을 끌어오지 않고 인증서버에서 보내준 Email과 AccessToken 값을 이용해서 토큰을 검증합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/handler/NoticeHandler.java#L17-L21
-검증 후 이상이 없다면 Session을 연결하기 위한 함수를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L20-L24
-세션을 연결할 때 `saveSessionInfo(session)`을 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L44-L47
-요청 파라미터에서 닉네임을 추출하여 닉네임과 SessionId, SessionId와 Session 정보를 Key, Value 쌍으로 저장합니다.
-이렇게 저장된 세션 정보는 알림 메시지를 전송할때 사용됩니다.
-<br><br>
-
-</details>
-
-<details><summary>
-  <code><b>알림 메시지 전송</b></code>
-</summary>
-  
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L38-L59
-kafka broker를 통해 피드에 좋아요를 눌렀을 때 해당 알림 메시지를 보내기 위한 데이터를 가져옵니다.
-가져온 데이터로 `NoticeService::sendNotice`를 호출합니다
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/f401581229f8d02cb7daed86e87bfd2c4799ebb2/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L26-L32
-알림을 받을 유저의 세션을 찾아서 좋아요가 눌러졌다는 메시지를 전송합니다.
-<br><br>
-
-``` java
-{
-    "topic": "like",
-    "data": {
-        "liker": "admin",
-        "date": 2023090513248392
-    }
-}
-```
-클라이언트는 이와 같은 json 메시지를 수신해서 유저의 스마트폰에 해당 내용을 포함하는 푸시알림을 띄울 수 있습니다.
-
-</details>
+알림서버는 유저에게 푸시알림을 보내는 기능을 구현한 서버입니다.<br><br>
+푸시알림 데이터는 현재 채팅 데이터, 좋아요 알림 데이터 2가지가 있으며 kafka에서 해당 데이터를 불러온 후 [FCM](https://firebase.google.com/docs/cloud-messaging?hl=ko)에 이 데이터를 전달합니다.<br>
+전달 된 데이터는 [APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns)에 전달되어 유저는 푸시알림을 수신할 수 있습니다. 
 
 </details>
 
 <br>
 
 # Load Balancer
-![loadbalancer](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/d25c9821-b53b-49bb-8acb-06afd2ba599e)
+![loadbalancer](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/5fb7539a-a459-4974-9b95-80fc27613824)
 
-> 트래픽을 서비스들에게 라우팅하기 위한 Load Balancer의 구조를 나타낸 그림입니다.<br><br>
+> 트래픽을 서비스들에게 라우팅하기 위한 Load Balancer의 트래픽 경로를 나타낸 그림입니다.<br><br>
 > GCP 환경에서 SSL 인증서를 사용하기 위해 HTTPS Load balancer를 사용했지만, 모든 백엔드 서비스들이 1개씩만 존재하므로 로드밸런서의 부하 분산기능은 사용되지 않고 라우팅 기능만 사용되었습니다.
 
 <br>
@@ -234,125 +172,63 @@ SSL 인증서를 사용중이기 때문에 443포트를 사용했고, http 80포
 <br>
 
 # Message Queue
-![messagequeue](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/49bca3a0-b7d2-4231-8659-99f7a5e6a343)
+![kafka](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f84a5cab-af4c-43e7-b466-bccad935d742)
 
-> 프로젝트의 서버단에서 사용된 미들웨어 Kafka의 토픽 및 pub/sub 구조를 나타내는 그림입니다. 
-> 싱글 브로커로 구성 되어 있으며 실선은 publish, 점선은 subscribe를 의미합니다.
+> 프로젝트의 서버단에서 사용된 미들웨어 Kafka의 토픽 및 pub/sub 구조를 대략적으로 나타낸 그림입니다.
 
 <br>
 
 ### topic : springCloudBus
-구성서버가 각 서비스들의 구성 정보(properties, yml)를 전파하기 위해 사용되는 토픽입니다.
+구성서버가 각 서비스들의 구성 정보(properties, yml)를 전파하기 위해 사용되는 토픽입니다.<br>
 각 서비스들은 구성 서버가 실행중이라면 이 토픽의 메시지를 수신해서 구성 정보를 등록할 수 있고, 혹은 `/actuator/busrefresh`로 구성 서버에서 원격 업데이트 할 수 있습니다.
 
 <br>
 
 ### topic : accessToken
-인증서버가 Email, Access Token 정보를 전파하기 위해 사용되는 토픽입니다.
+인증서버가 Email, Access Token 정보를 전파하기 위해 사용되는 토픽입니다.<br>
 인증이 필요한 서비스들은 JWT 관련 의존성을 추가하지 않고 해당 토픽의 메시지를 수신해서 토큰 유효성을 검사합니다.
-
-<details><summary>detail</summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/auth-service/src/main/java/sosohappy/authservice/jwt/service/JwtService.java#L39-L46
-토큰엔 주제와 만료기간과 함께 유저의 이메일이 claim으로 포함됩니다.
-커스텀 애노테이션 `@KafkaProducer` 는 createAccessToken 메소드의 인자 및 반환값으로 전파할 메시지를 설정합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L22-L44
-메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져온 후 email, access token을 byte array 형태로 브로커에 전송합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L18-L25
-인증이 필요한 다른 서비스에서 해당 메시지를 수신해서 key, value 쌍으로 관리합니다. 이 문서에선 채팅 서버를 예시로 사용합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/dm-service/src/main/java/sosohappy/dmservice/jwt/service/JwtService.java#L17-L21
- 필터에 포함되는 함수입니다. HTTP 요청에 포함된 헤더에서 Email, AccessToken을 추출하고 이 값이 브로커에게 전달받은 Email, AccessToken과 일치하는지 확인합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/dm-service/src/main/java/sosohappy/dmservice/jwt/filter/JwtFilter.java#L20-L29
- 일치한다면 다음 작업을 수행하고 그렇지 않다면 403 코드와 함께 다음 작업을 수행하지 않고 반환합니다. 모니터링을 위해 "/actuator"가 경로에 포함되는 경우는 인증과정이 생략됩니다.  
-
-</details>
-
-<br>
-
-### topic : resign
- 인증서버가 탈퇴한 회원 정보를 전파하기 위한 토픽입니다.
- 피드서버와는 데이터 정합성을 맞추고, 채팅서버 및 알림서버는 연결된 WebSocket Session을 끊기 위해 사용됩니다. 
-<details><summary>detail</summary>
-<br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L90-L93
-유저가 회원탈퇴 했을 때 호출되는 함수 중 하나입니다. 커스텀 애노테이션 `@KafkaProducer`을 통해 해당 함수의 리턴값을 끌어옵니다. <br>이 함수의 리턴값엔 회원탈퇴한 유저의 이메일과 닉네임이 포함됩니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L19-L30
-메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져옵니다.<br>
-이후 이메일과 닉네임을 byte array 형태로 브로커에 전송합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/dm-service/src/main/java/sosohappy/dmservice/kafka/KafkaConsumer.java#L35-L43
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5913ded93c409c9b7a79f1fa72d4529ae692b6e5/dm-service/src/main/java/sosohappy/dmservice/service/MessageService.java#L44-L49
-채팅 서버나 알림 서버에선 탈퇴한 유저와의 세션 연결을 끊습니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaConsumer.java#L34-L42
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/2f9806f2ea3568b62603bc0657dd5269c49b7246/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L88
-피드 서버에선 탈퇴한 유저의 피드, 좋아요 목록을 삭제합니다.
-<br><br>
-
-</details>
-<br>
-
-### topic : expired
- access token이 만료되었을 때 해당 정보를 전파하기 위한 토픽입니다.
- <details><summary>detail</summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/49f7e26902ac3cf3904d969c537e177d78102efd/auth-service/src/main/java/sosohappy/authservice/config/ExecutorConfig.java#L9-L16
-위와 같이 스레드 1개를 사용하는 `ScheduledExecutorService`가 Bean으로 등록되어 있습니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/49f7e26902ac3cf3904d969c537e177d78102efd/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L22-L46
-access token을 발행하고 kafka에 메시지를 보내는 시점에 만료 메시지도 보내기 위한 스케쥴을 설정합니다.<br>
-36000000ms는 access token의 유효 기간입니다. 36000000ms 후 "expired" 토픽으로 이메일이 전송됩니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/49f7e26902ac3cf3904d969c537e177d78102efd/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaConsumer.java#L26-L32
-피드, 채팅, 알림서버는 이 메시지를 수신하고 해당 유저의 토큰 정보를 삭제합니다. 따라서 토큰이 만료되었을 경우 접근이 허가되지 않습니다.
-
-   
-</details>
 
 <br>
 
 ### topic : noticeLike
  피드에 좋아요를 눌렀을 때 해당 회원 정보를 전파하기 위한 토픽입니다.
-<details><summary>detail</summary>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/feed-service/src/main/java/sosohappy/feedservice/service/FeedService.java#L83-L86
- 유저가 피드에 좋아요를 누르면 호출되는 함수 중 하나입니다. 커스텀 애노테이션 `@KafkaProducer`을 통해 해당 함수의 리턴값을 끌어옵니다.
- 이 함수의 리턴값엔 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임이 포함됩니다.
-<br><br>
+<br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/feed-service/src/main/java/sosohappy/feedservice/kafka/KafkaProducerAspect.java#L19-L30
- 메소드가 에러없이 성공적으로 실행되면 Spring AOP의 `@AfterReturning` 애노테이션을 통해 인자 및 반환값을 가져옵니다.<br>
- 이후 좋아요를 누른 유저의 닉네임과 피드 날짜, 피드 게시자의 닉네임을 byte array 형태로 브로커에 전송합니다.
-<br><br>
+### topic : deviceToken
+ 회원가입, 로그인 시 FCM deviceToken 데이터를 전파하기 위한 토픽입니다.<br>
+ 이 deviceToken은 FCM에 푸시알림 데이터를 보낼 때 기기 정보를 설정하기 위해 사용됩니다.
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/notice-service/src/main/java/sosohappy/noticeservice/kafka/KafkaConsumer.java#L38-L59
- 알림 서버가 이 데이터를 수신해서, 해당 데이터로 notice 서비스의 sendNotice 메소드를 호출합니다.
-<br><br>
+<br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/c961af37a03023cd686a7edba6968bb255668f1d/notice-service/src/main/java/sosohappy/noticeservice/service/NoticeService.java#L26-L31
- WebSocket으로 연결된 Session 중 좋아요 알림 메시지를 받아야 할 유저의 Session을 찾아 좋아요를 누른 유저의 닉네임과 피드에 대한 데이터를 전송합니다.
+### topic : directMessage
+ 채팅 데이터를 전파하기 위한 토픽입니다.<br>
+ 채팅서버에서 알림서버로 전달된 이 데이터는 FCM을 통해 유저에게 푸시알림을 보낼 때 사용됩니다.
+
+<br>
+
+### topic : resign
+ 인증서버가 탈퇴한 회원 정보를 전파하기 위한 토픽입니다.<br>
+ 피드서버와는 데이터 정합성을 맞추고, 채팅서버 및 알림서버는 연결된 WebSocket Session을 끊기 위해 사용됩니다. 
+
+<br>
+
+### topic : expired
+ access token이 만료되었을 때 해당 정보를 전파하기 위한 토픽입니다.<br>
+ 피드 서버나 채팅 서버에서 이 데이터를 수신하면 가지고 있던 인증 정보를 파기합니다.
+
+<br>
+
+### topic : emailAndNickname
+ 유저의 닉네임이 변경되었을 때 해당 정보를 전파하기 위한 토픽입니다.<br>
+ 인증 서버와 피드 서버가 다른 DB를 사용하기 때문에 연관관계 설정이 없으므로 닉네임 변경 시 피드 서버쪽의 DB에서 직접적인 수정이 필요합니다.
 
 </details>
 
 <br>
 
 # CI/CD
-![cicd](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/7e6d4bf0-6d35-4a84-b1af-49ca17f3567a)
+![cicd](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/e61a98fe-9512-437c-9060-22fe264a758b)
 >  Jenkins pipeline의 stages 구성을 나타내는 그림입니다.
 >  Jenkins는 kubernetes에 올라가지 않으며 webhook을 사용하지 않고 수동으로 빌드합니다.
 
@@ -404,8 +280,8 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e35252
 ### Build and Deployment other services
  인증, 피드, 채팅, 알림 서버를 빌드하고 배포하는 stage 입니다. 
 <details><summary>detail</summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L43-L63
+  
+https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/e3096366633d24b54dbf6ccf36faa9cc4c96e574/Jenkinsfile#L39-L58
  이 스테이지 또한 크게 3단계로 나누어 집니다.
 <br><br>
 
@@ -435,7 +311,8 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 <br><br>
 
 # Monitoring
-![monitoring](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/60079483-b786-4c32-a97d-c838580107ab)
+![monitoring](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/a5a14486-e61c-4716-986f-39f39bf64318)
+
 >  모니터링 환경의 구성요소를 나타내는 그림입니다.
 >  Grafana와 Prometheus는 kubernetes에 올라가지 않습니다.
 
