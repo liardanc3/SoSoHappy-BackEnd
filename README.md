@@ -110,9 +110,11 @@
 
 <br>
 
-![dm](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/16f95f40-98ea-410f-9dc3-039f1f01efb1)
+![dm](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/89f198df-885b-4022-a3f5-2c71275a8b8c)
 
-> 
+> 채팅 데이터가 어떻게 전달되는지 나타낸 그림입니다.<br>
+
+
 
 </details>
 <br>
