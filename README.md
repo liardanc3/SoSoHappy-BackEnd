@@ -38,7 +38,7 @@
 <br>
   
 # Microservices
-![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/e5b0e50a-9403-4753-98a2-cb88e28b24e0)
+![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/48ddbdd3-39b8-4c80-9545-6a99e1b5f2d1)
 
 > 프로젝트의 서버단에 포함된 서비스들의 구조를 나타내는 그림입니다.<br><br>
 > 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br><br>
@@ -53,28 +53,14 @@
 <details><summary>detail</summary>
 <br>
 
-구성 서버의 주요한 의존성 구성입니다.
+![config](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/74f4df60-973c-4a3f-adb1-e32944429f7a)
 
-``` java
-runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-implementation 'io.micrometer:micrometer-core'
-implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-implementation 'org.springframework.cloud:spring-cloud-starter-bus-kafka'
-implementation 'org.springframework.cloud:spring-cloud-config-server'
-testImplementation 'org.springframework.kafka:spring-kafka-test'
-```
-
-- 첫 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-- 이후 3줄은 property의 최신 정보를 전파하기 위해 추가하였습니다.
+> 구성 서버의 역할을 나타낸 그림입니다.
 
 <br>
 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/40e07af63b88a420e570178f97597584c7c70b7b/config-service/src/main/java/sosohappy/configservice/ConfigServiceApplication.java#L7-L16
-`@EnableConfigServer` 애노테이션을 추가하여 이 서버를 구성 정보 전파 서버로 설정할 수 있습니다.
-구성정보는 kafka의 토픽 [springCloudBus](#topic--springcloudbus)로 전파되어 타겟 서버가 구성 정보를 업데이트 할 수 있습니다.
-
-property 파일들은 외부에 노출되면 안되는 내용을 포함하기 때문에 [서브모듈](https://github.com/So-So-Happy/SoSoHappy-BackEnd/tree/master/config-service)에 모아두고 관리합니다.
+다른 비즈니스 서비스들이 공개 가능한 property를 가진 상태에서 실행되면 구성 서버가 비공개 property를 비즈니스 서비스들에 주입합니다.<br><br>
+전파되는 property 정보들은 외부에 노출되면 안되는 내용을 포함하기 때문에 [서브모듈](https://github.com/So-So-Happy/SoSoHappy-BackEnd/tree/master/config-service)에 모아두고 관리합니다.
 </details>
 
 <br>
