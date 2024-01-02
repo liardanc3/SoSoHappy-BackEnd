@@ -1,0 +1,60 @@
+server:
+port: 8888
+
+spring:
+  main:
+    banner-mode: off
+  servlet:
+    multipart:
+      max-file-size: 40MB
+      max-request-size: 40MB
+  application:
+    name: monolithic
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://34.64.157.36:3306/sosohappy?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
+    username: root
+    password: sosohappy
+  data:
+    mongodb:
+      uri: mongodb://root:sosohappy@34.64.157.36:27017/
+      database: dm
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+
+jwt:
+  secretKey: dsajfnlwejabjldqwnadjkenqkjfbkjf132asdkk1ljl09henl322
+  access:
+    expiration: 36000000
+    header: Authorization
+  refresh:
+    expiration: 12096000000
+    header: Authorization-refresh
+
+apple:
+  client-id: com.sosohappy.SoSoHappy
+  keyId: TUZ4G77435
+  teamId: Z8GC9N3WDL
+  secretKey: MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQggT2jmkvN3fGx8CjRW97M/cr0Vt9vxK2jJ3K7/L1f0bigCgYIKoZIzj0DAQehRANCAAT9OnKE+WYuoR5CxOwtoEbtiPgLdM7I8hfxf3LqApiMZ1K0WZ6O0CgjzQR4FSkcJlcYz9trSnPGk5D6U9HZJij0
+
+logging:
+  level:
+    root : INFO
+
+fcm:
+  type: "service_account"
+  project_id: "temporal-genius-402508"
+  private_key_id: "2031a70c7caae50e3cee229c297561bed917f1dc"
+  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC6HcTT4jPGJzwJ\nl8kXReaiY1IWlLT9HTsPSjnKzTouGcc7kEsgDRwIzPjnaY2BRONvwCrMZBl/0LoH\nQ+ucSsg4488/rlFui30M56QAKsHiMJ++V4UK9hGTqxeSe2PBy2QYODyLJYFzViIa\nc25n+UmJUDn7++HdyhN6M0Y/WnMpiMqvXBp1KhgXfXW3YvWjZSQiWACUFuac2vRz\n76+G97elJ9S4N/QvGVtOI7L2lqmRh13qee+jfe3fAvUMZzy88F/alY1rO2pDf3uz\nxbsiVKNOXqMVs5Uk6qHbdqn5P57PPg4PBZ9u9LLPfwDW+Etsv5UQe2Hhia5KXAke\nOltNH421AgMBAAECggEAAJvxVXozji35sdRX2aYma5ikn6NL9loeo92r08CZNKZr\n8wN1Y3z3fwXguK0tQ+OMVQTNfw7C0JrHyRdNUZ0jC6CfQIebB6AYQC8P59o7+TgM\nhcx2iIMmqpOQR6/0syEtyjCA7jmos05wXSLMlTWJKpRjJDJ+WkH7j1ZUoAd1QgkJ\novldhRl+yr08aVaGoCk3Q5nCa9UhGaJVVkdnFIZEtpF9AwRruGf86P6irTKGlxEA\nXeJjO+7vs8sdjkhlaj/mN7CwvCkWzbdD6Ac3eY4oUdQWcvNxaeaCumPmB58W7Hlp\nMTqd3KXKPk7hx3f5Xjz6mdWEmXet/7us5r0MJclgoQKBgQD9Kmy7whiH9X/DC5Pw\nT0rP3QYPdWgOlrH8wy7n4tyjK6LddV8qe7GpmmZVHvZnfsmkbVobng1686ZEKML3\nkvPqjqCPt2wTzq/NDMNpzQk7uzVSw8bAvQLOe7jOTmWQF9ICMcsKIR7znmmkFBM3\nwC2GjNvcKQdx+HDVMcny6nT5ZQKBgQC8My4Iz7GeLLLtECKbe603P+vftGdQ2OMv\nDY7SeCDDg2xncOBDC3k3/RV6r2c5m+Gbycy9jxT8fcev0TNAN1YCBQ4kqxGeTCao\n7nh3y+Mf+7Ns6tGKmO2jwNvKVpHMZw9ad2o2tErWWOpLCZqt+btsbM4lqdqXuYr3\nwYkCip4mEQKBgAWzoudHo83MFaiK5jYPUxwDWlOWzVUmx7NtoezPCzERloVuU0pd\nps6vD4bzP5FtJZVycQkWMi+GtUPrtxhkUuIBfFRASUrY6NSxaOVFHOQffz/x8NP+\nbcXAu5TJ5zerkatC+9Oqk0vhUXfEi/pBdcUF/x2iPuyuL7xddrLl3OSRAoGACoTV\nytpI9C1NZuCi/ovAF7lz5pH/wE4PDJ82X18lfagH1BREBJtMkCuOGshY/ahPyNRT\npDiuFJq3IYWQ1sMBBKXhr3z8RBu/gWuqwg9cR3pbAfhx88wuZBuwbTO/fGw6OHU6\nM4qKMEbR+ZW01oqBxkKilwpSVG6jbMuda83xnvECgYAueTC4Wxp5mdm+lDWwRMVI\nBTYCujGnghtmWWaNuUo1HI1FTQCpaphousZ/4Vhv925Lo1DLZmHRmwM7yZIPm0mP\n3t6/2t4Y/N/2NzcC8DMrR9uOE3eHpSSCg3Cvh3oj8ZGaEBc7Swrv5R2K9rDIUvWI\nXzwyGsILkyVCUqAJRiAaSQ==\n-----END PRIVATE KEY-----\n"
+  client_email: "firebase-adminsdk-142e7@temporal-genius-402508.iam.gserviceaccount.com"
+  client_id: "110788174095664984705"
+  auth_uri: "https://accounts.google.com/o/oauth2/auth"
+  token_uri: "https://oauth2.googleapis.com/token"
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-142e7%40temporal-genius-402508.iam.gserviceaccount.com"
+  universe_domain: "googleapis.com"
