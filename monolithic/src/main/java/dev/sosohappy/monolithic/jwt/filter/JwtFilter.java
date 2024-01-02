@@ -39,6 +39,13 @@ public class JwtFilter extends OncePerRequestFilter {
         boolean isImage = request.getRequestURI().startsWith(image);
         boolean isFavicon = request.getRequestURI().startsWith(favico);
         boolean isIndex = request.getRequestURI().equals("/");
+        
+        String uri = request.getRequestURI();
+        String email = request.getHeader("email");
+        
+        if(email == null){
+            email = request.getSession().getId();
+        }
 
         if(isIndex){
             response.getWriter().println("sosohappy don't operate a website.");
@@ -47,8 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (isSignIn || isGetAuthorizeCode || isImage || isFavicon) {
             filterChain.doFilter(request, response);
-
-            generateLog(request, response);
+            generateLog(email, uri, response);
             return;
         }
 
@@ -64,17 +70,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
-                generateLog(request, response);
+                generateLog(email, uri, response);
                 return;
             }
 
             response.setStatus(403);
-            generateLog(request, response);
+            generateLog(email, uri, response);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        verifyAccessToken(request, response, filterChain);
+        verifyAccessToken(email, uri, request, response, filterChain);
     }
 
     public void reIssueToken(HttpServletResponse response, String refreshToken) {
@@ -101,7 +107,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @SneakyThrows
-    public void verifyAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    public void verifyAccessToken(String email, String uri, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         Optional<User> user = jwtService.extractAccessToken(request)
                 .filter(token -> jwtService.isTokenValid(token, jwtService.extractHeaderEmail(request)))
                 .flatMap(jwtService::extractTokenEmail)
@@ -109,25 +115,21 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(user.isEmpty()){
             response.setStatus(403);
-            generateLog(request, response);
+            generateLog(email, uri, response);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
         filterChain.doFilter(request, response);
-        generateLog(request, response);
+        generateLog(email, uri, response);
     }
 
-    private void generateLog(HttpServletRequest request, HttpServletResponse response){
-        if(!request.getRequestURI().equals("/favicon.ico") && !request.getRequestURI().equals("/")){
-            String email = request.getHeader("email");
-
-            log.info(
-                    String.format(
-                            "RESPONSE %d [%32.32s] from %s",
-                            response.getStatus(), request.getRequestURI(), (email != null ? email : request.getSession().getId())
-                    )
-            );
-        }
+    private void generateLog(String email, String uri, HttpServletResponse response){
+        log.info(
+                String.format(
+                        "RESPONSE %d [%32.32s] from %s",
+                        response.getStatus(), uri, email
+                )
+        );    
     }
 }

@@ -135,10 +135,6 @@ public class UserService {
     }
 
     public Map<String, String> getAuthorizeCode(String codeChallenge){
-        if(codeChallenge == null){
-            throw new BadRequestException();
-        }
-
         String authorizeCode = UUID.randomUUID().toString();
         authorizeCodeAndChallengeMap.put(authorizeCode, codeChallenge);
 
