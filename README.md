@@ -66,202 +66,32 @@
 <br>
 
 ###  인증 서버 
-소셜 로그인 및 유저 정보 관련 작업을 수행하는 서버입니다.
+로그인, 회원탈퇴 등 유저 정보 관련 작업을 수행하는 서버입니다.
 <details><summary>detail</summary>
 <br>
 
-인증 서버의 주요한 의존성 구성입니다.
-```java
-implementation 'org.springframework.cloud:spring-cloud-starter-config'
-implementation "org.springframework.cloud:spring-cloud-starter-bus-kafka"
-testImplementation 'org.springframework.kafka:spring-kafka-test'
+![auth](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/610deaf7-db95-49e4-858d-be3b2541e1c6)
 
-implementation "org.springframework.boot:spring-boot-starter-actuator"
-runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-implementation 'io.micrometer:micrometer-core'
+> 인증 서버의 주요 기능인 회원가입(로그인) 과정을 나타낸 그림입니다.
 
-runtimeOnly 'com.mysql:mysql-connector-j'
-
-implementation 'org.springframework.boot:spring-boot-starter-security'
-implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-implementation 'com.auth0:java-jwt:4.2.1'
-```
-
-- 첫 3줄은 [구성 정보를 전파](#topic--springcloudbus)받거나 메시지 큐를 이용해 [JWT](#topic--accesstoken)를 전파하기 위해 추가되었습니다.
-- 이후 3줄은 metric 데이터를 수집하여 [모니터링](#spring-microservices) 하기 위해 추가하였습니다.
-- 이후 1줄은 퍼시스턴트 계층 관련 작업 및 피드 데이터를 MySQL에 저장하기 위해 추가하였습니다.
-- 마지막 3줄은 소셜 로그인 구현 및 JWT를 자체적으로 관리하기 위해 추가하였습니다.
-<br>
 <br>
 
-**인증 서버  구현 API 및 주요 로직 목록.**
-<details>
-  <summary>
-  <code><b>소셜 로그인</b></code>
-  </summary>
-  
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/0f9c4ed20a606b2c5d257f11ed11c24289f549f0/auth-service/src/main/java/sosohappy/authservice/config/SecurityConfig.java#L30-L50
-SecurityFilterChain을 빈으로 정의하여 Spring Security 필터 체인을 구성하는 코드입니다.
-<br><br>
+1. Client가 랜덤한 문자열 codeVerifier를 생성합니다.<br>
+2. 이를 SHA512에 적용하여 나온 값을 codeChallenge로 설정합니다.<br>
+3. 이 codeChallenge를 `/getAuthorizeCode` 호출 시 파라미터로 전달합니다.<br>
+4. 서버에서 랜덤한 문자열 authorizeCode를 생성 후 {authorizeCode, codeChallenge} 쌍을 HashMap에 저장합니다.<br>
+5. 이 authorizeCode를 Client에서 전달받습니다.<br>
+6. Client가 OAuth2 공급자에게서 유저 정보(이메일)을 받아옵니다.<br>
+7. 받아온 유저 정보, authorizeCode, codeVerifier를 `/signIn` 호출 시 파라미터로 전달합니다.<br>
+8. 파라미터로 넘어온 authorizeCode로 서버에 저장된 HashMap에서 codeChallenge를 가져온 후 codeChallenge = SHA512(codeVerifier)인지 검사합니다.<br>
+9. 성공 시 유저 정보를 저장 후 액세스토큰, 리프레시토큰을 반환합니다.<br>
 
-```java
-...
+<br>
 
-  .csrf(AbstractHttpConfigurer::disable)
-  .formLogin(AbstractHttpConfigurer::disable)
-  .httpBasic(AbstractHttpConfigurer::disable)
-  .sessionManagement(sessionConfigurer -> sessionConfigurer
-    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-  )
-
-...
-```
-JWT 토큰을 이용하여 로그인하므로 csrf, 기본 로그인 화면, http 기본 인증 및 세션은 비활성화 하였습니다.
-<br><br>
-
-```java
-.oauth2Login(loginConfigurer -> loginConfigurer
-                .tokenEndpoint(tokenEndpointConfig -> tokenEndpointConfig
-                    .accessTokenResponseClient(accessTokenResponseClient())
-                )
-                .userInfoEndpoint(userEndpointConfig -> userEndpointConfig
-                    .userService(customOAuth2UserService)
-                )
-                .successHandler(oAuth2LoginSuccessHandler)
-                .failureHandler(oAuth2LoginFailureHandler)
-)                
-```
-
-OAuth2 로그인 설정 구성입니다.<br>
-유저가 로그인을 한 후 받은 코드로 OAuth2 공급자에게게 액세스토큰 요청을 하기 위한 `tokenEndpoint`, 받은 토큰으로 유저 정보를 로드하기 위한 `userInfoEndpoint`, 유저 정보 로드까지 성공했을 경우 실행되는 로직인 `successHandler`, 실패했을 때 실행되는 로직인 `failureHandler`가 포함됩니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/config/SecurityConfig.java#L52-L58
-유저가 로그인을 한 후 서버는 tokenEndPoint의 `accessTokenResponseClient()`를 호출합니다.<br>
-이때 `accessTokenResponseClient()` 메소드는 `CustomRequestEntityConverter()` 컨버터를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/converter/CustomRequestEntityConverter.java#L41-L66
-컨버터는 Apple 소셜로그인을 위해 구성되었습니다.<br>
-Apple 소셜 로그인의 경우 id token을 요청하기 위해 key값과 key-id, client-id, team-id등 개발자 계정 정보가 포함된 JWT 토큰(client secret)을 요청에 포함해야 합니다. 때문에 provider가 Apple인 경우 이 값을 세팅하는 과정이 조건분기로 추가됩니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/service/CustomOAuth2UserService.java#L22-L65
-앞선 시큐리티 구성의 `userInfoEndpoint`에 구성된 `CustomOAuth2UserService`입니다.<br>
-Google, kakao의 경우 액세스토큰, Apple의 경우 id token을 받아온 후 위 로직이 실행됩니다.<br>
-Google, Kakao는 요청을 검증하고 사용자 정보를 응답으로 반환합니다. `DefaultOAuth2UserService().loadUser(userRequest)`가 이 과정을 포함하며 Map에 정보 유저를 세팅합니다.<br>
-Apple은 id token에 이미 사용자 정보가 포함되어 있습니다. 때문에 `decodeAppleToken()` 메소드를 실행하여 Map에 정보 유저를 세팅합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/attributes/OAuthAttributes.java#L12-L24
-정보 유저를 담기 위한 Class `OAuthAttributes`의 일부입니다.<br>
-각 공급자에게서 받은 정보 중 email, provider, providerId만을 선택하여 저장하기 위해 사용됩니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/handler/OAuth2LoginSuccessHandler.java#L28-L48
-로그인이 성공했을 때 호출되는 메소드입니다.<br>
-accessToken와 refreshToken을 생성하고, 이메일, 닉네임과 함께 헤더에 실어 보냄과 동시에 `userService::signIn`을 호출하여 회원가입 처리합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/5fc8ceb3f9179abcabe6a303ffeeaec3870f930b/auth-service/src/main/java/sosohappy/authservice/oauth2/handler/OAuth2LoginFailureHandler.java#L16-L19
-로그인이 실패했을 때 호출되는 메소드입니다.<br>
-클라이언트에 상태코드 403을 반환하며 플로우가 종료됩니다.
-<br><br>
+이 방식은 OAuth2의 [PKCE](https://oauth.net/2/pkce/) 동작 방식을 일부 카피하였습니다.
 
 </details>
   
-
-<details>
-  <summary>
-  <code><b>프로필 설정</b></code>
-  </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L28-L32
-`/setProfile` 경로로 API 요청이 들어오면 Service 단의 `setProfile()` 메소드를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L83-L98
-`setProfile()` 메소드는 들어온 이메일로 유저를 찾고, 성공적으로 유저를 찾으면 해당 유저의 프로필을 수정합니다.<br>
-<br><br>
-
-</details>
-
-<details>
-  <summary>
-  <code><b>프로필 사진 조회</b></code>
-  </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L40-L44
-`/findProfileImg` 경로로 API 호출이 들어오면 Service단의 `findProfileImg()` 메소드를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L100-L109
-`findProfileImg()` 메소드는 닉네임으로 유저를 찾아서 해당 유저의 프로필 사진을 클라이언트에 반환합니다.<br>
-<br><br>
-
-</details>
-
-<details>
-  <summary>
-  <code><b>회원 탈퇴</b></code>
-  </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L34-L38
-`/resign` 경로로 API가 호출되면 Service단의 `resign()` 메소드를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L44-L65
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L113-L115
-`resign()` 메소드는 `produceResign()` 메소드를 호출하고, 이후 DB에 저장된 유저 정보를 삭제합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/986a587b1ea756378f4026cf2317c5ee72a824f0/auth-service/src/main/java/sosohappy/authservice/kafka/KafkaProducerAspect.java#L22-L46
-```java
-if(kafkaProducer.topic().equals("resign")){
-     String email = (String) joinPoint.getArgs()[0];
-     String nickname = (String) joinPoint.getArgs()[1];
-     kafkaTemplate.send(kafkaProducer.topic(), email.getBytes(), nickname.getBytes());
-}
-```
-`produceResign()` 메소드로 전달된 파라미터를 기반으로 kafka broker에 회원탈퇴 했다는 메시지를 전달하기 위해 구현된 코드입니다.<br>
-피드 서버는 해당 메시지를 수신 후 탈퇴한 유저의 피드를 삭제합니다.
-<br><br>
-
-</details>
-
-<details>
-  <summary>
-  <code><b>닉네임 중복 검사</b></code>
-  </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/controller/UserController.java#L22-L26
-`/checkDuplicateNickname` 경로로 API가 호출되면 Service단의 `checkDuplicateNickname()` 메소드를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/service/UserService.java#L67-L81
-`checkDuplicateNickname()` 메소드는 닉네임으로 유저를 조회하여 해당 닉네임을 가진 유저가 있는지 확인하고 결과를 반환합니다.
-<br><br>
-
-</details>
-
-<details>
-  <summary>
-  <code><b>토큰 재발급</b></code>
-  </summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/jwt/filter/JwtFilter.java#L23-L54
-토큰 재발급 API는 Controller단이 아닌 Filter에 구현되었습니다.<br>
-경로에 `/reIssueToken`이 포함된 경우 헤더로 넘어온 기존 accessToken과 Email이 일치하는지, refreshToken이 이 유저의 refreshToken이 맞는지 검증 후 `reIssueToken()` 메소드를 호출합니다.
-<br><br>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/3c7999cc5e9534358f489ababa7985765ee09f3a/auth-service/src/main/java/sosohappy/authservice/jwt/filter/JwtFilter.java#L56-L70
-`reIssueToken()` 메소드에선 reponse Header에 새로운 accessToken과 refreshToken을 세팅하고 클라이언트에 반환합니다.<br>
-<br><br>
-
-</details>
-  
-</details>
-
 <br>
 
 ###  피드 서버 
