@@ -1,7 +1,7 @@
 <h1>SoSoHappy</h1> 
 <img align="right" src="https://skillicons.dev/icons?i=gcp,kubernetes,docker,jenkins,prometheus,grafana,kafka,java,spring,mysql,mongodb">
 
-![sosohappy-icon-removebg-preview](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/6c3db330-b80f-4837-b286-95f45d0cd6ae)
+![logo](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f1c6642b-8b03-45ce-b260-8286cfdb54b0)
 
 - - -
 이 문서는 iOS 앱 SoSoHappy의 서버단 구조 및 기능을 설명합니다. <br><br>
@@ -41,11 +41,9 @@
 ![microservices](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/e5b0e50a-9403-4753-98a2-cb88e28b24e0)
 
 > 프로젝트의 서버단에 포함된 서비스들의 구조를 나타내는 그림입니다.<br><br>
-> 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br>
-> 모든 deployment의 Replica는 메모리 이슈로 1개만 존재합니다.<br>
-> 
+> 구성, 인증, 피드, 채팅, 알림서버는 Rolling update 및 ReplicaSet 생성을 정의하기 위해 Deployment로 앱을 배포하였습니다.<br><br>
 > Mysql, MongoDB 서버는 마운트한 폴더를 지속적으로 사용하게 위해 StatefulSet으로 앱을 배포하였습니다.<br><br>
-> Grafana, Prometheus, Jenkins, Kafka는 워커노드 메모리 이슈로 쿠버네티스에 올리지 않고 VM 내부에서 도커 컨테이너로 실행하였습니다.
+> Grafana, Prometheus, Kafka는 워커노드 메모리 이슈로 쿠버네티스에 올리지 않고 VM 내부에서 도커 컨테이너로 실행하였으며 Jenkins는 VM 위에 직접 올라갑니다.
 
 
 <br>
