@@ -71,7 +71,7 @@ public class FeedService {
 
     public OtherFeedDto findDetailFeed(String srcNickname, String dstNickname, Long date) {
         return feedRepository.findBySrcNicknameAndDstNicknameAndDate(srcNickname, dstNickname, date)
-                .orElseThrow(NotFoundException::new);
+                .orElse(null);
     }
 
     public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {

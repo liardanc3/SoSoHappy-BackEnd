@@ -71,7 +71,6 @@ public class AppleOAuth2Delegator {
 
         try {
             ResponseEntity<TokenResponseDto> response = restTemplate.postForEntity(tokenURI, httpEntity, TokenResponseDto.class);
-            log.info(response.toString());
 
             if(response.getStatusCode().is2xxSuccessful()){
                 return Objects.requireNonNull(response.getBody()).getRefresh_token();
@@ -80,7 +79,6 @@ public class AppleOAuth2Delegator {
             }
 
         } catch (HttpClientErrorException e) {
-            log.error(e.getMessage());
             throw new ForbiddenException();
         }
 
@@ -106,11 +104,8 @@ public class AppleOAuth2Delegator {
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(revokeURI, httpEntity, String.class);
-
             return response.getStatusCode().is2xxSuccessful();
         } catch (HttpClientErrorException e) {
-            log.error(e.getMessage());
-
             throw new ForbiddenException();
         }
     }
