@@ -5,6 +5,7 @@ import dev.sosohappy.monolithic.service.*;
 import dev.sosohappy.monolithic.model.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.lang.Nullable;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/feed-service")
 @RequiredArgsConstructor
+@Slf4j
 public class FeedController {
 
     private final FeedService feedService;
@@ -64,6 +66,7 @@ public class FeedController {
     public OtherFeedDto findDetailFeed(@RequestParam String srcNickname,
                                        @RequestParam String dstNickname,
                                        @RequestParam Long date){
+        log.info("findDetailFeed : " + srcNickname + ", " + dstNickname + ", " + date);
         return feedService.findDetailFeed(srcNickname, dstNickname, date);
     }
 
