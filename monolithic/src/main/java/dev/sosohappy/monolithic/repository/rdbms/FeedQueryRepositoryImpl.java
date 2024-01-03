@@ -14,6 +14,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -247,7 +248,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .where(
                         dayEq(date),
                         nickNameEq(dstNickname),
-                        isPublic()
+                        !Objects.equals(srcNickname, dstNickname) ? isPublic() : null
                 )
                 .orderBy(feed.date.desc())
                 .transform(
