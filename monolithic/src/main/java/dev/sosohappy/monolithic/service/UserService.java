@@ -1,6 +1,5 @@
 package dev.sosohappy.monolithic.service;
 
-import dev.sosohappy.monolithic.exception.custom.BadRequestException;
 import dev.sosohappy.monolithic.exception.custom.ForbiddenException;
 import dev.sosohappy.monolithic.exception.custom.UnAuthorizedException;
 import dev.sosohappy.monolithic.jwt.service.JwtService;
@@ -9,7 +8,6 @@ import dev.sosohappy.monolithic.model.entity.User;
 import dev.sosohappy.monolithic.oauth2.apple.AppleOAuth2Delegator;
 import dev.sosohappy.monolithic.repository.rdbms.FeedRepository;
 import dev.sosohappy.monolithic.repository.rdbms.UserRepository;
-import dev.sosohappy.monolithic.util.Utils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,6 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @EnableScheduling
@@ -198,6 +197,25 @@ public class UserService {
             throw new ForbiddenException();
         }
 
+    }
+
+    public boolean updateBlock(BlockDto blockDto, boolean isBlock) {
+        try{
+            User srcUser = userRepository.findByNickname(blockDto.getSrcNickname()).orElseThrow();
+            User dstUser = userRepository.findByNickname(blockDto.getDstNickname()).orElseThrow();
+
+            if(isBlock){
+                if(!srcUser.getBlockUserList().contains(dstUser)){
+                    userRepository.insertBlockUser(srcUser.getId(), dstUser.getId());
+                }
+            } else {
+                userRepository.deleteBlockUser(srcUser.getId(), dstUser.getId());
+            }
+
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     // ------------------------------------------------------------------------------------------------------------ //

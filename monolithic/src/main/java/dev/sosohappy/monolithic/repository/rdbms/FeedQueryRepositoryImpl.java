@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
@@ -24,12 +25,12 @@ import static dev.sosohappy.monolithic.model.entity.QFeedCategory.*;
 import static dev.sosohappy.monolithic.model.entity.QFeedImage.*;
 import static dev.sosohappy.monolithic.model.entity.QFeedLikeNickname.*;
 
-
 @Repository
 @RequiredArgsConstructor
 public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final UserRepository userRepository;
 
     @Override
     public List<UserFeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
@@ -150,6 +151,8 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
 
+        List<String> blockUserList = getBlockUserNicknameListByNickname(nickname);
+
         List<OtherFeedDto> otherFeedDtos = queryFactory
                 .selectFrom(feed)
                 .leftJoin(feed.feedImages, feedImage)
@@ -174,7 +177,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                                         Expressions.asString(nickname)
                                 )
                         )
-                );
+                )
+                .stream()
+                .filter(otherFeedDto -> !blockUserList.contains(otherFeedDto.getNickname()))
+                .collect(Collectors.toList());
 
         List<OtherFeedDto> feedList = otherFeedDtos.subList(
                 Math.min(otherFeedDtos.size(), page * size),
@@ -198,6 +204,11 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
+
+        List<String> blockUserList = getBlockUserNicknameListByNickname(srcNickname);
+        if(blockUserList.contains(dstNickname)){
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
 
         List<OtherFeedDto> otherFeedDtos = queryFactory
                 .selectFrom(feed)
@@ -240,6 +251,11 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     @Override
     public Optional<OtherFeedDto> findBySrcNicknameAndDstNicknameAndDate(String srcNickname, String dstNickname, Long date) {
+        List<String> blockUserList = getBlockUserNicknameListByNickname(srcNickname);
+        if(blockUserList.contains(dstNickname)){
+            return Optional.empty();
+        }
+
         return queryFactory
                 .selectFrom(feed)
                 .leftJoin(feed.feedImages, feedImage)
@@ -289,5 +305,11 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     private BooleanExpression isPublic(){
         return feed.isPublic.eq(true);
+    }
+
+    private List<String> getBlockUserNicknameListByNickname(String nickname){
+        return userRepository.findByNickname(nickname)
+                .map(user -> user.getBlockUserList().stream().map(User::getNickname).toList())
+                .orElse(List.of(""));
     }
 }

@@ -1,11 +1,14 @@
 package dev.sosohappy.monolithic.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.sosohappy.monolithic.model.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -45,6 +48,14 @@ public class User {
     @Column
     private String appleRefreshToken;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_block",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "block_user_id")
+    )
+    private List<User> blockUserList = new ArrayList<>();
+
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
@@ -73,4 +84,5 @@ public class User {
     public void updateProviderId(String providerId) {
         this.providerId = providerId;
     }
+
 }

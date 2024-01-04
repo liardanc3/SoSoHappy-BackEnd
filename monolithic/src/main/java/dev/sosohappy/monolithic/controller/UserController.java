@@ -50,4 +50,14 @@ public class UserController {
     public Map<String, String> getAuthorizeCode(@Valid CodeChallengeDto codeChallengeDto){
         return userService.getAuthorizeCode(codeChallengeDto.getCodeChallenge());
     }
+
+    @PostMapping("/block")
+    public Map<String, Boolean> block(@Valid BlockDto blockDto){
+        return Map.of("success", userService.updateBlock(blockDto, true));
+    }
+
+    @PostMapping("/unblock")
+    public Map<String, Boolean> unblock(@Valid BlockDto blockDto){
+        return Map.of("success", userService.updateBlock(blockDto, false));
+    }
 }

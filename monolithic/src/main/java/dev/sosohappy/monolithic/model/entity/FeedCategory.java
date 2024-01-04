@@ -26,7 +26,4 @@ public class FeedCategory {
         this.category = category;
     }
 
-    public void deleteRelationship(){
-        this.feed = null;
-    }
 }

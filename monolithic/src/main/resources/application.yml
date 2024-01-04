@@ -25,7 +25,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
 
 jwt:
   secretKey: dsajfnlwejabjldqwnadjkenqkjfbkjf132asdkk1ljl09henl322
