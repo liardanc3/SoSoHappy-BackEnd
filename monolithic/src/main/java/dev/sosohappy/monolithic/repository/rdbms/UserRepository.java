@@ -19,6 +19,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     String findDeviceTokenByNickname(String nickname);
 
     @Modifying
+    void deleteByNickname(String nickname);
+
+    // --------------------------------------------------------------------------------- //
+
+    @Modifying
     @Query(value = "DELETE FROM user_block WHERE user_id = :srcUserId AND block_user_id = :dstUserId", nativeQuery = true)
     void deleteBlockUser(Long srcUserId, Long dstUserId);
 
@@ -27,5 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void insertBlockUser(Long srcUserId, Long dstUserId);
 
     @Modifying
-    void deleteByNickname(String nickname);
+    @Query(value = "DELETE FROM user_block WHERE user_id = :id OR block_user_id = :id", nativeQuery = true)
+    void deleteBlockUserById(Long id);
+
 }

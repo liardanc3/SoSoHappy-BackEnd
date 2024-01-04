@@ -27,18 +27,12 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class HappinessService {
 
-    private static final ConcurrentHashMap<String, Integer> categoryToIndexMap = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Integer, String> indexToCategoryMap = new ConcurrentHashMap<>();
-    private static final AtomicReference<List<List<Integer>>> atomicSimilarityMatrix = new AtomicReference<>();
     private static final Map<String, List<String>> categoryAndSentenceMap = new HashMap<>();
 
     private final FeedRepository feedRepository;
-    private final FeedCategoryRepository feedCategoryRepository;
 
     @PostConstruct
     void initSimilarityMatrix() {
-        allocateMatrix();
-        initMatrix();
         initCategoryAndSentenceMap();
     }
 
@@ -46,25 +40,6 @@ public class HappinessService {
         List<String> bestCategoryList = getBestCategoryList(nicknameAndDateDto);
 
         return new AnalysisDto(bestCategoryList, convertCategoryToSentence(bestCategoryList));
-    }
-
-    public void updateSimilarityMatrix(Feed feed, UpdateFeedDto updateFeedDto) {
-        Integer srcHappiness = feed.getHappiness();
-        List<String> srcCategoryList = feed.getFeedCategories().stream().map(FeedCategory::getCategory).collect(Collectors.toList());
-        
-        updateSimilarity(-srcHappiness, srcCategoryList);
-
-        Integer dstHappiness = updateFeedDto.getHappiness();
-        List<String> dstCategoryList = updateFeedDto.getCategoryList();
-
-        updateSimilarity(dstHappiness, dstCategoryList);
-    }
-
-    public void updateSimilarityMatrix(UpdateFeedDto updateFeedDto) {
-        Integer happiness = updateFeedDto.getHappiness();
-        List<String> categoryList = updateFeedDto.getCategoryList();
-        
-        updateSimilarity(happiness, categoryList);
     }
 
     public List<HappinessAndDateDto> findMonthHappiness(NicknameAndDateDto nicknameAndDateDto) {
@@ -136,78 +111,6 @@ public class HappinessService {
                 .toList();
     }
 
-    private void initMatrix() {
-        feedRepository.findAll()
-                .forEach(feed -> {
-                    Integer happiness = feed.getHappiness();
-                    List<String> categories = feed.getFeedCategories()
-                            .stream()
-                            .map(FeedCategory::getCategory)
-                            .collect(Collectors.toList());
-
-                    updateSimilarity(happiness, categories);
-                });
-    }
-
-    private void updateSimilarity(Integer happiness, List<String> categories) {
-        List<List<Integer>> matrix = atomicSimilarityMatrix.get();
-
-        for (String category : categories) {
-            updateCategory(category);
-        }
-
-        for (int i = 0; i < categories.size(); i++){
-
-            int srcIdx = categoryToIndexMap.get(categories.get(i));
-
-            for (int j = 0; j < categories.size(); j++){
-                if (i != j){
-
-                    int dstIdx = categoryToIndexMap.get(categories.get(j));
-
-                    matrix.get(srcIdx)
-                            .set(
-                                    dstIdx,
-                                    matrix.get(srcIdx).get(dstIdx) + happiness
-                            );
-                }
-            }
-        }
-    }
-
-    private void allocateMatrix() {
-        feedCategoryRepository.findDistinctCategory()
-                .forEach(this::updateCategory);
-
-        int size = Math.max(categoryToIndexMap.size(), 100);
-        atomicSimilarityMatrix.set(
-                Stream.generate(() ->
-                                Stream.generate(() -> 0)
-                                        .limit(size)
-                                        .collect(Collectors.toList())
-                        )
-                        .limit(size)
-                        .collect(Collectors.toList())
-        );
-    }
-
-    private void updateCategory(String category) {
-        categoryToIndexMap.putIfAbsent(category, categoryToIndexMap.size());
-        indexToCategoryMap.putIfAbsent(categoryToIndexMap.size()-1, category);
-    }
-
-    @SneakyThrows
-    private void initCategoryAndSentenceMap() {
-        InputStream inputStream = new ClassPathResource("category.txt").getInputStream();
-        BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
-
-        String line = "";
-        while ((line = buffer.readLine()) != null) {
-            String[] categoryAndSentence = line.split("=");
-            categoryAndSentenceMap.put(categoryAndSentence[0], Arrays.stream(categoryAndSentence[1].split(",")).toList());
-        }
-    }
-
     private List<String> convertCategoryToSentence(List<String> recommendCategoryList) {
         List<String> result = new ArrayList<>();
         
@@ -226,5 +129,17 @@ public class HappinessService {
         }
 
         return result.isEmpty() ? List.of("피드 작성하기") : result.subList(0, Math.min(result.size(), 10));
+    }
+
+    @SneakyThrows
+    private void initCategoryAndSentenceMap() {
+        InputStream inputStream = new ClassPathResource("category.txt").getInputStream();
+        BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
+
+        String line = "";
+        while ((line = buffer.readLine()) != null) {
+            String[] categoryAndSentence = line.split("=");
+            categoryAndSentenceMap.put(categoryAndSentence[0], Arrays.stream(categoryAndSentence[1].split(",")).toList());
+        }
     }
 }
