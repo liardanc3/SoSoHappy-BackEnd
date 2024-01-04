@@ -81,6 +81,7 @@ public class UserService {
 
                     if(revokeResult){
                         feedRepository.deleteByNickname(user.getNickname());
+                        userRepository.deleteByNickname(user.getNickname());
                     }
 
                     return ResignDto.builder()
