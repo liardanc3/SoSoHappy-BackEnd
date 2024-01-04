@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(value = "INSERT INTO user_block (user_id, block_user_id) values (:srcUserId, :dstUserId)", nativeQuery = true)
     void insertBlockUser(Long srcUserId, Long dstUserId);
+
+    @Modifying
+    void deleteByNickname(String nickname);
 }
