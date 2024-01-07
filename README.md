@@ -103,6 +103,128 @@
 
 <br>
 
+![feed](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/dc1df2ce-cdb8-4b61-9150-783949344c0d)
+
+<br>피드 관련 CRUD API가 구현된 서버입니다.<br>
+Controller, Service, Repository 총 3개의 Layer로 분리되어 있습니다.<br>
+
+아래는 Controller단의 코드 일부입니다.
+
+```java
+@RestController
+@RequiredArgsConstructor
+public class FeedController {
+
+    private final FeedService feedService;
+    private final FeedImageRepository feedImageRepository;
+
+    @PostMapping("/findMonthFeed")
+    public List<UserFeedDto> findMonthFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
+        return feedService.findMonthFeed(nicknameAndDateDto);
+    }
+
+    @PostMapping("/findDayFeed")
+    public UserFeedDto findDayFeed(@ModelAttribute @Valid NicknameAndDateDto nicknameAndDateDto){
+        return feedService.findDayFeed(nicknameAndDateDto);
+    }
+
+    ...
+
+}
+```
+Controller단에서 Request로 들어온 DTO를 Validation한 후 이상이 없으면 Service단의 메소드를 호출합니다.<br>
+
+아래는 Service단의 일부입니다.
+```java
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class FeedService {
+
+    private final FeedRepository feedRepository;
+    private final FeedLikeNicknameRepository feedLikeNicknameRepository;
+    private final FeedImageRepository feedImageRepository;
+    private final HappinessService happinessService;
+    private final KafkaDelegator kafkaDelegator;
+
+    public List<UserFeedDto> findMonthFeed(NicknameAndDateDto nicknameAndDateDto) {
+        return Optional.ofNullable(feedRepository.findMonthFeedDtoByNicknameAndDateDto(nicknameAndDateDto))
+                .orElse(List.of());
+    }
+
+    public Map<String, Boolean> updateLike(String srcNickname, NicknameAndDateDto nicknameAndDateDto) {
+        return feedRepository.findByNicknameAndDate(nicknameAndDateDto.getNickname(), nicknameAndDateDto.getDate())
+                .map(feed ->  {
+                    Map<String, Boolean> responseDto = Map.of("like", updateLike(feed, srcNickname));
+                    if(responseDto.get("like")){
+                        kafkaDelegator.produceUpdateLike(srcNickname, nicknameAndDateDto);
+                    }
+                    return responseDto;
+                })
+                .orElseThrow(NotFoundException::new);
+    }
+
+    ...
+
+}
+```
+Service단에선 필요에 따라 Kafka와 통신하거나 Repository단을 호출하여 피드 CRUD를 위한 메소드를 실행합니다.
+
+아래는 Repository단의 일부입니다.
+```java
+@Repository
+@RequiredArgsConstructor
+public class FeedQueryRepositoryImpl implements FeedQueryRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<UserFeedDto> findMonthFeedDtoByNicknameAndDateDto(NicknameAndDateDto nicknameAndDateDto) {
+        return queryFactory
+                .selectFrom(feed)
+                .leftJoin(feed.feedImages, feedImage)
+                .leftJoin(feed.feedCategories, feedCategory)
+                .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
+                .where(
+                        monthEq(nicknameAndDateDto.getDate()),
+                        nickNameEq(nicknameAndDateDto.getNickname())
+                )
+                .orderBy(feed.date.desc())
+                .transform(
+                        groupBy(feed.id).list(
+                                Projections.constructor(
+                                        UserFeedDto.class,
+                                        feed,
+                                        list(Projections.constructor(Long.class, feedImage.id)),
+                                        list(Projections.constructor(FeedCategory.class, feed, feedCategory.category)),
+                                        list(Projections.constructor(FeedLikeNickname.class, feed, feedLikeNickname.nickname))
+                                )
+                        )
+                );
+    }
+
+    ...
+
+}
+```
+```java
+
+public interface FeedRepository extends JpaRepository<Feed, Long>, FeedQueryRepository {
+
+    @Modifying
+    @Query("update Feed f set f.nickname = :after where f.nickname = :before")
+    void updateFeedNickname(@Param("before") String before, @Param("after") String after);
+
+    @Modifying
+    void deleteByNickname(String nickname);
+
+    ...
+
+}
+```
+Spring data JPA, Querydsl을 의존성 추가하여 사용합니다. 이곳에서 피드 CRUD 작업을 수행 후 결과를 json으로 Client에 반환합니다.<br>
+피드서버의 다른 API들도 위와 비슷한 과정을 거쳐 Client에 결과를 반환합니다.
+
 </details>
 
 <br>
