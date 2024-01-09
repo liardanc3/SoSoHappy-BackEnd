@@ -6,6 +6,7 @@ import dev.sosohappy.monolithic.jwt.service.JwtService;
 import dev.sosohappy.monolithic.model.dto.*;
 import dev.sosohappy.monolithic.model.entity.User;
 import dev.sosohappy.monolithic.oauth2.apple.AppleOAuth2Delegator;
+import dev.sosohappy.monolithic.repository.rdbms.FeedLikeNicknameRepository;
 import dev.sosohappy.monolithic.repository.rdbms.FeedRepository;
 import dev.sosohappy.monolithic.repository.rdbms.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,6 +39,7 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final FeedRepository feedRepository;
+    private final FeedLikeNicknameRepository feedLikeNicknameRepository;
     private final AppleOAuth2Delegator appleOAuth2Delegator;
 
     public void signIn(Map<String, Object> userAttributes, String refreshToken) {
@@ -113,6 +115,7 @@ public class UserService {
         return userRepository.findByEmail(userRequestDto.getEmail())
                 .map(user -> {
                     feedRepository.updateFeedNickname(user.getNickname(), userRequestDto.getNickname());
+                    feedLikeNicknameRepository.updateFeedLikeNickname(user.getNickname(), userRequestDto.getNickname());
 
                     user.updateProfile(userRequestDto);
 
