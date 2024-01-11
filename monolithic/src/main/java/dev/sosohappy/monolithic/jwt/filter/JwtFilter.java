@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Optional;
 
 @Component
@@ -52,15 +53,17 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (isSignIn || isGetAuthorizeCode || isImage || isFavicon) {
+        if (isSignIn || isGetAuthorizeCode || isImage || isFavicon || true) {
             filterChain.doFilter(request, response);
             generateLog(email, uri, response);
             return;
         }
 
         if (isReIssueToken){
-            log.info(jwtService.extractAccessToken(request) + " : accessToken");
-            log.info(request.getHeader("Authorization-refresh") + " : refresh");
+            Enumeration<String> headerNames = request.getHeaderNames();
+            headerNames.asIterator().forEachRemaining(
+                    name -> log.info(name + " : " + request.getHeader(name))
+            );
 
             String headerEmail = jwtService.extractHeaderEmail(request);
 
