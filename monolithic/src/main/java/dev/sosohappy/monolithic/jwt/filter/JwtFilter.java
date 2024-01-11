@@ -59,6 +59,9 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (isReIssueToken){
+            log.info(jwtService.extractAccessToken(request) + " : accessToken");
+            log.info(request.getHeader("Authorization-refresh") + " : refresh");
+
             String headerEmail = jwtService.extractHeaderEmail(request);
 
             String tokenEmail = jwtService.extractTokenEmail(jwtService.extractRefreshToken(request).orElse(null))
@@ -67,9 +70,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String refreshToken = jwtService.extractRefreshToken(request)
                     .filter(token -> jwtService.isTokenValid(token, headerEmail))
                     .orElse(null);
-
-            log.info(jwtService.extractAccessToken(request) + " : accessToken");
-            log.info(refreshToken + " : refreshToken");
 
             if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
