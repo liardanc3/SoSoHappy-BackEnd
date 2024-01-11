@@ -19,7 +19,7 @@ public class FeedImage {
     private Feed feed;
 
     @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "MEDIUMBLOB")
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] image;
 
     public FeedImage(Feed feed, byte[] image) {

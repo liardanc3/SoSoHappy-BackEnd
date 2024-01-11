@@ -6,8 +6,8 @@ spring:
     banner-mode: off
   servlet:
     multipart:
-      max-file-size: 40MB
-      max-request-size: 40MB
+      max-file-size: 50MB
+      max-request-size: 50MB
   application:
     name: monolithic
   datasource:
