@@ -164,6 +164,8 @@ public class UserService {
         String deviceToken = signInDto.getDeviceToken();
         String codeVerifier = signInDto.getCodeVerifier();
 
+        log.info(provider + ", " + email + ", " + providerId + ", " + authorizeCode + ", " + deviceToken + ", " + codeVerifier);
+
         if(!provider.equals("apple") && !provider.equals("google") && !provider.equals("kakao")){
             throw new ForbiddenException();
         }
