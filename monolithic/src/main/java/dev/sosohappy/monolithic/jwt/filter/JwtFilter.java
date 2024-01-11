@@ -68,6 +68,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     .filter(token -> jwtService.isTokenValid(token, headerEmail))
                     .orElse(null);
 
+            log.info(jwtService.extractAccessToken(request) + " : accessToken");
+            log.info(refreshToken + " : refreshToken");
+
             if (headerEmail.equals(tokenEmail) && refreshToken != null) {
                 reIssueToken(response, refreshToken);
                 generateLog(email, uri, response);
@@ -125,11 +128,21 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void generateLog(String email, String uri, HttpServletResponse response){
-        log.info(
-                String.format(
-                        "RESPONSE %d [%32.32s] from %s",
-                        response.getStatus(), uri, email
-                )
-        );    
+        if(response.getStatus() >= 400){
+            log.error(
+                    String.format(
+                            "RESPONSE %d [%32.32s] from %s",
+                            response.getStatus(), uri, email
+                    )
+            );
+        } else {
+            log.info(
+                    String.format(
+                            "RESPONSE %d [%32.32s] from %s",
+                            response.getStatus(), uri, email
+                    )
+            );
+        }
+
     }
 }

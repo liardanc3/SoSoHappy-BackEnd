@@ -66,6 +66,7 @@ public class FeedController {
     public OtherFeedDto findDetailFeed(@RequestParam String srcNickname,
                                        @RequestParam String dstNickname,
                                        @RequestParam Long date){
+        log.info(srcNickname + ", " + dstNickname + ", " + date);
         return feedService.findDetailFeed(srcNickname, dstNickname, date);
     }
 
