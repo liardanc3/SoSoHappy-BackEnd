@@ -160,7 +160,6 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
                         isDayFind(date),
-                        nickNameEq(nickname).not(),
                         isPublic()
                 )
                 .orderBy(feed.date.desc())
