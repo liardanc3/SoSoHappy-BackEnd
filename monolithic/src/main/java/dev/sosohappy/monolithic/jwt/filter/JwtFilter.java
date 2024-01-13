@@ -53,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (isSignIn || isGetAuthorizeCode || isImage || isFavicon || true) {
+        if (isSignIn || isGetAuthorizeCode || isImage || isFavicon) {
             filterChain.doFilter(request, response);
             generateLog(email, uri, response);
             return;
