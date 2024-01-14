@@ -30,7 +30,7 @@ spring:
 jwt:
   secretKey: dsajfnlwejabjldqwnadjkenqkjfbkjf132asdkk1ljl09henl322
   access:
-    expiration: 3600
+    expiration: 36000000
     header: Authorization
   refresh:
     expiration: 12096000000
