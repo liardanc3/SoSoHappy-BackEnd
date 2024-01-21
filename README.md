@@ -363,11 +363,8 @@ SSL 인증서를 사용중이기 때문에 443포트를 사용했고, http 80포
  구성 서버를 빌드하고 배포하는 stage 입니다. 
 
 <details><summary>detail</summary>
-
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L17-L35
- 이 스테이지는 크게 3단계로 나누어 집니다.
-<br><br>
-
+  <br>
+  
 ```
 sh "chmod +x gradlew"
 sh "./gradlew clean"
@@ -396,8 +393,15 @@ sh "kubectl --kubeconfig=/var/lib/jenkins/workspace/config rollout restart deplo
 ### Sleep
  구성 서버가 쿠버네티스에 올라가서 완전히 실행될 때까지 기다리는 stage 입니다.
 <details><summary>detail</summary>
- 
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e3525253c08c4f4bcf0e/Jenkinsfile#L37-L41
+  <br>
+  
+ ```java
+ stage('Waiting config pod running') {
+            steps {
+                sleep(time: 120, unit: 'SECONDS')
+            }
+        }
+```
  구성서버는 다른 서버의 구성정보를 전파해야 하기 때문에 구성 서버가 완전히 로딩되지 않으면 다른 서버가 온전히 실행되지 않습니다.
 </details>
 <br>
@@ -405,10 +409,7 @@ https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/32555f21a0ba59b7eff0e35252
 ### Build and Deployment other services
  인증, 피드, 채팅, 알림 서버를 빌드하고 배포하는 stage 입니다. 
 <details><summary>detail</summary>
-  
-https://github.com/So-So-Happy/SoSoHappy-BackEnd/blob/e3096366633d24b54dbf6ccf36faa9cc4c96e574/Jenkinsfile#L39-L58
- 이 스테이지 또한 크게 3단계로 나누어 집니다.
-<br><br>
+  <br>
 
 ```
 sh "chmod +x gradlew"
