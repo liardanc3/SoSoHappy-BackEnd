@@ -165,7 +165,6 @@ public class UserService {
         String codeVerifier = signInDto.getCodeVerifier();
 
         if(!provider.equals("apple") && !provider.equals("google") && !provider.equals("kakao")){
-            log.error("unknown provider : " + provider);
             throw new ForbiddenException();
         }
 
