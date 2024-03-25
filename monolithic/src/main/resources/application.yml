@@ -12,12 +12,12 @@ spring:
     name: monolithic
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://34.64.157.36:3306/sosohappy?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
+    url: jdbc:mysql://35.185.173.105:3306/sosohappy?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
     username: root
     password: sosohappy
   data:
     mongodb:
-      uri: mongodb://root:sosohappy@34.64.157.36:27017/
+      uri: mongodb://root:sosohappy@35.185.173.105:27017/
       database: dm
   jpa:
     show-sql: false
