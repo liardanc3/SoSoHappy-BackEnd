@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Optional;
 
 @Component
@@ -59,6 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (isReIssueToken){
+
             String headerEmail = jwtService.extractHeaderEmail(request);
 
             String tokenEmail = jwtService.extractTokenEmail(jwtService.extractRefreshToken(request).orElse(null))
@@ -125,11 +127,21 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void generateLog(String email, String uri, HttpServletResponse response){
-        log.info(
-                String.format(
-                        "RESPONSE %d [%32.32s] from %s",
-                        response.getStatus(), uri, email
-                )
-        );    
+        if(response.getStatus() >= 400){
+            log.error(
+                    String.format(
+                            "RESPONSE %d [%32.32s] from %s",
+                            response.getStatus(), uri, email
+                    )
+            );
+        } else {
+            log.info(
+                    String.format(
+                            "RESPONSE %d [%32.32s] from %s",
+                            response.getStatus(), uri, email
+                    )
+            );
+        }
+
     }
 }

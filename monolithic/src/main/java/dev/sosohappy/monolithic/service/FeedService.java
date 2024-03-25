@@ -91,14 +91,6 @@ public class FeedService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public void updateNickname(String srcNickname, String dstNickname){
-        feedRepository.updateFeedNickname(srcNickname, dstNickname);
-    }
-
-    public void deleteDataOfResignedUser(String nickname){
-        feedRepository.deleteByNickname(nickname);
-    }
-
     public byte[] findImage(String imageId) {
         try{
 

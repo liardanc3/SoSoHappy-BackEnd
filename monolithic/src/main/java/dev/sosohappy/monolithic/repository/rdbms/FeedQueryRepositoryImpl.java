@@ -144,7 +144,7 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
     @Override
     public Slice<OtherFeedDto> findByNicknameAndDateWithSlicing(String nickname, Long date, Pageable pageable) {
-        if(pageable.getPageSize() > 25){
+        if(pageable.getPageSize() > 35){
             throw new ValidException();
         }
 
@@ -160,12 +160,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                 .leftJoin(feed.feedLikeNicknames, feedLikeNickname)
                 .where(
                         isDayFind(date),
-                        nickNameEq(nickname).not(),
-                        isPublic()
+                        isPublic(),
+                        feed.nickname.notIn(blockUserList)
                 )
                 .orderBy(feed.date.desc())
-                .offset(0)
-                .limit(6L * page * (size + 1) + size * 6L + 1)
                 .transform(
                         groupBy(feed.id).list(
                                 Projections.constructor(
@@ -177,21 +175,14 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                                         Expressions.asString(nickname)
                                 )
                         )
-                )
-                .stream()
-                .filter(otherFeedDto -> !blockUserList.contains(otherFeedDto.getNickname()))
-                .collect(Collectors.toList());
+                );
 
         List<OtherFeedDto> feedList = otherFeedDtos.subList(
                 Math.min(otherFeedDtos.size(), page * size),
-                Math.min(otherFeedDtos.size(), (page * size) + size + 1)
+                Math.min(otherFeedDtos.size(), (page * size) + size)
         );
 
-        boolean hasNext = false;
-        if (feedList.size() > pageable.getPageSize()){
-            feedList.remove(pageable.getPageSize());
-            hasNext = true;
-        }
+        boolean hasNext = feedList.size() >= pageable.getPageSize() && otherFeedDtos.size() != (page * size) + size;
 
         return new SliceImpl<>(feedList, pageable, hasNext);
     }
@@ -220,8 +211,6 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
                         isPublic()
                 )
                 .orderBy(feed.date.desc())
-                .offset(0)
-                .limit(6L * page * (size + 1) + size * 6L + 1)
                 .transform(
                         groupBy(feed.id).list(
                                 Projections.constructor(
@@ -237,14 +226,10 @@ public class FeedQueryRepositoryImpl implements FeedQueryRepository {
 
         List<OtherFeedDto> feedList = otherFeedDtos.subList(
                 Math.min(otherFeedDtos.size(), page * size),
-                Math.min(otherFeedDtos.size(), (page * size) + size + 1)
+                Math.min(otherFeedDtos.size(), (page * size) + size)
         );
 
-        boolean hasNext = false;
-        if (feedList.size() > pageable.getPageSize()){
-            feedList.remove(pageable.getPageSize());
-            hasNext = true;
-        }
+        boolean hasNext = feedList.size() >= pageable.getPageSize() && otherFeedDtos.size() != (page * size) + size;
 
         return new SliceImpl<>(feedList, pageable, hasNext);
     }
