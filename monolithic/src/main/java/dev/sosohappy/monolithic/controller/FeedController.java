@@ -47,7 +47,7 @@ public class FeedController {
     public SliceResponse<OtherFeedDto> findOtherDayFeed(@RequestParam String nickname,
                                                         @RequestParam @Nullable Long date,
                                                         @PageableDefault(size = 7) Pageable pageable){
-        return feedService.findOtherFeed(nickname, date == null ? -1 : date, pageable);
+        return feedService.findOtherFeed(nickname, Long.valueOf(date == null ? -1 : date), pageable);
     }
 
     @PostMapping("/updateLike")
