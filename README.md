@@ -1,7 +1,6 @@
 <h1>SoSoHappy</h1> 
 <img align="right" src="https://skillicons.dev/icons?i=gcp,kubernetes,docker,jenkins,prometheus,grafana,kafka,java,spring,mysql,mongodb">
 
-![logo](https://github.com/So-So-Happy/SoSoHappy-BackEnd/assets/85429793/f1c6642b-8b03-45ce-b260-8286cfdb54b0)
 
 - - -
 이 문서는 iOS 앱 SoSoHappy의 서버단 구조 및 기능을 설명합니다. <br><br>
