@@ -6,7 +6,9 @@
 - - -
 이 문서는 iOS 앱 SoSoHappy의 서버단 구조 및 기능을 설명합니다. <br><br>
 클라이언트 3명([@suekim999](https://github.com/suekim999), [@rirupark](https://github.com/rirupark), [@kyungee](https://github.com/kyungeee)), 서버 1명([@liardanc3](https://github.com/liardanc3))이 참여한 프로젝트입니다. <br>
-클라이언트단 레포지토리는 [여기서](https://github.com/So-So-Happy/SoSoHappy-iOS), API 문서는 [여기서](https://sosohappy.gitbook.io/sosohappy/) 확인하실 수 있습니다.
+클라이언트단 레포지토리는 [여기서](https://github.com/So-So-Happy/SoSoHappy-iOS), API 문서는 [여기서](https://sosohappy.gitbook.io/sosohappy/) 확인하실 수 있습니다. <br><br>
+
++ 2024년 04월부로 프로젝트가 Monolithic 구조로 마이그레이션 되었습니다.
 - - -
 
 <br>
